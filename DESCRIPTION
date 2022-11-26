@@ -1,0 +1,39 @@
+Package: dynamicSDM
+Title: Dynamic species distribution and abundance modelling
+Version: 0.0.0.9000
+Authors@R: 
+    person("Rachel", "Dobson", , "eerdord@gmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: This package enables the generation of species distribution and abundance models that are dynamic through space and time. dynamicSDM presents highly-flexible functions for incorporating both spatial and temporal aspects at key species distribution modelling stages, including when cleaning and filtering species occurrence data, assessing and correcting biases and autocorrelation, generating pseudo-absence records, extracting dynamic explanatory variables and projecting species distribution and abundance patterns at high spatiotemporal resolution. Functions take advantage of Google Earth Engine and Google Drive to minimise computing power and storage demands.
+License: use_gpl3_license()
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Imports: 
+    ape,
+    blockTools,
+    dplyr,
+    fmsb,
+    gbm,
+    geobuffer,
+    ggplot2,
+    googledrive,
+    lubridate,
+    magick,
+    magrittr,
+    matrixStats,
+    pROC,
+    raster,
+    reticulate,
+    rgee,
+    rgeos,
+    ROCR,
+    sp,
+    terra,
+    tidyr
+Depends: 
+    R (>= 2.10)
+LazyData: true
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
