@@ -10,7 +10,8 @@ spatiotemp_block(
   spatial.layer = NULL,
   spatial.split.degrees = NULL,
   temporal.block = NULL,
-  n.blocks = 10
+  n.blocks = 10,
+  iterations = 5000
 )
 }
 \arguments{
@@ -24,7 +25,9 @@ spatiotemp_block(
 
 \item{temporal.block}{optional; a character string or vector, the time step for sampling unit splitting. Any combination of '"day"', '"month"' or '"year"' or "quarter".}
 
-\item{n.blocks}{a numeric value, the number of blocks to group occurrence records into. Default; 10.}
+\item{n.blocks}{optional; a numeric value, the number of blocks to group occurrence records into. Default; 10.}
+
+\item{iterations}{optional; a numeric value, the number of random block groupings to trial before selecting the optimal grouping. Default; 5000.}
 }
 \value{
 Returns occurrence data frame with column "BLOCK.CATS", assigning each record to a spatiotemporal block.
@@ -39,10 +42,8 @@ We adapt this approach to account for temporal autocorrelation by enabling users
 
 Spatial splitting: If the spatial.layer raster has categories that take up large contiguous areas, spatial.split.degrees will split categories into smaller units using grid cells at given resolution.
 Temporal splitting: If temporal.block is given, then occurrence records with unique values for given level are considered unique sampling unit. For instance, if temporal.block = “year”, then records from the same year are considered a sampling unit to be grouped into blocks. However, if spatial splitting is also used, then spatial characteristics may split these further into separate sampling units.
-Once split into sampling units based upon temporal and spatial characteristics, these units are then assigned into given number of blocks (n.blocks), so that the mean and range of explanatory variables (vars.to.block.by) are similar across each (Moore et al., 2016).
+Once split into sampling units based upon temporal and spatial characteristics, these units are then assigned into given number of blocks (n.blocks), so that the mean and range of explanatory variables (vars.to.block.by) are similar across each.
 }
 \references{
 Bagchi, R., Crosby, M., Huntley, B., Hole, D. G., Butchart, S. H. M., Collingham, Y., Kalra, M., Rajkumar, J., Rahmani, A. & Pandey, M. 2013. Evaluating the effectiveness of conservation site networks under climate change: accounting for uncertainty. Global Change Biology, 19, 1236-1248.
-
-Moore, R.T., Schnakenberg, K. and Moore, 2016. Package ‘blockTools’.
 }

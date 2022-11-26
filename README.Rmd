@@ -20,27 +20,62 @@ knitr::opts_chunk$set(
 
 [![Codecov test coverage](https://codecov.io/gh/r-a-dobson/dynamicSDM/branch/main/graph/badge.svg)](https://app.codecov.io/gh/r-a-dobson/dynamicSDM?branch=main)
 <!-- badges: end -->
-## Summary 
-
-Across ecological research fields, species distribution and abundance modelling (SDM) is a major tool to understand drivers and patterns of species occurrence by relating occurrence records to environmental conditions. **dynamicSDM** facilitates the incorporation of environmental variables that are dynamic in both space and time to better represent our dynamic world in SDMs. 
-
-Our functions are; **user-friendly**, with simple inputs and outputs; **highly flexible**, with open arguments for targeting study specifics; and **computer friendly**, utilising Google Drive and Google Earth Engine to minimise computing power and storage demands of high spatiotemporal resolution modelling. 
 
 
-## Installation
+# Summary
 
-You can install the development version of dynamicSDM like so:
+Across ecological research fields, species distribution and abundance modelling (SDM) is a major tool for understanding the drivers and patterns of species occurrence. To advance our ability to model species inhabiting our dynamic ecosystems, **dynamicSDM** facilitates the incorporation of explanatory variables that are dynamic in both space and time. 
+Our functions are:
 
+* **user-friendly** - requiring only simple inputs and outputs
+* **highly flexible** - offering diverse and open arguments for targeting study specifics;
+* **computer friendly** - utilising Google Earth Engine and Google Drive to minimise the computing power and storage demands associated with high spatiotemporal resolution modelling. 
+
+# Package structure
+
+<a href='https://RachelDobson.github.io/dynamicSDM'><img src="https://raw.githubusercontent.com/RachelDobson/dynamicSDM/main/man/figures/Picture1.png" align="centre" height="550"/></a>
+
+### 1) Response data functions
+Functions for preparing species distribution or abundance model input data for modelling with spatiotemporally dynamic explanatory variables. 
+
+* `spatiotemp_check()` Check species occurrence record formatting, completeness and validity.
+* `spatiotemp_extent()` Filter species occurrence records by a given spatial and temporal extent.
+* `spatiotemp_resolution()` Filter species occurrence records by given spatial and temporal resolution.
+* `spatiotemp_bias()` Test for spatial and temporal bias in species occurrence records. 
+* `spatiotemp_thin()` Thin species occurrence records by spatial and temporal proximity.
+* `spatiotemp_pseudoabs()` Generate pseudo-absence record coordinates and dates.
+* `spatiotemp_weights()` Calculate sampling effort across spatial and temporal buffer from species occurrence records.
+
+### 2) Explanatory variable functions
+Functions for extracting spatiotemporally dynamic explanatory variable data for species occurrence record co-ordinates and dates using Google Earth Engine.  
+
+* `extract_dynamic_coords()` Extract temporally dynamic explanatory variable data for occurrence records.
+* `get_moving_window()` Generate a “moving window” matrix of optimal size for spatial buffering of explanatory variable data.
+* `extract_buffered_coords()` Extract spatially buffered and temporally dynamic explanatory variable data for occurrence records.
+* `extract_coords_combine()` Combine extracted explanatory variable data for occurrence records into single data frame for model fitting.
+
+### 3) Modelling functions
+
+Functions for generating species distribution or abundance models that account for spatial and temporal autocorrelation in dynamic explanatory variables. 
+
+* `spatiotemp_autocorr()` Test for spatial and temporal autocorrelation in species distribution model explanatory data.
+* `spatiotemp_block()` Split occurrence records into spatial and temporal blocks for model fitting.
+* `brt_fit()` Fit boosted regression tree models to species distribution or abundance data.
+
+### 4) Projection functions
+Functions for generating explanatory variable projection data frames at given spatiotemporal extent and resolution, and projecting species dynamic distribution and abundance patterns onto these. 
+
+* `dynamic_proj_dates()` Generate vector of dates for dynamic projections
+* `extract_dynamic_raster()` Extract temporally dynamic rasters of explanatory variable data.
+* `extract_buffered_raster()` Extract spatially buffered and temporally dynamic rasters of explanatory variable data.
+* `dynamic_proj_covariates()` Combine explanatory variable rasters into a covariate data frame for each projection date.
+* `dynamic_proj()` Project species distribution and abundance models onto dynamic environmental covariates.
+* `dynamic_proj_GIF()` Create GIF of dynamic species distribution and abundance projections
+
+# Installation
 ``` r
-# Install using github please
+# Install using Github 
+install_github("r-a-dobson/dynamicSDM")
+
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date. `devtools::build_readme()` is handy for this. You could also use GitHub Actions to re-render `README.Rmd` every time you push. An example workflow can be found here: <https://github.com/r-lib/actions/tree/v1/examples>.
-
-You can also embed plots, for example:
-
-
-<a href='https://RachelDobson.github.io/flexsdm'><img src="https://raw.githubusercontent.com/RachelDobson/dynamicSDM/main/man/figures/Picture1.png" align="centre" height="550"/></a>
-
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub and CRAN.

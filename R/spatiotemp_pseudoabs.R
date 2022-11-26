@@ -137,8 +137,14 @@ if(spatial.method=="buffer"){
   value<-ceiling(n.pseudoabs/nrow(occ.data))
 
   # Create buffer shapefiles for given buffer min and max size from each occurrence record co-ordinates as specified by the user
+  spatial.buffer<-c(100000,1000000)
 
   first.buff<-geobuffer::geobuffer_pts(xy = data.frame(lon = c(occ.data[,"x"]),lat = c(occ.data[,"y"])),dist_m = spatial.buffer[1],step_dg = 60,output = "sp")
+
+  coords <- occ.data[, c("x","y")]
+
+  first.buff3<-rangemap::geobuffer_points(coords,radius=100000,by_point = T)
+
   second.buff<-geobuffer::geobuffer_pts(xy = data.frame(lon = c(occ.data[,"x"]),lat = c(occ.data[,"y"])),dist_m = spatial.buffer[2],step_dg = 60,output = "sp")
 
   raster::crs(second.buff)<-NA

@@ -23,6 +23,7 @@ Imports:
     magrittr,
     matrixStats,
     pROC,
+    rangemap,
     raster,
     reticulate,
     rgee,
