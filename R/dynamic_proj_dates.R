@@ -8,10 +8,7 @@
 #' @details Function returns a vector of dates given start.date and end.date at given interval size.
 #' @return Vector of dates between start date and end date split at regular intervals.
 #' @example
-#’ Generate all dates at 2 month intervals that exist between dates given.
 #'dynamic_proj_dates(startdate="2000-01-01",enddate="2001-01-01",interval.level = "month",interval=2)
-#'Returns:
-#'"2000-01-01" "2000-03-01" "2000-05-01" "2000-07-01" "2000-09-01" "2000-11-01" "2001-01-01"
 
 dynamic_proj_dates<-function(startdate,enddate,interval.level, interval){
 

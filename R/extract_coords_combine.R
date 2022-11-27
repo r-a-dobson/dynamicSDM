@@ -10,9 +10,6 @@
 #'
 #'To prevent error, the “.csv” files must be uniquely named within the folder and include an exact character match for the varnames provided. All “.csv” files matching the varnames should have the same number and names of columns, which the default output of extract_dynamic_coords and extract_buffered_coords will if given the same occ.data data frame.
 #' @return Returns a data frame containing all occurrence records with associated explanatory variable data.
-#' @example
-#'extract_coords_combine(local.directory=c("path/to/folder1","path/to/folder2"),
-#'                       varnames=c("EVI_7_post_mean","LST_Day_1km_7_post_mean","Fpar_20_prior_max"))
 
 extract_coords_combine<-function(varnames,local.directory){
 

@@ -107,4 +107,3 @@ test_that("Success if temporal method random and spatial random, n.pseudoabs def
 
 
 
-

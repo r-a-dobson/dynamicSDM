@@ -22,17 +22,7 @@
 #' @references
 #'Aybar, C., Wu, Q., Bautista, L., Yali, R. and Barja, A., 2020. rgee: An R package for interacting with Google Earth Engine. Journal of Open Source Software, 5(51), p.2272.
 #'@return Returns details of successful explanatory variable extractions.
-#'@example
-#'For each record in occ.data, the average MODIS Terra Land Surface Temperature across the seven days prior to each occurrence record date and the occurrence record co-ordinates will be computed on Google Earth Engine servers.
-#'extract_dynamic_coords(occ.data=occ.data,
-#'                       datasetname="MODIS/006/MOD11A1",
-#'                       bandname="LST_Day_1km",
-#'                       spatial.res.metres=1000,
-#'                       GEE.math.fun="mean",
-#'                       save.method="combined",
-#'                       temporal.res="7",
-#'                       temporal.direction="prior",
-#'                       save.directory="C:/path/to/folder")
+
 
 extract_dynamic_coords<-function(occ.data,datasetname,bandname,spatial.res.metres,GEE.math.fun,save.method,temporal.res,temporal.direction,varname,save.directory){
 

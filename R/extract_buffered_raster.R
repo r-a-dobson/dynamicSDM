@@ -36,31 +36,6 @@
 #'
 #'Hijmans, R. J., Van Etten, J., Cheng, J., Mattiuzzi, M., Sumner, M., Greenberg, J. A., Lamigueiro, O. P., Bevan, A., Racine, E. B. & Shortridge, A. 2015. Package ‘raster’. R package, 734.
 #' @return Returns details of successful explanatory variable extractions for each projection date.
-#' @example
-#' Extracts rasters at 1000m resolution for given spatial extent. For each projection date and for each grid cell in spatial extent, the mean MODIS Terra Land Surface Temperature across the nine surrounding cells plus each cell's own value is calculated.
-#'extract_buffered_raster(dates=c("2010-01-01","2011-01-01"),
-#'                      spatial.ext=c(12,36,-35,-12),
-#'                      datasetname="MODIS/006/MOD11A1",
-#'                      bandname="LST_Day_1km",
-#'                      spatial.res.metres=1000,
-#'                      GEE.math.fun="mean",
-#'                      moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
-#'                      save.drive.folder="googledrivefoldername",
-#'                      user.email="usernameatgmail.com")
-#'
-#' Extracts rasters at 1000m resolution for given spatial extent. For each projection date and for each grid cell in spatial extent, the mean MODIS Terra Land Surface Temperature over 10 days prior to the date, is averaged across the nine surrounding cells plus each cell's own value is calculated.
-#'extract_buffered_raster(dates=c("2010-01-01","2011-01-01"),
-#'                      spatial.ext=c(12,36,-35,-12),
-#'                      datasetname="MODIS/006/MOD11A1",
-#'                      bandname="LST_Day_1km",
-#'                      spatial.res.metres=1000,
-#'                      GEE.math.fun="mean",
-#'                      moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
-#'                      save.drive.folder="googledrivefoldername",
-#'                      temporal.res=10,
-#'                      temporal.direction ="prior",
-#'                      user.email="usernameatgmail.com")
-#'
 
 extract_buffered_raster<-function(dates,spatial.ext,datasetname,bandname,spatial.res.metres,GEE.math.fun,moving.window.matrix,user.email,varname=NULL,temporal.res=NULL,temporal.direction=NULL,categories=NULL,save.directory=NULL,save.drive.folder){
 

@@ -30,13 +30,6 @@
 #' occ.data<-data.frame(cbind(x,y,year,month,day))
 #'
 #' spatiotemp_thin(occ.data=occ.data, temporal.method="day", temporal.dist=14,spatial.split.degrees=3,spatial.dist=100000, iterations=5)
-#'
-#' Returns:
-#'   x         y year month day split2
-#' 2 25.54125 -26.70792 2011     3  16      1
-#' 3 28.54125 -26.37458 2016     2  25      2
-#' 4 30.04125 -29.37458 2011     2  25      5
-#' 5 29.95792 -28.45792 2015     4  26      5
 
 spatiotemp_thin <- function(occ.data, temporal.method, temporal.dist,spatial.split.degrees,spatial.dist, iterations=100) {
 

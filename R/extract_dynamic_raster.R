@@ -26,19 +26,6 @@
 #'
 #'D'Agostino McGowan L., and Bryan J., 2022. googledrive: An Interface to Google Drive. https://googledrive.tidyverse.org, https://github.com/tidyverse/googledrive.
 #' @return Returns details of successful explanatory variable extractions for each projection date.
-#' @example
-#'Extracts rasters at 1000m resolution for given spatial extent. For each projection date and for each grid cell in spatial extent, the max MODIS Terra Land Surface Temperature over 5 days prior to the projection date is calculated.
-#'extract_dynamic_raster(dates=c("2010-01-01","2011-01-01"),
-#'                       spatial.ext=c(12,36,-35,-12),
-#'                       datasetname="MODIS/006/MOD11A1",
-#'                       bandname="LST_Day_1km",
-#'                       spatial.res.metres=1000,
-#'                       GEE.math.fun="max",
-#'                       user.email="myusernameatgmail.com",
-#'                       temporal.res=5,
-#'                       temporal.direction="prior",
-#'                       save.directory = "path/to/local/folder",
-#'                       save.drive.folder ="googledrivefoldername")
 
 extract_dynamic_raster<-function(dates,spatial.ext,datasetname,bandname,spatial.res.metres,GEE.math.fun,user.email,varname=NULL,temporal.res,temporal.direction,save.directory=NULL,save.drive.folder){
 

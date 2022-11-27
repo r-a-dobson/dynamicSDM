@@ -19,53 +19,12 @@
 #'If temporal.method is "'random'", then occurrence record co-ordinates are randomly generated within the two temporal.ext dates given.
 #' @return Returns data frame of pseudo-absence coordinates and dates.
 #' @examples
-#'x<-c(27.79125, 28.54125, 25.54125, 30.04125, 29.95792)
-#'y<-c(-26.79125, -26.37458, -26.70792, -29.37458, -28.45792)
-#'year<-c(2014, 2016, 2011, 2011, 2015)
-#'month<-c(1, 2, 3, 2, 4)
-#'day<-c(27, 25, 16, 25, 26)
-#'occ.data<-data.frame(cbind(x,y,year,month,day))
-#'spatiotemp_pseudoabs(occ.data,
-#'                     spatial.method="random",
-#'                     temporal.method="random",
-#'                     spatial.ext =c(20,36,-35,-12),
-#'                     temporal.ext = c("2011-01-01","2017-01-01"))
-#'
-#'Returns:
-#'message "n.pseudoabs missing - using default of equal to number of occurrence records"
-#'         x         y year month day
-#'1 24.52388 -13.89866 2015    02  12
-#'2 27.63831 -20.60380 2013    02  28
-#'3 22.68096 -27.77846 2011    07  24
-#'4 33.46343 -26.71086 2011    08  08
-#'5 23.82245 -29.50937 2016    05  16
-#'
-#'
-#'x<-c(27.79125, 28.54125, 25.54125, 30.04125, 29.95792)
-#'y<-c(-26.79125, -26.37458, -26.70792, -29.37458, -28.45792)
-#'year<-c(2014, 2016, 2011, 2011, 2015)
-#'month<-c(1, 2, 3, 2, 4)
-#'day<-c(27, 25, 16, 25, 26)
-#'occ.data<-data.frame(cbind(x,y,year,month,day))
-#'spatiotemp_pseudoabs(occ.data,
+#'data("sample_occ_data",package="dynamicSDM")
+#'spatiotemp_pseudoabs(sample_occ_data,
 #'                    spatial.method="random",
 #'                    temporal.method="random",
 #'                    spatial.ext =c(20,36,-35,-12),
 #'                    temporal.ext = c("2011-01-01","2017-01-01"))
-#'
-#'Returns:
-#'spatiotemp_pseudoabs(occ.data,spatial.method="buffer",temporal.method="buffer",spatial.buffer = c(50000,250000),temporal.buffer = c(1,7),n.pseudoabs = 10)
-#'x         y year month day
-#'1  27.72052 -27.85885 2014    02  02
-#'2  28.12310 -25.43493 2014    02  03
-#'3  27.91989 -26.24847 2016    03  04
-#'4  27.82286 -28.04036 2016    03  03
-#'5  26.87930 -26.90877 2011    03  23
-#'6  26.95451 -27.84577 2011    03  23
-#'7  32.00781 -29.35225 2011    03  05
-#'8  29.79891 -30.63704 2011    03  04
-#'9  29.98996 -27.40757 2015    05  03
-#'10 29.33290 -29.60677 2015    05
 
 spatiotemp_pseudoabs<-function(spatial.method,temporal.method,occ.data=NULL,spatial.ext=NULL,temporal.ext=NULL,spatial.buffer=NULL,temporal.buffer=NULL,n.pseudoabs=100){
 

@@ -24,7 +24,7 @@
 #' @example
 #' data("sample_model_data", package ="dynamicSDM")
 #' data("biome_layer", package ="dynamicSDM")
-#' spatiotemp_block(occ.data = sample_model_data,spatial.layer = biome_layer,spatial.split.degrees=3,temporal.block=c("month"),vars.to.block.by=colnames(sample_model_data)[9:15],n.blocks=10)
+#' spatiotemp_block(occ.data = sample_model_data,spatial.layer = biome_layer,spatial.split.degrees=3,temporal.block=c("month"),vars.to.block.by=colnames(sample_model_data)[9:12],n.blocks=10)
 
 spatiotemp_block<-function(occ.data,vars.to.block.by,spatial.layer=NULL,spatial.split.degrees=NULL,temporal.block=NULL,n.blocks=10,iterations=5000){
 

@@ -32,17 +32,6 @@
 #'
 #'If one of drive.folder or save.drive.folder are used then user.email is required to access the appropriate Google Drive user account. This requires users to have installed R package "googledrive" and initialised Google Drive with valid log-in credentials. Please follow instructions on https://googledrive.tidyverse.org/.
 #' @return Exports model projection rasters for each projection date to user-specified Google Drive folder or local directory.
-#' @example
-#'dynamic_proj(dates=c("2010-01-01","2010-04-01"),
-#'             local.directory = "path/to/local/directory",
-#'             projection.method=c("binary","proportional","abundance","stacked"),
-#'             sdm.mod = fitted.sdm.models ,
-#'             sdm.thresh = 0.5,
-#'             sdm.weight = c(0.70,0.80,0.82,0.60),
-#'             sam.mod = fitted.sam.models,
-#'             sam.weight =c(0.50,0.60,0.48,0.50),
-#'             save.directory="path/to/local/directory/for/output")
-#'
 
 
 dynamic_proj<-function(dates,projection.method,local.directory=NULL,drive.folder=NULL,user.email=NULL,sdm.mod=NULL,sdm.thresh=0.5,sdm.weight=1,sam.mod=NULL,sam.weight=1, save.directory=NULL,save.drive.folder=NULL){

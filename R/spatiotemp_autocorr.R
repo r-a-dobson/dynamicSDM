@@ -13,33 +13,8 @@
 #' As the spatial autocorrelation calculation involves computation of a distance matrix between all occurrence records. To reduce computation time, it is recommended that a sample of large occurrence datasets are input.
 #' @return Returns a list of temporal and spatial autocorrelation test results for each variable.
 #' @example
-#'Load in occurrence and explanatory variable data frame
 #'data("sample_model_data")
-#'Take sample of 2000 for reduced computing time of example
-#'sample_model_data<-dplyr::sample_n(sample_model_data,2000)
-#'
 #'spatiotemp_autocorr(sample_model_data,varname="Temperaturemean",temporal.level="year")
-#'Returns:
-#'
-#'$Temperaturemean
-#'$Temperaturemean$"Temporal autocorrelation"
-#'
-#'Pearson's product-moment correlation
-#'
-#'data:  first_obs and second_obs
-#'t = 1.0892, df = 13, p-value = 0.2958
-#'alternative hypothesis: true correlation is not equal to 0
-#'95 percent confidence interval:
-#' -0.2618759  0.6980383
-#'sample estimates:
-#'      cor
-#'0.2891802
-#'
-#'
-#'$Temperaturemean$"Spatial autocorrelation"
-#'     observed      expected           sd p.value
-#'1 -0.09301179 -0.0005002501 0.0002770151       0
-
 
 spatiotemp_autocorr<-function(occ.data,varname,temporal.level){
 

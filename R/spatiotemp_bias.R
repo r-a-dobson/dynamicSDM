@@ -10,35 +10,8 @@
 #' As the spatial bias calculation involves calculation of a distance matrix. To reduce computation time, it is recommended that a sample of large occurrence datasets are input.
 #' @return Returns list containing chi-squared and t-test results.
 #' @example
-#'
-#'Load in occurrence record data frame
 #'data("sample_occ_data",package="dynamicSDM")
-#'Randomly select sample of occurrence data frame for faster computation
-#'sample_occ_data<-dplyr::sample_n(sample_occ_data,1000)
-#'
 #'spatiotemp_bias(occ.data = sample_occ_data,temporal.level = "month")
-#'Returns:
-#' $"Temporal bias"
-#'
-#'Chi-squared test for given probabilities
-#'
-#'data:  occ.data.frequency
-#'X-squared = 17015, df = 9, p-value < 2.2e-16
-#'
-#'
-#'$"Spatial bias"
-#'
-#'Welch Two Sample t-test
-#'
-#'data:  min.nndist.actual and min.nndist.random
-#'t = -3.8306, df = 147.14, p-value = 0.0001887
-#'alternative hypothesis: true difference in means is not equal to 0
-#'95 percent confidence interval:
-#'  -74735.80 -23866.79
-#'sample estimates:
-#'mean of x  mean of y
-#'46637.06   95938.35
-#'
 
 spatiotemp_bias<-function(occ.data,temporal.level=NA){
 

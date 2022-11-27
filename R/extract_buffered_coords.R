@@ -41,36 +41,6 @@
 #'
 #'Hijmans, R. J., Van Etten, J., Cheng, J., Mattiuzzi, M., Sumner, M., Greenberg, J. A., Lamigueiro, O. P., Bevan, A., Racine, E. B. & Shortridge, A. 2015. Package ‘raster’. R package, 734.
 #' @return Returns details of successful explanatory variable extractions.
-#' @examples
-#' Sum total MODIS Annual Land grass (6) and cereal cropland (7) cells across the nine surrounding cells and the one including the record's co-ordinate for the year specific to the record’s date.
-#'extract_buffered_coords(occ.data=occ.data,
-#'                        datasetname="MODIS/006/MCD12Q1",
-#'                        bandname="LC_Type5",
-#'                        spatial.res.metres=500,
-#'                        GEE.math.fun="sum",
-#'                        moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
-#'                        extraction.drive.folder= "drivefoldername",
-#'                        user.email="myusernameatgmail.com",
-#'                        save.method="combined",
-#'                        temporal.level="year",
-#'                        categories=c(6,7),
-#'                        save.directory="C:/path/to/folder")
-#'
-#' Extract mean MODIS Terra Land Surface Temperature across the seven days prior to the occurrence record’s date and then average this across the nine surrounding cells and the one including the record's co-ordinate.
-#'extract_buffered_coords(occ.data=occ.data,
-#'                        datasetname="MODIS/006/MOD11A1",
-#'                        bandname="LST_Day_1km",
-#'                        spatial.res.metres=111320,
-#'                        GEE.math.fun="mean",
-#'                        moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
-#'                        extraction.drive.folder="drivefoldername",
-#'                        user.email="myusernameatgmail.com",
-#'                        temporal.level="day",
-#'                        save.method="split",
-#'                        temporal.res=7,
-#'                        temporal.direction="prior",
-#'                        GEE.math.fun="mean",
-#'                        save.directory=tempdir())
 
 extract_buffered_coords<-function(occ.data,datasetname,bandname,spatial.res.metres, GEE.math.fun,moving.window.matrix,extraction.drive.folder,user.email,save.method,varname=NULL,temporal.res=NULL,temporal.level=NULL,temporal.direction=NULL,categories=NULL,save.directory=NULL){
 
