@@ -7,13 +7,13 @@
 dynamic_proj_dates(startdate, enddate, interval.level, interval)
 }
 \arguments{
+\item{startdate}{a character string, the start date in format YYYY-MM-DD.}
+
+\item{enddate}{a character string, the end date in format YYYY-MM-DD.}
+
 \item{interval.level}{a character string, the time-step of intervals. One of '"day"', '"month"' or '"year"': can be abbreviated.}
 
 \item{interval}{a numeric value, the length of interval in interval.level units to generate between the start and end date.}
-
-\item{start.date}{a character string, the start date in format YYYY-MM-DD.}
-
-\item{end.date}{a character string, the end date in format YYYY-MM-DD.}
 }
 \value{
 Vector of dates between start date and end date split at regular intervals.

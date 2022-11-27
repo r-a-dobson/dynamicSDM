@@ -42,20 +42,6 @@ For dynamic_proj_GIF to find the projection rasters for each date, then “.tif�
 
 If one of drive.folder or save.drive.folder is used then user.email for the Google Drive account must be provided. This requires users to have installed R package "googledrive" and initialised Google Drive with valid log-in credentials. Please follow instructions on https://googledrive.tidyverse.org/.
 }
-\examples{
-Read projection rasters in from local directory and save GIF to local directory
-dynamic_proj_GIF(dates=c("2010-01-01","2010-04-01"),
-                projection.type="stacked",
-                local.directory="path/to/local/directory",
-                save.directory="path/to/local/directory")
-
-Read projection rasters in from Google Drive folder and save GIF to Google Drive folder
-dynamic_proj_GIF(dates=c("2010-01-01","2010-04-01"),
-                projection.type="binary",
-                drive.folder="GoogleDriveFolderName",
-                save.drive.folder="AnotherGoogleDriveFolderName",
-                user.email="myusername_at_gmail.com")
-}
 \references{
 Wickham, H., and Chang, W, 2016. Package ‘ggplot2’. Create elegant data visualisations using the grammar of graphics. Version, 2(1), pp.1-189.
 }

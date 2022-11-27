@@ -25,34 +25,13 @@ If spatial.ext is provided, the function checks whether species occurrence recor
 If temporal.ext is provided, the function checks whether species occurrence record dates are within the given temporal extent of the study (temporal.ext) and excludes any outside of this extent.
 }
 \examples{
-
-Remove records outside of given temporal extent
-
 x<-c(27.79125, 28.54125, 25.54125, 30.04125, 29.95792)
 y<-c(-26.79125, -26.37458, -26.70792, -29.37458, -28.45792)
 month<-c(1, 2, 3, 2, 4)
 day<-c(27, 25, 16, 25, 26)
 year<-c(2014, 2016, 2011, 2011, 2015)
 occ.data<-data.frame(cbind(x,y,year,month,day))
-spatiotemp_extent(occ.data,temporal.ext=c("2012-01-01","2017-01-01"))
-
-Returns:
-  x         y        year month day
-1 27.79125 -26.79125 2014     1  27
-2 28.54125 -26.37458 2016     2  25
-5 29.95792 -28.45792 2015     4  26
-
-Remove records outside of given spatial extent
-
-x<-c(27.79125, 28.54125, 25.54125, 30.04125, 29.95792)
-y<-c(-26.79125, -26.37458, -26.70792, -29.37458, -28.45792)
-month<-c(1, 2, 3, 2, 4)
-day<-c(27, 25, 16, 25, 26)
-year<-c(2014, 2016, 2011, 2011, 2015)
-occ.data<-data.frame(cbind(x,y,year,month,day))
-spatiotemp_extent(occ.data,spatial.ext =c(28,31,-30,-26))
-x         y year month day
-2 28.54125 -26.37458 2016     2  25
-4 30.04125 -29.37458 2011     2  25
-5 29.95792 -28.45792 2015     4  26
+spatiotemp_extent(occ.data,
+                 temporal.ext=c("2012-01-01","2017-01-01"),
+                spatial.ext =c(28,31,-30,-26))
 }

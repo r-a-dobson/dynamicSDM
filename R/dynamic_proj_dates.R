@@ -8,7 +8,7 @@
 #' @details Function returns a vector of dates given start.date and end.date at given interval size.
 #' @return Vector of dates between start date and end date split at regular intervals.
 #' @example
-#'dynamic_proj_dates(startdate="2000-01-01",enddate="2001-01-01",interval.level = "month",interval=2)
+#' dynamic_proj_dates(startdate="2000-01-01",enddate="2001-01-01",interval.level = "month",interval=2)
 
 dynamic_proj_dates<-function(startdate,enddate,interval.level, interval){
 

@@ -29,35 +29,11 @@ If temporal.res given, temporal.res = "day" would result in exclusion of records
 spatial.res and temporal.res can be informed based upon the highest spatial and temporal resolution of the datasets to be utilised when extracting dynamic variables. For instance, if explanatory variables datasets are annual, then temporal.res of "year" is adequate, whereas if datasets are daily, then temporal.res of "day" is more appropriate.
 }
 \examples{
-
-Filters by spatial.res of 5 decimal places, removing any records with co-ordinates that are not specified 5.dp or higher
 x<-c(27.1, 28.54125, 25.54125, 30.04125, 29.95792)
 y<-c(-26.79125, -26.37458, -26.70792, -29.37458, -28.45792)
 year<-c(2014, 2016, 2011, 2011, 2015)
 month<-c(1, 2, 3, 2, 4)
 day<-c(27, 25, 16, 25, 26)
 occ.data<-data.frame(cbind(x,y,year,month,day))
-
-Returns:
-spatiotemp_resolution(occ.data,spatial.res=5)
-x         y year month day
-2 28.54125 -26.37458 2016     2  25
-3 25.54125 -26.70792 2011     3  16
-4 30.04125 -29.37458 2011     2  25
-5 29.95792 -28.45792 2015     4  26
-
-Filters by temporal.res of 'day', removing any records with dates that are not specified to day resolution
-x<-c(27.79125, 28.54125, 25.54125, 30.04125, 29.95792)
-y<-c(-26.79125, -26.37458, -26.70792, -29.37458, -28.45792)
-year<-c(2014, 2016, 2011, 2011, 2015)
-month<-c(1, 2, 3, 2, 4)
-day<-c(27, NA, 16, 25, NA)
-occ.data<-data.frame(cbind(x,y,year,month,day))
-
-spatiotemp_resolution(occ.data,temporal.res="day")
-Returns:
-x         y year month day
-1 27.79125 -26.79125 2014     1  27
-3 25.54125 -26.70792 2011     3  16
-4 30.04125 -29.37458 2011     2  2504
+spatiotemp_resolution(occ.data,spatial.res=5,temporal.res="day")
 }

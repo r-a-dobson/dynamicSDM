@@ -78,37 +78,6 @@ temporal.level states the temporal resolution of the explanatory variable data a
 
 For save.method '"combined"', the function with save “.csv” files containing all occurrence records and associated values for the explanatory variable. If save.method '"split"' is chosen, the function will save individual “.csv” files for all of the records with each unique period of the given temporal.level (e.g. each year, each year and month combination or each unique date). '"split"' method is provided to protect users if internet connection is lost when extracting data for large occurrence datasets.
 }
-\examples{
-Sum total MODIS Annual Land grass (6) and cereal cropland (7) cells across the nine surrounding cells and the one including the record's co-ordinate for the year specific to the recordâ€™s date.
-extract_buffered_coords(occ.data=occ.data,
-                       datasetname="MODIS/006/MCD12Q1",
-                       bandname="LC_Type5",
-                       spatial.res.metres=500,
-                       GEE.math.fun="sum",
-                       moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
-                       extraction.drive.folder= "drivefoldername",
-                       user.email="myusernameatgmail.com",
-                       save.method="combined",
-                       temporal.level="year",
-                       categories=c(6,7),
-                       save.directory="C:/path/to/folder")
-
-Extract mean MODIS Terra Land Surface Temperature across the seven days prior to the occurrence recordâ€™s date and then average this across the nine surrounding cells and the one including the record's co-ordinate.
-extract_buffered_coords(occ.data=occ.data,
-                       datasetname="MODIS/006/MOD11A1",
-                       bandname="LST_Day_1km",
-                       spatial.res.metres=111320,
-                       GEE.math.fun="mean",
-                       moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
-                       extraction.drive.folder="drivefoldername",
-                       user.email="myusernameatgmail.com",
-                       temporal.level="day",
-                       save.method="split",
-                       temporal.res=7,
-                       temporal.direction="prior",
-                       GEE.math.fun="mean",
-                       save.directory=tempdir())
-}
 \references{
 Aybar, C., Wu, Q., Bautista, L., Yali, R. and Barja, A., 2020. rgee: An R package for interacting with Google Earth Engine. Journal of Open Source Software, 5(51), p.2272.
 

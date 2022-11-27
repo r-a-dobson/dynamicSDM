@@ -60,7 +60,6 @@ split = sample(c(TRUE, FALSE), nrow(sample_model_data), replace=TRUE, prob=c(0.7
 training = sample_model_data[split, ]
 testing = sample_model_data[!split, ]
 
-Fit single boosted regression tree model to occ.data. Optimise interaction.depth using test.data.
 brt_fit(occ.data=training,
         test.data=testing,
         response.col = "presence.absence",
@@ -68,7 +67,6 @@ brt_fit(occ.data=training,
         weights.col="sampling_weights",
         varnames=colnames(training)[9:12])
 
-Fit multiple boosted regression tree model to occ.data, splitting by block.col given in jack-knife approach to optimise interaction.depth.
 training = sample_model_data
 brt_fit(occ.data=training,
         response.col = "presence.absence",
@@ -78,5 +76,6 @@ brt_fit(occ.data=training,
         varnames=colnames(training)[9:12])
 }
 \references{
-
+Bagchi, R., Crosby, M., Huntley, B., Hole, D. G., Butchart, S. H. M., Collingham, Y., Kalra, M., Rajkumar, J., Rahmani, A. & Pandey, M. 2013. Evaluating the effectiveness of conservation site networks under climate change: accounting for uncertainty. Global Change Biology, 19, 1236-1248.
+Greenwell, B., Boehmke, B., Cunningham, J., & GBM Developers. 2019. Package ‘gbm’. R package version, 2.
 }

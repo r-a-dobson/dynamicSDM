@@ -48,23 +48,3 @@ Resample methods (resample.method) include: "ngb", in which each cell acquires t
 
 If drive.folder or save.drive.folder arguments are used to download rasters for use or upload function output, then users must have installed R package "googledrive" and initialised Google Drive with valid log-in credentials. The credentials must be given under function argument user.email to initiate the correct Google Drive account. Please follow instructions on https://googledrive.tidyverse.org/.
 }
-\examples{
-Read explanatory variable rasters in from a local directory, and save projection covariate data frames to a local directory.
-dynamic_proj_covariates(dates=c("2010-01-01","2011-01-01"),
-                       varnames=c("precipitation_10_prior_sum","NDVI_5_post_max"),
-                       local.directory="path/to/directory/containing/rasters",
-                       spatial.ext=c(12,36,-35,-12),
-                       spatial.res.degrees=0.05,
-                       resample.method="bilinear",
-                       save.directory="path/to/local/directory")
-
-Read explanatory variable rasters in from Google Drive folder, and save projection covariate data frames to Google Drive Folder
-dynamic_proj_covariates(dates=c("2010-01-01","2011-01-01"),
-                       varnames=c("precipitation_10_prior_sum","NDVI_5_post_max"),
-                       user.email="myusernameatgmail.com",
-                       drive.folder="GoogleDriveFolderContainingRasters",
-                       spatial.ext=c(12,36,-35,-12),
-                       spatial.res.degrees=0.05,
-                       resample.method="bilinear",
-                       save.directory="path/to/googledrivefolder")
-}
