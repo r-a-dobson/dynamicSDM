@@ -174,7 +174,9 @@ extract_buffered_coords<-function(occ.data,datasetname,bandname,spatial.res.metr
   spatial.buffer<-ceiling(spatial.buffer/5)*5
 
   # From each occurrence record point in this loop, add the calculated radius in metres using the geobuffer package
-  spatial.buffer<-geobuffer::geobuffer_pts(xy = data.frame(lon = c(occforperiod[,"x"]),lat = c(occforperiod[,"y"])),dist_m = spatial.buffer,step_dg = 60,output = "sp") # Add this radius to all occurrence record co-ordinates that are being extracted in this loop
+  spatial.buffer<-rangemap::geobuffer_points(occforperiod[, c("x","y")],radius=spatial.buffer,by_point = T) # Add this radius to all occurrence record co-ordinates that are being extracted in this loop
+
+
 
   # Extract min and max longtiude and latitude co-ordinates, this is the minimum possible area to extract from environmental dataset
   xmin<-sp::bbox(raster::extent(spatial.buffer))[1,1]

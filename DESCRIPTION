@@ -14,7 +14,6 @@ Imports:
     dplyr,
     gbm,
     gargle,
-    geobuffer,
     geodist,
     geosphere,
     ggplot2,

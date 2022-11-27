@@ -72,7 +72,7 @@ test_that("Success if projection.method = all", {
 
 
 test_that("Success if projection.method = all + Google Drive used", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   dates=c("2010-01-01","2010-04-01")
   save.directory=tempdir()

@@ -64,7 +64,7 @@ test_that("Successfully write GIF: proportional", {
 projection.type<-"binary"
 
 test_that("Successfully write GIF: binary with Google Drive", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   save.directory=tempdir()
   projection.type<-c("binary")

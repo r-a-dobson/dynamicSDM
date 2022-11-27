@@ -66,7 +66,7 @@ spatiotemp_weights<-function(occ.data,sampling.events.df, spatial.dist=NA,tempor
   samplingefforttemp <-as.data.frame(sampling.events.df[samplingeffortdates >= date1 &    # Extract sampling events between earliest and latest date
                samplingeffortdates <= date2, ])
 
-  surroundingarea<-geobuffer::geobuffer_pts(xy = data.frame(lon = c(occ.data[x,"x"]),lat = c(occ.data[x,"y"])),dist_m = spatial.dist,step_dg = 60,output = "sp") # Create polygon of spatial area surrounding occurrence co-ordinate to extract sampling effort across
+  surroundingarea<-rangemap::geobuffer_points(occ.data[x, c("x","y")],radius=spatial.dist,by_point = T) # Create polygon of spatial area surrounding occurrence co-ordinate to extract sampling effort across
 
   xmin<-sp::bbox(raster::extent(surroundingarea))[1,1] # Extract co-ordinates for buffer area
   xmax<-sp::bbox(raster::extent(surroundingarea))[1,2]
@@ -82,6 +82,7 @@ spatiotemp_weights<-function(occ.data,sampling.events.df, spatial.dist=NA,tempor
   SAMP_EFFORT<-rbind(SAMP_EFFORT,nrow(samplingefforttemp))} ## Continue iterating through each record
 
   REL_SAMP_EFFORT<-SAMP_EFFORT/(sum(SAMP_EFFORT,na.rm=T)) ## Calculate relative sampling effort
+
   return(cbind(occ.data,SAMP_EFFORT,REL_SAMP_EFFORT)) }
 
 

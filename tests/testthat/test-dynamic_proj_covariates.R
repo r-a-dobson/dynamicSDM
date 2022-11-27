@@ -71,7 +71,7 @@ test_that("Works if spatial.ext = polygon", {
 
 
 test_that("Works if spatial.ext = polygon and Google Drive used", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   dates=c("2010-01-01","2010-04-01")
   polygon<-sp::Polygon(cbind(c(12,12,36,36),c(-35,-12,-35,-12)))

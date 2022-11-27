@@ -7,7 +7,7 @@ test_datasetname<-"MODIS/006/MOD11A1"
 test.spatial.res.metres<-111320
 
 test_that("stops if no occcurence data provided", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   expect_error(extract_buffered_coords(
                             moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -25,7 +25,7 @@ test_that("stops if no occcurence data provided", {
 
 
 test_that("stops if no moving.window.matrix provided", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   expect_error(extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                        datasetname=test_datasetname,
@@ -42,7 +42,7 @@ test_that("stops if no moving.window.matrix provided", {
 
 
 test_that("stops if no datasetname provided", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   expect_error(extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                        moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -60,7 +60,7 @@ test_that("stops if no datasetname provided", {
 
 
 test_that("stops if no drive folder provided", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   expect_error(extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                        moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -77,7 +77,7 @@ test_that("stops if no drive folder provided", {
 
 
 test_that("stops if no bandname provided", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   expect_error(extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                        moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -93,7 +93,7 @@ test_that("stops if no bandname provided", {
                                        save.directory=tempdir()))})
 
 test_that("stops if no spatial.res provided", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   expect_error(extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                        moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -109,7 +109,7 @@ test_that("stops if no spatial.res provided", {
                                        save.directory=tempdir()))})
 
 test_that("stops if no temporal.direction provided", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   expect_error(extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                        moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -125,7 +125,7 @@ test_that("stops if no temporal.direction provided", {
                                        save.directory=tempdir()))})
 
 test_that("stops if no math.fun provided", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   expect_error(extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                        moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -142,7 +142,7 @@ test_that("stops if no math.fun provided", {
 
 
 test_that("stops if no save.method provided", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   expect_error(extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                        moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -159,7 +159,7 @@ test_that("stops if no save.method provided", {
 
 
 test_that("stops if no save.method not accepted", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   expect_error(extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                        moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -176,7 +176,7 @@ test_that("stops if no save.method not accepted", {
                                        save.directory=tempdir()))})
 
 test_that("stops if no save.directory provided", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   expect_error(extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                        moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -193,7 +193,7 @@ test_that("stops if no save.directory provided", {
 
 
 test_that("stops if more than one math.fun provided", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   expect_error(extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                        moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -211,7 +211,7 @@ test_that("stops if more than one math.fun provided", {
 
 
 test_that("stops if save.directory doesn't exist", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   expect_error(extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                        moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -229,7 +229,7 @@ test_that("stops if save.directory doesn't exist", {
 
 
 test_that("Works if temporal.level = year with prior", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
 results<-extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                         moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -250,7 +250,7 @@ expect_equal(length(unique(sample_occ_abs_data_fortest$year)),length(results))})
 
 
 test_that("Works if temporal.level = month with prior", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   results<-extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                    moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -273,7 +273,7 @@ test_that("Works if temporal.level = month with prior", {
 
 
 test_that("Works if temporal.level = day with prior", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   results<-extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                    moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -294,7 +294,7 @@ test_that("Works if temporal.level = day with prior", {
 
 
 test_that("Works if temporal.level = year  with prior", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   results<-extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                    moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -316,7 +316,7 @@ test_that("Works if temporal.level = year  with prior", {
 
 
 test_that("Works if temporal.level = month  with prior", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   results<-extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                    moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -341,7 +341,7 @@ test_that("Works if temporal.level = month  with prior", {
 
 
 test_that("Works if temporal.level = day with prior", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   results<-extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                    moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -369,7 +369,7 @@ test_that("Works if temporal.level = day with prior", {
 
 
 test_that("Works if temporal.level = year with post", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   results<-extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                    moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -390,7 +390,7 @@ test_that("Works if temporal.level = year with post", {
 
 
 test_that("Works if temporal.level = month with post", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   results<-extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                    moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -414,7 +414,7 @@ test_that("Works if temporal.level = month with post", {
 
 
 test_that("Works if temporal.level = day with post", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   results<-extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                    moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -438,7 +438,7 @@ test_that("Works if temporal.level = day with post", {
 
 
 test_that("Works if temporal.level = year with combined", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   results<-extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                    moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -459,7 +459,7 @@ test_that("Works if temporal.level = year with combined", {
 
 
 test_that("Works if temporal.level = month with combined", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   results<-extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                    moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -480,7 +480,7 @@ test_that("Works if temporal.level = month with combined", {
 
 
 test_that("Works if temporal.level = day with combined", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   results<-extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                    moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
@@ -506,7 +506,7 @@ test.spatial.res.metres<-500
 test.categories<-c(6,7)
 
 test_that("Works if categories ", {
-  skip_if_no_auth()
+  skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
   results<-extract_buffered_coords(occ.data=sample_occ_abs_data_fortest,
                                    moving.window.matrix=matrix(1/9,nrow=3,ncol=3),
