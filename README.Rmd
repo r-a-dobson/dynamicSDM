@@ -33,7 +33,7 @@ Our functions are:
 
 # Package structure
 
-<a href='https://RachelDobson.github.io/dynamicSDM'><img src="https://raw.githubusercontent.com/RachelDobson/dynamicSDM/main/man/figures/Picture1.png" align="centre" height="550"/></a>
+<a href='https://r-a-dobson.github.io/dynamicSDM'><img src="https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/main/man/figures/Figure1.png" align="centre" height="250"/></a>
 
 ### 1) Response data functions
 Functions for preparing species distribution or abundance model input data for modelling with spatiotemporally dynamic explanatory variables. 

@@ -57,13 +57,14 @@ extract_dynamic_coords<-function(occ.data,datasetname,bandname,spatial.res.metre
 
   GEE.math.fun<-R.FUNC.LIST[[match(GEE.math.fun,namelist)]]# Match GEE.math.fun argument to analogous R function
 
+  ##Import python module
+  ee <- reticulate::import("ee")
 
   ### Check Google Earth Engine and initialise
   rgee::ee_check("rgee")
   rgee::ee_Initialize()
 
-  ##Import python module
-  ee <- reticulate::import("ee")
+
 
 
   if(save.method=="split"){  ## This method saves extracted explanatory variable data for each record in individual .csv files. Protection against internet connection loss.

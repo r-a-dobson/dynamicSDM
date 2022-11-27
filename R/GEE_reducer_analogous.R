@@ -63,15 +63,11 @@ variance<-function(x, na.omit=T){
   return(var(x) *((length(x)-1)/ length(x)))}
 
 
-
-#skip_if_no_auth Skips test_that test if no authorisation token available for Google Drive
-skip_if_no_auth <- function() {
-  if ((nrow(gargle::gargle_oauth_sitrep())<1)==T) {
-    skip("No authentication available")}}
-
-
 #skip_if_no_GEE_credentials Skips test_that test if no Google Earth Engine credentials set-up
 skip_if_no_GEE_credentials <- function() {
+
+  ##Import python module
+  ee <- reticulate::import("ee")
   if ((rgee::ee_check_credentials())==F){
     skip("No Google Earth Engine credentials available")
   }
