@@ -68,3 +68,17 @@ test_that("Success if projection.method = all", {
                      sam.mod = results3,sam.weight =as.numeric(unlist(results3_eval)), save.directory=tempdir())
   expect_equal(file.exists(paste0(save.directory,"/",filenames[2])),TRUE)})
 
+
+
+
+test_that("Success if projection.method = all + Google Drive used", {
+  skip_if_no_auth()
+  user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
+  dates=c("2010-01-01","2010-04-01")
+  save.directory=tempdir()
+  filenames<-paste0(dates,"_stacked.tif")
+  dynamic_proj(dates=c("2010-01-01","2010-04-01"),drive.folder = "testfiles",user.email = user.email,
+               projection.method=c("binary","proportional","abundance","stacked"),sdm.mod =results1,sdm.thresh = 0.5,sdm.weight = as.numeric(unlist(results1_eval)),
+               sam.mod = results3,sam.weight =as.numeric(unlist(results3_eval)), save.drive.folder = "temporarysavedrivefolder", save.directory=tempdir())
+  expect_equal(file.exists(paste0(save.directory,"/",filenames[2])),TRUE)})
+

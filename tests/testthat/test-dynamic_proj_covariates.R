@@ -69,3 +69,14 @@ test_that("Works if spatial.ext = polygon", {
   expect_equal(length(results),length(dates))})
 
 
+
+test_that("Works if spatial.ext = polygon and Google Drive used", {
+  skip_if_no_auth()
+  user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
+  dates=c("2010-01-01","2010-04-01")
+  polygon<-sp::Polygon(cbind(c(12,12,36,36),c(-35,-12,-35,-12)))
+  results<-dynamic_proj_covariates(dates=dates,varnames=c("Temperaturemean","TemperatureEightmean","Precipitationsum","Precipitation8Wsum"),user.email=user.email,drive.folder="temporary_folder_buffered_extraction",
+                                   spatial.ext=polygon,spatial.res.degrees=0.05,resample.method="bilinear",
+                                   save.drive.folder = "testfiles")
+
+  expect_equal(length(results),length(dates))})

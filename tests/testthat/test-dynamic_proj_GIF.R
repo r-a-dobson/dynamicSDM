@@ -59,3 +59,16 @@ test_that("Successfully write GIF: proportional", {
   expect_equal(file.exists(paste0(save.directory,"/",filenames[1])),TRUE)})
 
 
+#dynamic_proj_GIF
+
+projection.type<-"binary"
+
+test_that("Successfully write GIF: binary with Google Drive", {
+  skip_if_no_auth()
+  user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
+  save.directory=tempdir()
+  projection.type<-c("binary")
+  filenames<-paste0(projection.type,".gif")
+  dynamic_proj_GIF(dates=c("2010-01-01","2010-04-01"),projection.type=projection.type,drive.folder="temporarysavedrivefolder",
+                   save.drive.folder="temporary_folder_buffered_extraction",user.email=user.email,save.directory=tempdir())
+  expect_equal(file.exists(paste0(save.directory,"/",filenames[1])),TRUE)})

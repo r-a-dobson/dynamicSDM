@@ -2,7 +2,7 @@
 % Please edit documentation in R/spatiotemp_autocorr.R
 \name{spatiotemp_autocorr}
 \alias{spatiotemp_autocorr}
-\title{Test for spatial and temporal autocorrelation in species distribution model explanatory data or model residuals.}
+\title{Test for spatial and temporal autocorrelation in species distribution model explanatory data.}
 \usage{
 spatiotemp_autocorr(occ.data, varname, temporal.level)
 }
@@ -17,7 +17,7 @@ spatiotemp_autocorr(occ.data, varname, temporal.level)
 Returns a list of temporal and spatial autocorrelation test results for each variable.
 }
 \description{
-Function performs statistical tests to assess spatial and temporal autocorrelation in given explanatory variable data or model residuals.
+Function performs statistical tests to assess spatial and temporal autocorrelation in given explanatory variable data.
 }
 \details{
 To test for temporal autocorrelation, the function first calculates the average value across records for each time step (temporal.level). The correlation between the average value at one time point (t) and the value at the previous time point (t-1) is calculated and plotted. A significant relationship between values at consecutive data points indicates temporal autocorrelation is present.

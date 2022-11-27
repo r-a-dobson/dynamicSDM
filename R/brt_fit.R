@@ -30,7 +30,7 @@
 #' training = sample_model_data[split, ]
 #' testing = sample_model_data[!split, ]
 #'
-#' Fit single boosted regression tree model to occ.data. Optimise interaction.depth using test.data.
+#' #Fit single boosted regression tree model to occ.data. Optimise interaction.depth using test.data.
 #' brt_fit(occ.data=training,
 #'         test.data=testing,
 #'         response.col = "presence.absence",
@@ -38,7 +38,7 @@
 #'         weights.col="sampling_weights",
 #'         varnames=colnames(training)[9:12])
 #'
-#' Fit multiple boosted regression tree model to occ.data, splitting by block.col given in jack-knife approach to optimise interaction.depth.
+#' #Fit multiple boosted regression tree model to occ.data, splitting by block.col given in jack-knife approach to optimise interaction.depth.
 #' training = sample_model_data
 #' brt_fit(occ.data=training,
 #'         response.col = "presence.absence",

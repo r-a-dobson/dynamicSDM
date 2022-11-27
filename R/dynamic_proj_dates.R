@@ -1,8 +1,8 @@
 #' Generate vector of dates for dynamic projections
 #'
 #' Creates a vector of dates at regular intervals between two given dates.
-#' @param start.date a character string, the start date in format YYYY-MM-DD.
-#' @param end.date a character string, the end date in format YYYY-MM-DD.
+#' @param startdate a character string, the start date in format YYYY-MM-DD.
+#' @param enddate a character string, the end date in format YYYY-MM-DD.
 #' @param interval.level a character string, the time-step of intervals. One of '"day"', '"month"' or '"year"': can be abbreviated.
 #' @param interval a numeric value, the length of interval in interval.level units to generate between the start and end date.
 #' @details Function returns a vector of dates given start.date and end.date at given interval size.

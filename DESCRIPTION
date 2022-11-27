@@ -13,6 +13,7 @@ Imports:
     ape,
     dplyr,
     gbm,
+    gargle,
     geobuffer,
     geodist,
     geosphere,

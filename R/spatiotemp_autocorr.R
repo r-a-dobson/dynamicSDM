@@ -1,6 +1,6 @@
-#' Test for spatial and temporal autocorrelation in species distribution model explanatory data or model residuals.
+#' Test for spatial and temporal autocorrelation in species distribution model explanatory data.
 #'
-#' Function performs statistical tests to assess spatial and temporal autocorrelation in given explanatory variable data or model residuals.
+#' Function performs statistical tests to assess spatial and temporal autocorrelation in given explanatory variable data.
 #'
 #' @param occ.data a data frame, with columns for occurrence record co-ordinates and dates with column names as follows; record longitude as "x", latitude as "y", year as "year", month as "month", and day as "day" and associated explanatory data.
 #' @param temporal.level a character string, the time step to test for temporal autocorrelation at. One of '"day"' or '"month"', '"year"'. Can be abbreviated.
