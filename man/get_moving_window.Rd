@@ -36,8 +36,4 @@ The function then calculates the optimal “moving window” matrix that best ma
 }
 \examples{
 get_moving_window(radial.distance=100000,spatial.res.metres=111320)
-   [,1] [,2] [,3]
-[1,]    1    1    1
-[2,]    1    1    1
-[3,]    1    1    1
 }
