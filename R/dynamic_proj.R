@@ -32,7 +32,7 @@
 #'
 #'If one of drive.folder or save.drive.folder are used then user.email is required to access the appropriate Google Drive user account. This requires users to have installed R package "googledrive" and initialised Google Drive with valid log-in credentials. Please follow instructions on https://googledrive.tidyverse.org/.
 #' @return Exports model projection rasters for each projection date to user-specified Google Drive folder or local directory.
-
+#'@export
 
 dynamic_proj<-function(dates,projection.method,local.directory=NULL,drive.folder=NULL,user.email=NULL,sdm.mod=NULL,sdm.thresh=0.5,sdm.weight=1,sam.mod=NULL,sam.weight=1, save.directory=NULL,save.drive.folder=NULL){
 
@@ -89,7 +89,7 @@ dynamic_proj<-function(dates,projection.method,local.directory=NULL,drive.folder
   if(!missing(sdm.mod)){
 
     if(!class(sdm.mod)=="list"){
-      SDMpred<- predict(SDMMOD, newdata = projection_df,type = "response",na.action = na.pass)
+      SDMpred<- predict(sdm.mod, newdata = projection_df,type = "response",na.action = na.pass)
       SDMbinary<-as.numeric(SDMpred>sdm.thresh)}
 
 

@@ -65,11 +65,6 @@ variance<-function(x, na.omit=T){
 
 #skip_if_no_GEE_credentials Skips test_that test if no Google Earth Engine credentials set-up
 skip_if_no_GEE_credentials <- function() {
-
-  ##Import python module
-  ee <- reticulate::import("ee")
-  if ((rgee::ee_check_credentials())==F){
-    skip("No Google Earth Engine credentials available")
-  }
+tryCatch(reticulate::import("ee"),  error = function(e)  testthat::skip("No Google Earth Engine credentials available")) # => 1
 }
 

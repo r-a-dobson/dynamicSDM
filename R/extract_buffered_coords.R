@@ -41,7 +41,7 @@
 #'
 #'Hijmans, R. J., Van Etten, J., Cheng, J., Mattiuzzi, M., Sumner, M., Greenberg, J. A., Lamigueiro, O. P., Bevan, A., Racine, E. B. & Shortridge, A. 2015. Package ‘raster’. R package, 734.
 #' @return Returns details of successful explanatory variable extractions.
-
+#'@export
 extract_buffered_coords<-function(occ.data,datasetname,bandname,spatial.res.metres, GEE.math.fun,moving.window.matrix,extraction.drive.folder,user.email,save.method,varname=NULL,temporal.res=NULL,temporal.level=NULL,temporal.direction=NULL,categories=NULL,save.directory=NULL){
 
   if(missing(extraction.drive.folder)){stop("No extraction.drive.folder specified. Please create and provide the name of folder within your Google Drive")}

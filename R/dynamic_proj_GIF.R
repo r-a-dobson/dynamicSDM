@@ -16,7 +16,7 @@
 #' If one of drive.folder or save.drive.folder is used then user.email for the Google Drive account must be provided. This requires users to have installed R package "googledrive" and initialised Google Drive with valid log-in credentials. Please follow instructions on https://googledrive.tidyverse.org/.
 #' @references Wickham, H., and Chang, W, 2016. Package ‘ggplot2’. Create elegant data visualisations using the grammar of graphics. Version, 2(1), pp.1-189.
 #' @return Exports GIF to Google Drive folder or local directory.
-
+#'@export
 dynamic_proj_GIF<-function(dates,projection.type,drive.folder=NULL,user.email=NULL,local.directory=NULL,save.drive.folder=NULL,save.directory=NULL){
 
   # Check neccessary arguments have been provided

@@ -15,7 +15,7 @@
 #' @example
 #'data("sample_model_data")
 #'spatiotemp_autocorr(sample_model_data,varname="Temperaturemean",temporal.level="year")
-
+#'@export
 spatiotemp_autocorr<-function(occ.data,varname,temporal.level){
 
   temporal_ordered<-occ.data[order(occ.data[,temporal.level]),] ### Re-order the data into time order (based upon temporal.level specified by user)

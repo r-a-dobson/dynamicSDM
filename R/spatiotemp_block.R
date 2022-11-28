@@ -25,7 +25,7 @@
 #' data("sample_model_data", package ="dynamicSDM")
 #' data("biome_layer", package ="dynamicSDM")
 #' spatiotemp_block(occ.data = sample_model_data,spatial.layer = biome_layer,spatial.split.degrees=3,temporal.block=c("month"),vars.to.block.by=colnames(sample_model_data)[9:12],n.blocks=10)
-
+#'@export
 spatiotemp_block<-function(occ.data,vars.to.block.by,spatial.layer=NULL,spatial.split.degrees=NULL,temporal.block=NULL,n.blocks=10,iterations=5000){
 
   occ.data.save<-occ.data # Save original occ.data to return to used with added block column at end
@@ -43,7 +43,7 @@ spatiotemp_block<-function(occ.data,vars.to.block.by,spatial.layer=NULL,spatial.
     if(!class(spatial.split.degrees)=="numeric"){stop("spatial.split.degrees must be of class numeric")}
 
     occ.data.points<- sp::SpatialPointsDataFrame(data = occ.data, coords = cbind(occ.data$x, occ.data$y),
-                                                 proj4string = terra::crs("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+                                                 proj4string =raster::crs(spatial.layer))
 
     ### Assign occurrence points value from the categorical RasterLayer provided by extracting at record co-ordinates
     split1<-raster::extract(spatial.layer, occ.data.points) #For each record co-ordinate extract spatial.layer value from given RasterLayer

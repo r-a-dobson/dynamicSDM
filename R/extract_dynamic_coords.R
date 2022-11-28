@@ -22,7 +22,7 @@
 #' @references
 #'Aybar, C., Wu, Q., Bautista, L., Yali, R. and Barja, A., 2020. rgee: An R package for interacting with Google Earth Engine. Journal of Open Source Software, 5(51), p.2272.
 #'@return Returns details of successful explanatory variable extractions.
-
+#'@export
 
 extract_dynamic_coords<-function(occ.data,datasetname,bandname,spatial.res.metres,GEE.math.fun,save.method,temporal.res,temporal.direction,varname,save.directory){
 

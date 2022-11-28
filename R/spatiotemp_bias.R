@@ -12,7 +12,8 @@
 #' @example
 #'data("sample_occ_data",package="dynamicSDM")
 #'spatiotemp_bias(occ.data = sample_occ_data,temporal.level = "month")
-
+#'@export
+#'
 spatiotemp_bias<-function(occ.data,temporal.level=NA){
 
   # Match abbreviate temporal.level to available options, fail if no match to options

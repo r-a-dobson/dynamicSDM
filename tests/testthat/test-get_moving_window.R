@@ -18,23 +18,23 @@ test_that("stops if spatial.res.degrees and spatial.ext class numeric and incorr
 test_that("works with spatial.ext as numeric", {
   numeric<-c(12,36,-35,-12)
   results<-get_moving_window(radial.distance=100,spatial.res.degrees=0.5,spatial.ext=numeric)
-  expect_equal(class(results),"matrix")})
+  expect_equal(class(results)[1],"matrix")})
 
 test_that("works with spatial.ext as Extent", {
   Extent<-raster::extent(c(12,36,-35,-12))
   results<-get_moving_window(radial.distance=100,spatial.res.degrees=0.5,spatial.ext=Extent)
-  expect_equal(class(results),"matrix")})
+    expect_equal(class(results)[1],"matrix")})
 
 test_that("works with spatial.ext as raster", {
   numeric<-c(12,36,-35,-12)
   raster<-raster::raster(raster::extent(numeric))
   results<-get_moving_window(radial.distance=100000,spatial.res.degrees=0.5,spatial.ext=raster)
-  expect_equal(class(results),"matrix")})
+  expect_equal(class(results)[1],"matrix")})
 
 test_that("works with spatial.ext as polygon", {
   polygon<-sp::Polygon(cbind(c(12,12,36,36),c(-35,-12,-35,-12)))
   results<-get_moving_window(radial.distance=100000,spatial.res.degrees=0.5,spatial.ext=polygon)
-  expect_equal(class(results),"matrix")})
+  expect_equal(class(results)[1],"matrix")})
 
 test_that("stops if spatial.res.degrees and spatial.ext class invalid", {
   expect_error(get_moving_window(radial.distance=100000,spatial.res.degrees=0.5,spatial.ext="southernafrica"))})

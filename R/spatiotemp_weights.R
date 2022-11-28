@@ -15,7 +15,7 @@
 #' data("sample_occ_abs_data",package="dynamicSDM")
 #' data("sample_surveyeffort",package="dynamicSDM")
 #' spatiotemp_weights(occ.data = sample_occ_abs_data,sampling.events.df = sample_surveyeffort,spatial.dist = 200000,temporal.dist = 20)
-
+#'@export
 spatiotemp_weights<-function(occ.data,sampling.events.df, spatial.dist=NA,temporal.dist=NA){
 
   # Check formatting of sampling events data frame provided

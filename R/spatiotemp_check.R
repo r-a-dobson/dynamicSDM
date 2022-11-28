@@ -17,7 +17,7 @@
 #'day<-c(27, 25, 16, 25, 26)
 #'occ.data<-data.frame(cbind(x,y,month,day))
 #'spatiotemp_check(occ.data)
-
+#'@export
 
 
 spatiotemp_check<-function(occ.data, na.handle="exclude",duplicate.handle="exclude",coord.handle="exclude",date.handle="exclude"){

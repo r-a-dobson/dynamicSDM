@@ -36,7 +36,7 @@
 #'
 #'Hijmans, R. J., Van Etten, J., Cheng, J., Mattiuzzi, M., Sumner, M., Greenberg, J. A., Lamigueiro, O. P., Bevan, A., Racine, E. B. & Shortridge, A. 2015. Package ‘raster’. R package, 734.
 #' @return Returns details of successful explanatory variable extractions for each projection date.
-
+#'@export
 extract_buffered_raster<-function(dates,spatial.ext,datasetname,bandname,spatial.res.metres,GEE.math.fun,moving.window.matrix,user.email,varname=NULL,temporal.res=NULL,temporal.direction=NULL,categories=NULL,save.directory=NULL,save.drive.folder){
 
   # Check all arguments that are required have been given and are valid .

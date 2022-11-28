@@ -20,7 +20,7 @@
 #'day<-c(27, 25, 16, 25, 26)
 #'occ.data<-data.frame(cbind(x,y,year,month,day))
 #'spatiotemp_resolution(occ.data,spatial.res=5,temporal.res="day")
-
+#'@export
 spatiotemp_resolution<-function(occ.data, spatial.res=NULL, temporal.res=NULL){
 
   ## Filter by spatial resolution if specified

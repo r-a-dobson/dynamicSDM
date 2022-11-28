@@ -44,7 +44,7 @@
 #'         block.col="blockno",
 #'         weights.col="sampling_weights",
 #'         varnames=colnames(training)[9:12])
-
+#'@export
 
 brt_fit<-function(occ.data, response.col, varnames, distribution, block.col=NULL, weights.col=NULL, test.data=NULL,interaction.depth=NULL, n.trees=5000,shrinkage=0.001){
 
@@ -70,10 +70,12 @@ brt_fit<-function(occ.data, response.col, varnames, distribution, block.col=NULL
   # Set response variable as correct class for "bernoulli" distribution
   if(distribution=="bernoulli"){if(!class( occ.data[,response.col])=="character"){occ.data[,response.col]<-as.character(occ.data[,response.col])}}
 
-  # Remove rows that contain NA in response variable or explanatory variable columns and spatiotemporal blocking/weights column if applicable.
-  occ.data<-occ.data %>% tidyr::drop_na(response.col,varnames)
-  if(!missing(block.col)){occ.data<-occ.data %>% tidyr::drop_na(response.col,varnames,block.col)}
-  if(!missing(weights.col)){occ.data<-occ.data %>% tidyr::drop_na(response.col,varnames,weights.col)}
+# Remove rows that contain NA in response variable or explanatory variable columns and spatiotemporal blocking/weights column if applicable.
+  occ.data<-occ.data[!is.na(occ.data[,response.col]),]
+  occ.data<-occ.data[!is.na(occ.data[,varnames]),]
+
+  if(!missing(block.col)){occ.data<-occ.data[!is.na(occ.data[,block.col]),]}
+  if(!missing(weights.col)){occ.data<-occ.data[!is.na(occ.data[,weights.col]),] }
 
   #Fit models on standard training/testing data split
     if(missing(block.col)){

@@ -20,7 +20,7 @@
 #’ dynamic_proj_covariates requires explanatory variable rasters in local.directory or drive.folder to be uniquely named “.tif” files containing the variable name and relevant projection date in format YYYY-MM-DD. If more than one “.tif” file in the Google Drive folder or local directory matches the projection date and explanatory variable name, then the function will error.
 #'
 #'If drive.folder or save.drive.folder arguments are used to download rasters for use or upload function output, then users must have installed R package "googledrive" and initialised Google Drive with valid log-in credentials. The credentials must be given under function argument user.email to initiate the correct Google Drive account. Please follow instructions on https://googledrive.tidyverse.org/.
-
+#'@export
 
 dynamic_proj_covariates<-function(dates,varnames,drive.folder=NULL,user.email=NULL, local.directory=NULL,spatial.ext=NULL,spatial.res.degrees=NULL,resample.method=NULL,save.directory=NULL,save.drive.folder = NULL){
 
@@ -144,7 +144,7 @@ dynamic_proj_covariates<-function(dates,varnames,drive.folder=NULL,user.email=NU
   # Alternatively save covariate data.frame to local directory
   if(!missing(save.directory)){
     if(!dir.exists(save.directory)){stop("save.directory does not exist")}
-        write.csv(stack,file=paste0(save.directory,"/",date,"_projection_dataframe.csv"))} #File name includes the date that these covariate represent
+   write.csv(stack,file=paste0(save.directory,"/",date,"_projection_dataframe.csv"))} #File name includes the date that these covariate represent
 
   listofdone<-rbind(listofdone,date)} # Record that this date has been completed
 

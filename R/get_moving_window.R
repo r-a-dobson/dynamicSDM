@@ -16,11 +16,7 @@
 #' @return Returns "moving window" matrix of equal weights.
 #' @examples
 #'get_moving_window(radial.distance=100000,spatial.res.metres=111320)
-#'    [,1] [,2] [,3]
-#'[1,]    1    1    1
-#'[2,]    1    1    1
-#'[3,]    1    1    1
-#
+#'@export
 
 get_moving_window<-function(radial.distance, spatial.res.degrees=NULL, spatial.res.metres=NULL,spatial.ext=NULL){
 

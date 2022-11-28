@@ -25,7 +25,7 @@
 #'                    temporal.method="random",
 #'                    spatial.ext =c(20,36,-35,-12),
 #'                    temporal.ext = c("2011-01-01","2017-01-01"))
-
+#'@export
 spatiotemp_pseudoabs<-function(spatial.method,temporal.method,occ.data=NULL,spatial.ext=NULL,temporal.ext=NULL,spatial.buffer=NULL,temporal.buffer=NULL,n.pseudoabs=100){
 
 if(!class(n.pseudoabs)=="numeric"){stop("n.pseudoabs should be a numeric value")}

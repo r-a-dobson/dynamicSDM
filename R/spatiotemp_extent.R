@@ -19,7 +19,7 @@
 #'spatiotemp_extent(occ.data,
 #'                  temporal.ext=c("2012-01-01","2017-01-01"),
 #'                 spatial.ext =c(28,31,-30,-26))
-
+#'@export
 spatiotemp_extent<-function(occ.data, temporal.ext=NA,spatial.ext=NA){
 
   if(!missing(temporal.ext)){

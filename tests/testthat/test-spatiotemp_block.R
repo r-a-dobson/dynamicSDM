@@ -21,22 +21,22 @@ test_that("stops if temporal.block not accepted", {
   expect_error(spatiotemp_block(occ.data = sample_model_data,spatial.layer=biome_layer,spatial.split.degrees=3,temporal.block=c("decadal"),vars.to.block.by=colnames(sample_model_data)[9:12],n.blocks=10))})
 
 test_that("Only temporal blocking by one level, results in correct number of unique blocking categories", {
-  n<-as.numeric(sample(1:10,1))
+  n<-as.numeric(sample(2:10,1))
   df<-spatiotemp_block(occ.data = sample_model_data,temporal.block=c("month"),vars.to.block.by=colnames(sample_model_data)[9:12],n.blocks=n)
   expect_equal(length(unique(df$BLOCK.CATS)),n)})
 
 test_that("Doesn't error with only temporal blocking by two feature", {
-  n<-as.numeric(sample(1:10,1))
+  n<-as.numeric(sample(2:10,1))
   df<-spatiotemp_block(occ.data = sample_model_data,temporal.block=c("quarter","year"),vars.to.block.by=colnames(sample_model_data)[9:12],n.blocks=n)
 expect_equal(length(unique(df$BLOCK.CATS)),n)})
 
 test_that("Only spatial blocking, results in correct number of unique blocking categories", {
-  n<-as.numeric(sample(1:10,1))
+  n<-as.numeric(sample(2:10,1))
   df<-spatiotemp_block(occ.data = sample_model_data,spatial.layer = biome_layer,spatial.split.degrees=3,vars.to.block.by=colnames(sample_model_data)[9:12],n.blocks=n)
 expect_equal(length(unique(df$BLOCK.CATS)),n)})
 
 test_that("Both spatial and temporal blocking, results in correct number of unique blocking categories", {
-  n<-as.numeric(sample(1:10,1))
+  n<-as.numeric(sample(2:10,1))
   df<-spatiotemp_block(occ.data = sample_model_data,spatial.layer = biome_layer,spatial.split.degrees=3,temporal.block=c("month"),vars.to.block.by=colnames(sample_model_data)[9:12],n.blocks=n)
   expect_equal(length(unique(df$BLOCK.CATS)),n)})
 

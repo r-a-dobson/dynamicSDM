@@ -30,7 +30,7 @@
 #' occ.data<-data.frame(cbind(x,y,year,month,day))
 #'
 #' spatiotemp_thin(occ.data=occ.data, temporal.method="day", temporal.dist=14,spatial.split.degrees=3,spatial.dist=100000, iterations=5)
-
+#'@export
 spatiotemp_thin <- function(occ.data, temporal.method, temporal.dist,spatial.split.degrees,spatial.dist, iterations=100) {
 
   ## Check correct formatting of iterations argument

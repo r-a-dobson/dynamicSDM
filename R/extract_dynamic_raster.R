@@ -26,7 +26,7 @@
 #'
 #'D'Agostino McGowan L., and Bryan J., 2022. googledrive: An Interface to Google Drive. https://googledrive.tidyverse.org, https://github.com/tidyverse/googledrive.
 #' @return Returns details of successful explanatory variable extractions for each projection date.
-
+#'@export
 extract_dynamic_raster<-function(dates,spatial.ext,datasetname,bandname,spatial.res.metres,GEE.math.fun,user.email,varname=NULL,temporal.res,temporal.direction,save.directory=NULL,save.drive.folder){
 
   # Set default varname for saving raster
