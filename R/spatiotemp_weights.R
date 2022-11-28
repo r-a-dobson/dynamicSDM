@@ -16,6 +16,7 @@
 #' data("sample_surveyeffort",package="dynamicSDM")
 #' spatiotemp_weights(occ.data = sample_occ_abs_data,sampling.events.df = sample_surveyeffort,spatial.dist = 200000,temporal.dist = 20)
 #'@export
+#'
 spatiotemp_weights<-function(occ.data,sampling.events.df, spatial.dist=NA,temporal.dist=NA){
 
   # Check formatting of sampling events data frame provided
@@ -43,6 +44,9 @@ spatiotemp_weights<-function(occ.data,sampling.events.df, spatial.dist=NA,tempor
 
   SAMP_EFFORT=NULL  ## Create empty vector to bind extracted sampling effort values to
 
+  surroundingarea_points<-rangemap::geobuffer_points(occ.data[, c("x","y")],radius=spatial.dist,by_point = T) # Create polygon of spatial area surrounding occurrence co-ordinate to extract sampling effort across
+
+
   for(x in 1:nrow(occ.data)){
 
   date1<-as.Date(with(occ.data, paste(year, month, day,sep="-")), "%Y-%m-%d")[x] - temporal.dist ## Get the earliest date to include in the sampling effort calculation
@@ -53,12 +57,12 @@ spatiotemp_weights<-function(occ.data,sampling.events.df, spatial.dist=NA,tempor
   samplingefforttemp <-as.data.frame(sampling.events.df[samplingeffortdates >= date1 &    # Extract sampling events between earliest and latest date
                samplingeffortdates <= date2, ])
 
-  surroundingarea<-rangemap::geobuffer_points(occ.data[x, c("x","y")],radius=spatial.dist,by_point = T) # Create polygon of spatial area surrounding occurrence co-ordinate to extract sampling effort across
+  surroundingarea_point<-surroundingarea_points[x] # Select radius for this co-ordinate
 
-  xmin<-sp::bbox(raster::extent(surroundingarea))[1,1] # Extract co-ordinates for buffer area
-  xmax<-sp::bbox(raster::extent(surroundingarea))[1,2]
-  ymin<-sp::bbox(raster::extent(surroundingarea))[2,1]
-  ymax<-sp::bbox(raster::extent(surroundingarea))[2,2]
+  xmin<-sp::bbox(raster::extent(surroundingarea_point))[1,1] # Extract co-ordinates for buffer area
+  xmax<-sp::bbox(raster::extent(surroundingarea_point))[1,2]
+  ymin<-sp::bbox(raster::extent(surroundingarea_point))[2,1]
+  ymax<-sp::bbox(raster::extent(surroundingarea_point))[2,2]
 
   samplingefforttemp <-as.data.frame(samplingefforttemp[samplingefforttemp$x <= xmax &    # Filter temporally filtered sampling events to include only records within spatial limits in longitude
                                                           samplingefforttemp$x >= xmin, ])

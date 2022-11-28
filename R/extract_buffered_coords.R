@@ -137,16 +137,14 @@ extract_buffered_coords<-function(occ.data,datasetname,bandname,spatial.res.metr
   spatial.buffer<-nrow(moving.window.matrix)*spatial.res.metres/2
 
   ## The matrix is square not circular, so then need to work out the radius to furthers corner of matrix away from co-ordinate, using pythagorus theorem (a2 + b2 = c2), so c = square root of a2 + b2 (the radius from previous calculation)
-
   spatial.buffer<- sqrt((spatial.buffer^2)+(spatial.buffer^2)) # Matrix is square not circular so work out radius to furthest corner away from co-ordinate using pythagorus theorem
 
   ## To ensure that all cells are definitely included round to nearest 5
   spatial.buffer<-ceiling(spatial.buffer/5)*5
 
-  # From each occurrence record point in this loop, add the calculated radius in metres using the geobuffer package
-  spatial.buffer<-rangemap::geobuffer_points(occforperiod[, c("x","y")],radius=spatial.buffer,by_point = T) # Add this radius to all occurrence record co-ordinates that are being extracted in this loop
-
-
+  # From each occurrence record point in this loop, add the calculated radius in metres using the rangemap package. Requires >1 co-ord. If only 1, just bind same co-ord twice and take first.
+  if(nrow(occforperiod)>1){spatial.buffer<-rangemap::geobuffer_points(occforperiod[, c("x","y")],radius=spatial.buffer,by_point = T)} # Add this radius to all occurrence record co-ordinates that are being extracted in this loop
+  if(nrow(occforperiod)==1){spatial.buffer<-rangemap::geobuffer_points(rbind(occforperiod[, c("x","y")],occforperiod[, c("x","y")]),radius=spatial.buffer,by_point = T)[1]}
 
   # Extract min and max longtiude and latitude co-ordinates, this is the minimum possible area to extract from environmental dataset
   xmin<-sp::bbox(raster::extent(spatial.buffer))[1,1]

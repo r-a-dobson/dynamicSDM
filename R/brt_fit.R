@@ -72,7 +72,7 @@ brt_fit<-function(occ.data, response.col, varnames, distribution, block.col=NULL
 
 # Remove rows that contain NA in response variable or explanatory variable columns and spatiotemporal blocking/weights column if applicable.
   occ.data<-occ.data[!is.na(occ.data[,response.col]),]
-  occ.data<-occ.data[!is.na(occ.data[,varnames]),]
+  for(v in 1:length(varnames)){occ.data<-occ.data[!is.na(occ.data[,varnames[v]]),]}
 
   if(!missing(block.col)){occ.data<-occ.data[!is.na(occ.data[,block.col]),]}
   if(!missing(weights.col)){occ.data<-occ.data[!is.na(occ.data[,weights.col]),] }

@@ -33,10 +33,6 @@ Checks the occurrence record data frame contains the column names and classes re
 Record dates and co-ordinates are checked for validity using the following rules. Dates must be real dates that could exist. For example, 50th February 2000 is not a valid date. Co-ordinates must have longitude (x) values between -180 and 180, and latitude (y) values between -90 and 90 to be considered valid.
 }
 \examples{
-x<-c(27.79125, 28.54125, 25.54125, 30.04125, 29.95792)
-y<-c(-26.79125, -26.37458, -26.70792, -29.37458, -28.45792)
-month<-c(1, 2, 3, 2, 4)
-day<-c(27, 25, 16, 25, 26)
-occ.data<-data.frame(cbind(x,y,month,day))
-spatiotemp_check(occ.data)
+data("sample_occ_data",package="dynamicSDM")
+spatiotemp_check(sample_occ_data)
 }

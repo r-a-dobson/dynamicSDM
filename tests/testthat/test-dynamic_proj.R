@@ -1,12 +1,11 @@
 
 data("sample_model_data")
-sample_model_data_test<-dplyr::sample_n(sample_model_data,100)
-sample_model_data_train<-dplyr::sample_n(sample_model_data,100)
+sample_model_data_test<-dplyr::sample_n(sample_model_data,10)
+sample_model_data_train<-dplyr::sample_n(sample_model_data,10)
 
-results1<-brt_fit(occ.data = sample_model_data_train,response.col = "presence.absence",block.col="blockno",distribution="bernoulli",varnames=colnames(sample_model_data_train)[9:12])
+results1<-readRDS(paste0(testthat::test_path("test-files"),"/testsdm.rds"))
 
 results1_eval<-list(c(0.6,0.7,0.6,0.4,0.5,0.6))
-
 
 sample_model_data_train_abund<-sample_model_data[sample_model_data$individualCount>0 ,]
 sample_model_data_train_abund<-sample_model_data_train_abund[!is.na(sample_model_data_train_abund$individualCount),]
@@ -14,7 +13,7 @@ sample_model_data_train_abund$individualCount<-log10(1+sample_model_data_train_a
 sample_model_data_train_abund_test.data<-dplyr::sample_n(sample_model_data_train_abund,415)
 sample_model_data_train_abund<-dplyr::sample_n(sample_model_data_train_abund,415)
 
-results3<-brt_fit(occ.data = sample_model_data_train_abund,response.col = "individualCount",block.col="blockno",distribution="gaussian",varnames=colnames(sample_model_data_train)[9:12])
+results3<-readRDS(paste0(testthat::test_path("test-files"),"/testsam.rds"))
 
 results3_eval<-list(c(0.70,0.56,0.60,0.7,0.7,0.90))
 
