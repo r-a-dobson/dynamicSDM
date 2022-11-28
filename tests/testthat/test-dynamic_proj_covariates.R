@@ -64,7 +64,7 @@ test_that("Works if spatial.ext = RasterLayer", {
 test_that("Works if spatial.ext = polygon", {
   dates<-c("2010-01-01","2011-01-01")
   polygon<-sp::Polygon(cbind(c(12,12,36,36),c(-35,-12,-35,-12)))
-  results<-dynamic_proj_covariates(dates=dates,varnames=c("precipitation_10_prior_sum","NDVI_5_post_max"),local.directory="/tests/testthat/test-files",
+  results<-dynamic_proj_covariates(dates=dates,varnames=c("precipitation_10_prior_sum","NDVI_5_post_max"),local.directory=testthat::test_path("test-files"),
                                          spatial.ext=polygon,spatial.res.degrees=0.05,resample.method="bilinear",
                                          save.directory=tempdir())
   expect_equal(length(results),length(dates))})

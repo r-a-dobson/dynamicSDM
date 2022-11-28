@@ -1,233 +1,0 @@
-Writing NAMESPACE
-Writing NAMESPACE
-Writing spatiotemp_autocorr.Rd
-[36m--[39m [36mBuilding[39m [36m-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------[39m [36mdynamicSDM[39m [36m--[39m
-[38;5;247mSetting env vars:[39m
-* [38;5;247mCFLAGS    : -Wall -pedantic[39m
-* [38;5;247mCXXFLAGS  : -Wall -pedantic[39m
-* [38;5;247mCXX11FLAGS: -Wall -pedantic[39m
-* [38;5;247mCXX14FLAGS: -Wall -pedantic[39m
-* [38;5;247mCXX17FLAGS: -Wall -pedantic[39m
-* [38;5;247mCXX20FLAGS: -Wall -pedantic[39m
-[36m---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------[39m
-         checking for file 'C:\Users\eerdo\Documents\GitHub\dynamicSDM/DESCRIPTION' ...     checking for file 'C:\Users\eerdo\Documents\GitHub\dynamicSDM/DESCRIPTION' ...   v  checking for file 'C:\Users\eerdo\Documents\GitHub\dynamicSDM/DESCRIPTION' (1.4s)
-      -  preparing 'dynamicSDM': (2.9s)
-     checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   v  checking DESCRIPTION meta-information
-      -  checking for LF line-endings in source and make files and shell scripts (2.1s)
-      -  checking for empty or unneeded directories
-      -  looking to see if a 'data/datalist' file should be added
-      -  building 'dynamicSDM_0.0.0.9000.tar.gz'
-     
-[36m--[39m [36mChecking[39m [36m-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------[39m [36mdynamicSDM[39m [36m--[39m
-[38;5;247mSetting env vars:[39m
-* [38;5;247m_R_CHECK_CRAN_INCOMING_REMOTE_: FALSE[39m
-* [38;5;247m_R_CHECK_CRAN_INCOMING_       : FALSE[39m
-* [38;5;247m_R_CHECK_FORCE_SUGGESTS_      : FALSE[39m
-* [38;5;247mNOT_CRAN                      : true[39m
--- R CMD check ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--\|/    -  -  using log directory 'C:/Users/eerdo/AppData/Local/Temp/RtmpWI5BWy/dynamicSDM.Rcheck' (980ms)
--  using R version 3.6.2 (2019-12-12)
--  using platform: x86_64-w64-mingw32 (64-bit)
--  using session charset: ISO8859-1
-\|/-\|    /  -  using options '--no-manual --as-cran' (1.1s)
--     checking for file 'dynamicSDM/DESCRIPTION' ...\     checking for file 'dynamicSDM/DESCRIPTION' ... |  v  checking for file 'dynamicSDM/DESCRIPTION'
--  this is package 'dynamicSDM' version '0.0.0.9000'
--  package encoding: UTF-8
-/     checking package namespace information ...-     checking package namespace information ... \  v  checking package namespace information
-   checking package dependencies ...|/-\|/-     checking package dependencies ... \  v  checking package dependencies (1.4s)
-   checking if this is a source package ...|     checking if this is a source package ... /  v  checking if this is a source package
-v  checking if there is a namespace
--    \  v  checking for .dll and .exe files
-   checking for hidden files and directories ...|     checking for hidden files and directories ... /  N  checking for hidden files and directories
-   Found the following hidden files and directories:
-     .github
--     These were most likely included in error. See section 'Package
-   structure' in the 'Writing R Extensions' manual.
-   checking for portable file names ...\     checking for portable file names ... |  v  checking for portable file names
-/    -     checking serialization versions ...\     checking serialization versions ... |  v  checking serialization versions
-/     checking whether package 'dynamicSDM' can be installed ...-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-     checking whether package 'dynamicSDM' can be installed ... \  v  checking whether package 'dynamicSDM' can be installed (9.9s)
-|/-\|/    -  v  checking package directory (1s)
-   checking for future file timestamps ...\|     checking for future file timestamps ... /  v  checking for future file timestamps (360ms)
-   checking DESCRIPTION meta-information ...-\|/-\     checking DESCRIPTION meta-information ... |  W  checking DESCRIPTION meta-information (1.1s)
-   Non-standard license specification:
-     use_gpl3_license()
-   Standardizable: FALSE
-/    -  N  checking top-level files
-\     File
-     LICENSE
-   is not mentioned in the DESCRIPTION file.
-   Non-standard file/directory found at top level:
-     'cmdcheck.txt'
-   checking for left-over files ...|     checking for left-over files ... /  v  checking for left-over files
-v  checking index information
--     checking package subdirectories ...\|/     checking package subdirectories ... -  v  checking package subdirectories (508ms)
-   checking R files for non-ASCII characters ...\|     checking R files for non-ASCII characters ... /  v  checking R files for non-ASCII characters (335ms)
-   checking R files for syntax errors ...-\|     checking R files for syntax errors ... /  v  checking R files for syntax errors (427ms)
-   checking whether the package can be loaded ...-\|     checking whether the package can be loaded ... /  v  checking whether the package can be loaded (565ms)
-   checking whether the package can be loaded with stated dependencies ...-\     checking whether the package can be loaded with stated dependencies ... |  v  checking whether the package can be loaded with stated dependencies
-   checking whether the package can be unloaded cleanly .../-\     checking whether the package can be unloaded cleanly ... |  v  checking whether the package can be unloaded cleanly (451ms)
-   checking whether the namespace can be loaded with stated dependencies .../-     checking whether the namespace can be loaded with stated dependencies ... \  v  checking whether the namespace can be loaded with stated dependencies (397ms)
-   checking whether the namespace can be unloaded cleanly ...|/-\     checking whether the namespace can be unloaded cleanly ... |  v  checking whether the namespace can be unloaded cleanly (735ms)
-/     checking loading without being on the library search path ...-\|/-\     checking loading without being on the library search path ... |  v  checking loading without being on the library search path (1.1s)
-   checking dependencies in R code .../-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-     checking dependencies in R code ... \  W  checking dependencies in R code (9.4s)
-   '::' or ':::' import not declared from: 'gargle'
-   checking S3 generic/method consistency ...|/-\|     checking S3 generic/method consistency ... /  v  checking S3 generic/method consistency (968ms)
-   checking replacement functions ...-\|     checking replacement functions ... /  v  checking replacement functions (527ms)
-   checking foreign function calls ...-\|/     checking foreign function calls ... -  v  checking foreign function calls (748ms)
-   checking R code for possible problems ...\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|     checking R code for possible problems ... /  N  checking R code for possible problems (11.6s)
-   brt_fit: no visible global function definition for 'as.formula'
-   dynamic_proj: no visible global function definition for 'read.csv'
-   dynamic_proj: no visible global function definition for 'predict'
-   dynamic_proj: no visible binding for global variable 'SDMMOD'
-   dynamic_proj: no visible binding for global variable 'na.pass'
-   dynamic_proj_GIF: no visible binding for global variable 'y'
-   dynamic_proj_GIF: no visible binding for global variable 'value'
-   dynamic_proj_GIF: no visible global function definition for
-     'terrain.colors'
-   dynamic_proj_GIF: no visible global function definition for 'png'
-   dynamic_proj_GIF: no visible global function definition for 'dev.off'
-   dynamic_proj_covariates: no visible global function definition for
-     'write.csv'
-   extract_buffered_coords: no visible binding for global variable 'sd'
-   extract_buffered_coords: no visible binding for global variable 'var'
-   extract_buffered_coords: no visible global function definition for
-     'write.csv'
-   extract_buffered_raster: no visible binding for global variable 'sd'
-   extract_buffered_raster: no visible binding for global variable 'var'
-   extract_coords_combine: no visible binding for global variable
-     'read.csv'
-   extract_dynamic_coords: no visible binding for global variable 'sd'
-   extract_dynamic_coords: no visible binding for global variable 'var'
-   extract_dynamic_coords: no visible global function definition for
-     'na.omit'
-   extract_dynamic_coords: no visible global function definition for
-     'write.csv'
-   firstNonNull: no visible global function definition for 'na.omit'
-   lastNonNull: no visible global function definition for 'na.omit'
-   skip_if_no_GEE_credentials: no visible global function definition for
-     'skip'
-   skip_if_no_auth: no visible global function definition for 'skip'
-   spatiotemp_autocorr: no visible global function definition for
-     'aggregate'
-   spatiotemp_autocorr: no visible global function definition for
-     'as.formula'
-spatiotemp_autocorr: no visible global function defin-     spatiotemp_autocorr: no visible global function definition for 'plot'
-   spatiotemp_autocorr: no visible global function definition for 'abline'
-   spatiotemp_autocorr: no visible global function definition for 'lm'
-   spatiotemp_autocorr: no visible global function definition for
-     'cor.test'
-   spatiotemp_bias: no visible global function definition for 'hist'
-   spatiotemp_bias: no visible global function definition for 'plot'
-   spatiotemp_bias: no visible global function definition for 'chisq.test'
-   spatiotemp_bias: no visible global function definition for 't.test'
-   spatiotemp_block: no visible global function definition for 'aggregate'
-   spatiotemp_block: no visible global function definition for
-     'as.formula'
-   spatiotemp_block: no visible global function definition for 'var'
-   spatiotemp_pseudoabs: no visible global function definition for 'as'
-   spatiotemp_thin: no visible global function definition for 'dist'
-   variance: no visible global function definition for 'var'
-   Undefined global functions or variables:
-     SDMMOD abline aggregate as as.formula chisq.test cor.test dev.off
-     dist hist lm na.omit na.pass plot png predict read.csv sd skip t.test
-     terrain.colors value var write.csv y
-   Consider adding
-     importFrom("grDevices", "dev.off", "png", "terrain.colors")
-     importFrom("graphics", "abline", "hist", "plot")
-     importFrom("methods", "as")
-     importFrom("stats", "aggregate", "as.formula", "chisq.test",
-                "cor.test", "dist", "lm", "na.omit", "na.pass", "predict",
-                "sd", "t.test", "var")
-     importFrom("utils", "read.csv", "write.csv")
-   to your NAMESPACE file (and ensure that your DESCRIPTION Imports field
-   contains 'methods').
-\     checking Rd files ...|/-\|     checking Rd files ... /  N  checking Rd files (973ms)
-   prepare_Rd: brt_fit.Rd:80-82: Dropping empty section \references
-   checking Rd metadata ...-\     checking Rd metadata ... |  v  checking Rd metadata
-   checking Rd line widths .../-\     checking Rd line widths ... |  N  checking Rd line widths (554ms)
-   Rd file 'brt_fit.Rd':
-     \examples lines wider than 100 characters:
-        Fit multiple boosted regression tree model to occ.data, splitting by block.col given in jack-knife approach to optimise interaction.dep ... [TRUNCATED]
-   
-   Rd file 'dynamic_proj_covariates.Rd':
-     \examples lines wider than 100 characters:
-        Read explanatory variable rasters in from a local directory, and save projection covariate data frames to a local directory.
-        Read explanatory variable rasters in from Google Drive folder, and save projection covariate data frames to Google Drive Folder
-   
-   Rd file 'extract_buffered_coords.Rd':
-     \examples lines wider than 100 characters:
-        Sum total MODIS Annual Land grass (6) and cereal cropland (7) cells across the nine surrounding cells and the one including the record' ... [TRUNCATED]
-        Extract mean MODIS Terra Land Surface Temperature across the seven days prior to the occurrence recordâ€™s date and then average t ... [TRUNCATED]
-   
-   Rd file 'spatiotemp_check.Rd':
-     \examples lines wider than 100 characters:
-        Returns: message - "Error in spatiotemp_check(occ.data) : year column not found. Ensure the column containing species record year is na ... [TRUNCATED]
-   
-   Rd file 'spatiotemp_pseudoabs.Rd':
-     \examples lines wider than 100 characters:
-        spatiotemp_pseudoabs(occ.data,spatial.method="buffer",temporal.method="buffer",spatial.buffer = c(50000,250000),temporal.buffer = c(1,7 ... [TRUNCATED]
-   
-   Rd file 'spatiotemp_resolution.Rd':
-     \examples lines wider than 100 characters:
-        Filters by spatial.res of 5 decimal places, removing any records with co-ordinates that are not specified 5.dp or higher
-        Filters by temporal.res of 'day', removing any records with dates that are not specified to day resolution
-   
-   These lines will be truncated in the PDF manual.
-/     checking Rd cross-references ...-\|/     checking Rd cross-references ... -  v  checking Rd cross-references (672ms)
-   checking for missing documentation entries ...\|/-     checking for missing documentation entries ... \  W  checking for missing documentation entries (659ms)
-   Undocumented code objects:
-     'biome_layer' 'sample_model_data' 'sample_occ_abs_data'
-     'sample_occ_data' 'sample_surveyeffort'
-   Undocumented data sets:
-     'biome_layer' 'sample_model_data' 'sample_occ_abs_data'
-     'sample_occ_data' 'sample_surveyeffort'
-   All user-level objects in a package should have documentation entries.
-|     See chapter 'Writing R documentation files' in the 'Writing R
-   Extensions' manual.
-   checking for code/documentation mismatches .../-\|/-\|/-     checking for code/documentation mismatches ... \  v  checking for code/documentation mismatches (1.9s)
-   checking Rd \usage sections ...|/-\     checking Rd \usage sections ... |  W  checking Rd \usage sections (693ms)
-   Undocumented arguments in documentation object 'dynamic_proj_dates'
-     'startdate' 'enddate'
-   Documented arguments not in \usage in documentation object 'dynamic_proj_dates':
-     'start.date' 'end.date'
-   
-   Functions with \usage entries need to have the appropriate \alias
-   entries, and all their arguments documented.
-   The \usage entries must correspond to syntactically valid R code.
-/     See chapter 'Writing R documentation files' in the 'Writing R
-   Extensions' manual.
--\|/-    \     checking Rd contents ...|/-     checking Rd contents ... \  v  checking Rd contents (1.4s)
-   checking for unstated dependencies in examples ...|/-\     checking for unstated dependencies in examples ... |  W  checking for unstated dependencies in examples (719ms)
-   Warning: parse error in file 'lines':
-   5: unexpected symbol
-   27: 
-   28: Fit single
-           ^
-   checking contents of 'data' directory .../-     checking contents of 'data' directory ... \  v  checking contents of 'data' directory
-   checking data for non-ASCII characters ...|/-\|/-\|     checking data for non-ASCII characters ... /  v  checking data for non-ASCII characters (1.7s)
-   checking data for ASCII and uncompressed saves ...-\|     checking data for ASCII and uncompressed saves ... /  v  checking data for ASCII and uncompressed saves (561ms)
--    \     checking examples ...|/-\|/-     checking examples ... \  E  checking examples (1.5s)
-   Running examples in 'dynamicSDM-Ex.R' failed
-|     The error most likely occurred in:
-   
-/     > base::assign(".ptime", proc.time(), pos = "CheckExEnv")
-   > ### Name: brt_fit
-   > ### Title: Fit boosted regression tree models to species distribution or
-   > ###   abundance data.
-   > ### Aliases: brt_fit
-   > 
-   > ### ** Examples
-   > 
-   > 
-   > data("sample_model_data",package ="dynamicSDM")
-   > split = sample(c(TRUE, FALSE), nrow(sample_model_data), replace=TRUE, prob=c(0.75, 0.25))
-   > training = sample_model_data[split, ]
-   > testing = sample_model_data[!split, ]
-   > 
-   > Fit single boosted regression tree model to occ.data. Optimise interaction.depth using test.data.
-   Error: unexpected symbol in "Fit single"
-   Execution halted
-   checking for unstated dependencies in 'tests' ...-\|/-\|/-\|/-\|/-\|/-\|     checking for unstated dependencies in 'tests' ... /  W  checking for unstated dependencies in 'tests' (4.5s)
-   '::' or ':::' import not declared from: 'gargle'
-   checking tests ...-\|/-\  -  checking tests (1.1s)
-|     Running 'testthat.R'/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\

@@ -8,6 +8,12 @@
 #' @param user.email optional; a character string, user email for initialising Google Drive. Required if drive.folder or save.drive.folder used.
 #' @param save.directory optional; a character string, path to local directory to save GIF to.
 #' @param save.drive.folder optional; a character string, Google Drive folder to save GIF to.
+#' @param width optional; a numeric value, the GIF width in pixels. Default = 480.
+#' @param height optional; a numeric value, the GIF height in pixels. Default = 480.
+#' @param legend.max optional; a numeric value, the maximum limit of legend values to standardise across projections.
+#' @param legend.min optional; a numeric value, the minimum limit of legend values to standardise across projections.
+#' @param legend.name optional; a character string, the name for the legend title. Default = projection.type.
+#' @param file.name optional, a character string, the name for the saved GIF file. Default = projection.type.
 #' @details
 #' Function reads in projection rasters for each date and projection.type. These are plotted using ggplot2 and combined into Graphics Interchange Format (GIF).
 #'
@@ -18,7 +24,7 @@
 #' @return Exports GIF to Google Drive folder or local directory.
 #'@export
 
-dynamic_proj_GIF<-function(dates,projection.type,drive.folder=NULL,user.email=NULL,local.directory=NULL,save.drive.folder=NULL,save.directory=NULL){
+dynamic_proj_GIF<-function(dates,projection.type,drive.folder=NULL,user.email=NULL,local.directory=NULL,save.drive.folder=NULL,save.directory=NULL,width = 480, height = 480,legend.max=NULL,legend.min=NULL,legend.name=NULL,file.name=NULL){
 
   # Check neccessary arguments have been provided
   if(missing(drive.folder) && missing(local.directory)){stop("Please provide one of local.directory or drive.folder to import projection covariates from.")}
@@ -69,11 +75,16 @@ dynamic_proj_GIF<-function(dates,projection.type,drive.folder=NULL,user.email=NU
   projectionraster<-as.data.frame(raster::rasterToPoints(projectionraster))
   colnames(projectionraster)<-c("x","y","value") # Rename columns
 
+  #Set default plot parameters
+  if(missing(legend.max)){legend.max<-max(projectionraster[,"value"],na.rm=T)}
+  if(missing(legend.min)){legend.min<-min(projectionraster[,"value"],na.rm=T)}
+  if(missing(legend.name)){legend.name<-projection.type}
+
   # Plot projection with ggplot2
   plot<- ggplot2::ggplot(data = projectionraster) +
    ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value))+
    ggplot2::ggtitle(dates[x])+
-   ggplot2::scale_fill_gradientn(colours = terrain.colors(7),trans = 'reverse',name = projection.type)+
+   ggplot2::scale_fill_gradientn(colours = terrain.colors(7),trans = 'reverse',name = legend.name,limits=c(legend.max,legend.min))+
    ggplot2::theme(panel.background =  ggplot2::element_rect(fill = "white", color = "white"),plot.title =  ggplot2::element_text(size=25,face = "bold",hjust = 0.5),
           axis.line= ggplot2::element_blank(),axis.ticks= ggplot2::element_blank(),axis.text= ggplot2::element_blank(), legend.text =  ggplot2::element_text(size=24),
           legend.title =  ggplot2::element_text(size=30,face="bold"))#+
@@ -81,7 +92,7 @@ dynamic_proj_GIF<-function(dates,projection.type,drive.folder=NULL,user.email=NU
   # Save temporary  png file of plot
   tempfilename<-paste0(tempfile(),".png")
   tempfilelist<-c(tempfilelist,tempfilename)
-  png(file=paste0(tempfilename))
+  png(file=paste0(tempfilename),width=width,height=height)
   print(plot)
   dev.off()}
 
@@ -91,11 +102,13 @@ dynamic_proj_GIF<-function(dates,projection.type,drive.folder=NULL,user.email=NU
    magick::image_join() %>% # joins image
    magick::image_animate(fps=1)
 
+  if(missing(file.name)){file.name<-projection.type}
+
   #Save GIF file to local directory
   if(!missing(save.directory)){
     if(!dir.exists(save.directory)){stop("save.directory does not exist")}
-    magick::image_write(GIF,paste0(save.directory,"/",projection.type,".gif"))
-    print(paste0("GIF successfully saved to ",save.directory,"/",projection.type,".gif"))}
+    magick::image_write(GIF,paste0(save.directory,"/",file.name,".gif"))
+    print(paste0("GIF successfully saved to ",save.directory,"/",file.name,".gif"))}
 
   #Save GIF file to Google Drive folder
   if(!missing(save.drive.folder)){
@@ -109,5 +122,5 @@ dynamic_proj_GIF<-function(dates,projection.type,drive.folder=NULL,user.email=NU
     filename<-paste0(tempfile(),".gif")
     magick::image_write(GIF,filename) # Write image to temporary location for upload to Google Drive
     save.folderpath<-googledrive::drive_find(pattern=paste0(save.drive.folder), type='folder')
-    googledrive::drive_upload(media=filename,path=googledrive::as_id(save.folderpath$id),name=paste0(projection.type,".gif"),overwrite=T)
-    print(paste0("GIF successfully saved to Google Drive location: ",save.drive.folder,"/",projection.type,".gif"))}} # Upload GIF to Google Drive folder
+    googledrive::drive_upload(media=filename,path=googledrive::as_id(save.folderpath$id),name=paste0(file.name,".gif"),overwrite=T)
+    print(paste0("GIF successfully saved to Google Drive location: ",save.drive.folder,"/",file.name,".gif"))}} # Upload GIF to Google Drive folder

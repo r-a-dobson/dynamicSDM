@@ -11,7 +11,13 @@ dynamic_proj_GIF(
   user.email = NULL,
   local.directory = NULL,
   save.drive.folder = NULL,
-  save.directory = NULL
+  save.directory = NULL,
+  width = 480,
+  height = 480,
+  legend.max = NULL,
+  legend.min = NULL,
+  legend.name = NULL,
+  file.name = NULL
 )
 }
 \arguments{
@@ -28,6 +34,18 @@ dynamic_proj_GIF(
 \item{save.drive.folder}{optional; a character string, Google Drive folder to save GIF to.}
 
 \item{save.directory}{optional; a character string, path to local directory to save GIF to.}
+
+\item{width}{optional; a numeric value, the GIF width in pixels. Default = 480.}
+
+\item{height}{optional; a numeric value, the GIF height in pixels. Default = 480.}
+
+\item{legend.max}{optional; a numeric value, the maximum limit of legend values to standardise across projections.}
+
+\item{legend.min}{optional; a numeric value, the minimum limit of legend values to standardise across projections.}
+
+\item{legend.name}{optional; a character string, the name for the legend title. Default = projection.type.}
+
+\item{file.name}{optional, a character string, the name for the saved GIF file. Default = projection.type.}
 }
 \value{
 Exports GIF to Google Drive folder or local directory.
