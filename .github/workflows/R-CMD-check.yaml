@@ -15,7 +15,7 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v2
 
       - name: Install spatial dependencies
-        run: sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev netcdf-bin
+        run: sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev netcdf-bin libmagick++-dev
 
       - name: Install dependencies
         run: |
