@@ -9,6 +9,7 @@
 [![Codecov test
 coverage](https://codecov.io/gh/r-a-dobson/dynamicSDM/branch/main/graph/badge.svg)](https://app.codecov.io/gh/r-a-dobson/dynamicSDM?branch=main)
 [![rcmdcheck](https://github.com/r-a-dobson/dynamicSDM/actions/workflows/rcmdcheck.yml/badge.svg)](https://github.com/r-a-dobson/dynamicSDM/actions/workflows/rcmdcheck.yml)
+[![DOI](https://zenodo.org/badge/570609884.svg)](https://zenodo.org/badge/latestdoi/570609884)
 <!-- badges: end -->
 
 # Summary
