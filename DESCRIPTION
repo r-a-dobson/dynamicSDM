@@ -30,7 +30,7 @@ Imports:
     sp,
     stats,
     stringr,
-    terra (>= 1.5-21),
+    terra,
     tidyr
 Depends: 
     R (>= 2.10)

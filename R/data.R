@@ -81,26 +81,26 @@
 "sample_occ_data"
 
 
-#' OpenLandMap Potential Distribution of Biomes in southern Africa.
+#' Categorical raster.
 #'
-#' Biome classification type from OpenLandMap Potential Distribution of Biomes dataset for the year 2001, in the form of a RasterLayer cropped to southern Africa at 0.008 resolution.
+#' Categorical RasterLayer cropped to southern Africa at 10 degree resolution.
+#' Represents a biome classification RasterLayer that could be used when spatially blocking species occurrence data.
 #'
 #' @format A RasterLayer
 #' \describe{
 #'   \item{class}{RasterLayer}
-#'   \item{dimensions}{4839, 3243, 15692877  (nrow, ncol, ncell)}
-#'   \item{resolution}{0.008983153, 0.008983153}
+#'   \item{dimensions}{4, 3, 12   (nrow, ncol, ncell)}
+#'   \item{resolution}{10, 10  (x, y)}
 #'   \item{extent}{11.71845, 40.85081, -47.89832, -4.428839  (xmin, xmax, ymin, ymax)}
 #'   \item{crs}{"+proj=longlat +datum=WGS84 +no_defs"}
-#'   \item{source}{biome_type_2001-01-01.tif}
-#'   \item{names}{biome_type_2001-01-01}
-#'   \item{values}{Numerical categorical value representing biome type classification by OpenLandMap. See  https://doi.org/10.7910/DVN/QQHCIK for classifications.}
+#'   \item{source}{memory}
+#'   \item{names}{layer}
+#'   \item{values}{Numerical categorical value.}
 #' }
-#' @references
-#' Hengl T, Walsh MG, Sanderman J, Wheeler I, Harrison SP, Prentice IC. (2018) Global Mapping of Potential Natural Vegetation: An Assessment of Machine Learning Algorithms for Estimating Land Potential. PeerJ Preprints. 10.7287/peerj.preprints.26811v1
 #' @noRd
 #'
 "biome_layer"
+
 
 #' Sample e-Bird sampling event records
 #'

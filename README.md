@@ -9,7 +9,7 @@
 [![Codecov test
 coverage](https://codecov.io/gh/r-a-dobson/dynamicSDM/branch/main/graph/badge.svg)](https://app.codecov.io/gh/r-a-dobson/dynamicSDM?branch=main)
 [![rcmdcheck](https://github.com/r-a-dobson/dynamicSDM/actions/workflows/rcmdcheck.yml/badge.svg)](https://github.com/r-a-dobson/dynamicSDM/actions/workflows/rcmdcheck.yml)
-[![DOI](https://zenodo.org/badge/570609884.svg)](https://zenodo.org/badge/latestdoi/570609884)
+
 <!-- badges: end -->
 
 # Summary
@@ -33,11 +33,11 @@ and time. Our functions are:
 dynamicSDM functions are split into four key modelling stages: response
 data, explanatory variables, modelling relationships and dynamic
 projections. See the package manual
-[here](https://github.com/r-a-dobson/dynamicSDM/blob/main/man/figures/dynamicSDM_0.0.0.9000.pdf)
+[here](https://github.com/r-a-dobson/dynamicSDM/main/man/figures/dynamicSDM_0.0.0.9000.pdf)
 for more details on each
 function.
 
-<a href='https://github.com/r-a-dobson/dynamicSDM/'><img src="https://github.com/r-a-dobson/dynamicSDM/blob/main/man/figures/Figure1.png" align="centre" height="300" width="750"/></a>
+<a href='https://r-a-dobson.github.io/dynamicSDM'><img src="https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/main/man/figures/Figure1.png" align="centre" height="250"/></a>
 
 ### 1\) Response data functions
 
