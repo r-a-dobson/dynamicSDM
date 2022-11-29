@@ -46,13 +46,12 @@ spatiotemp_thin <- function(occ.data, temporal.method, temporal.dist,spatial.spl
   ymax<-ceiling(max(occ.data$y)/10)*10
 
   # Create a grid using the rounded minimum and maximum longitude and latitude
-  split_grid<-raster::raster(raster::extent(c(xmin, xmax, ymin, ymax)),crs=raster::crs("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+  split_grid<-raster::raster(raster::extent(c(xmin, xmax, ymin, ymax)))
   raster::res(split_grid)<-spatial.split.degrees # Ensure grid is the resolution in degrees specified by the user
 
   split_grid <- raster::setValues(split_grid,  1:raster::ncell(split_grid)) #fill grid squares with numerical value to create label
 
-  occ.data.points<- sp::SpatialPointsDataFrame(data = occ.data, coords = cbind(occ.data$x, occ.data$y),
-                                               proj4string = raster::crs("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")) # Convert occ.data co-ordinates into spatial points with same CRS as the grid
+  occ.data.points<- sp::SpatialPointsDataFrame(data = occ.data, coords = cbind(occ.data$x, occ.data$y)) # Convert occ.data co-ordinates into spatial points with same CRS as the grid
 
   split2<-raster::extract(split_grid, occ.data.points) #Extract the grid cell number each record belongs to, to group by before thinning temporally
   occ.data$split2<-split2
