@@ -16,19 +16,25 @@ coverage](https://codecov.io/gh/r-a-dobson/dynamicSDM/branch/main/graph/badge.sv
 Across ecological research fields, species distribution and abundance
 modelling (SDM) is a major tool for understanding the drivers and
 patterns of species occurrence. To advance our ability to model species
-inhabiting our dynamic ecosystems, **dynamicSDM** facilitates the
+inhabiting dynamic ecosystems worldwide, **dynamicSDM** facilitates the
 incorporation of explanatory variables that are dynamic in both space
 and time. Our functions are:
 
-  - **user-friendly** - requiring only simple inputs and outputs
+  - **user-friendly** - requiring only simple inputs and outputs;
   - **highly flexible** - offering diverse and open arguments for
     targeting study specifics;
   - **computer friendly** - utilising Google Earth Engine and Google
     Drive to minimise the computing power and storage demands associated
-    with high spatiotemporal resolution
-modelling.
+    with high spatiotemporal resolution modelling.
 
 # Package structure
+
+dynamicSDM functions are split into four key modelling stages: response
+data, explanatory variables, modelling relationships and dynamic
+projections. See the package manual
+[here](https://github.com/r-a-dobson/dynamicSDM/main/man/figures/dynamicSDM_0.0.0.9000.pdf)
+for more details on each
+function.
 
 <a href='https://r-a-dobson.github.io/dynamicSDM'><img src="https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/main/man/figures/Figure1.png" align="centre" height="250"/></a>
 
@@ -68,7 +74,7 @@ Earth Engine.
     data for occurrence records into single data frame for model
     fitting.
 
-### 3\) Modelling functions
+### 3\) Modelling relationship functions
 
 Functions for generating species distribution or abundance models that
 account for spatial and temporal autocorrelation in dynamic explanatory
@@ -81,7 +87,7 @@ variables.
   - `brt_fit()` Fit boosted regression tree models to species
     distribution or abundance data.
 
-### 4\) Projection functions
+### 4\) Dynamic projection functions
 
 Functions for generating explanatory variable projection data frames at
 given spatiotemporal extent and resolution, and projecting species

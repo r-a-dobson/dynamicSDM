@@ -18,20 +18,22 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![License](https://img.shields.io/badge/license-GPL%20%28%3E=%203%29-lightgrey.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
 [![Codecov test coverage](https://codecov.io/gh/r-a-dobson/dynamicSDM/branch/main/graph/badge.svg)](https://app.codecov.io/gh/r-a-dobson/dynamicSDM?branch=main)
-[![R-CMD-check](https://github.com/r-a-dobson/dynamicSDM/workflows/R-CMD-check/badge.svg)](https://github.com/r-a-dobson/dynamicSDM/actions)
+[![rcmdcheck](https://github.com/r-a-dobson/dynamicSDM/actions/workflows/rcmdcheck.yml/badge.svg)](https://github.com/r-a-dobson/dynamicSDM/actions/workflows/rcmdcheck.yml)
 <!-- badges: end -->
 
 
 # Summary
 
-Across ecological research fields, species distribution and abundance modelling (SDM) is a major tool for understanding the drivers and patterns of species occurrence. To advance our ability to model species inhabiting our dynamic ecosystems, **dynamicSDM** facilitates the incorporation of explanatory variables that are dynamic in both space and time. 
+Across ecological research fields, species distribution and abundance modelling (SDM) is a major tool for understanding the drivers and patterns of species occurrence. To advance our ability to model species inhabiting dynamic ecosystems worldwide, **dynamicSDM** facilitates the incorporation of explanatory variables that are dynamic in both space and time. 
 Our functions are:
 
-* **user-friendly** - requiring only simple inputs and outputs
+* **user-friendly** - requiring only simple inputs and outputs;
 * **highly flexible** - offering diverse and open arguments for targeting study specifics;
 * **computer friendly** - utilising Google Earth Engine and Google Drive to minimise the computing power and storage demands associated with high spatiotemporal resolution modelling. 
 
 # Package structure
+
+dynamicSDM functions are split into four key modelling stages: response data, explanatory variables, modelling relationships and dynamic projections. See the package manual [here](https://github.com/r-a-dobson/dynamicSDM/main/man/figures/dynamicSDM_0.0.0.9000.pdf) for more details on each function. 
 
 <a href='https://r-a-dobson.github.io/dynamicSDM'><img src="https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/main/man/figures/Figure1.png" align="centre" height="250"/></a>
 
@@ -54,7 +56,7 @@ Functions for extracting spatiotemporally dynamic explanatory variable data for 
 * `extract_buffered_coords()` Extract spatially buffered and temporally dynamic explanatory variable data for occurrence records.
 * `extract_coords_combine()` Combine extracted explanatory variable data for occurrence records into single data frame for model fitting.
 
-### 3) Modelling functions
+### 3) Modelling relationship functions
 
 Functions for generating species distribution or abundance models that account for spatial and temporal autocorrelation in dynamic explanatory variables. 
 
@@ -62,7 +64,7 @@ Functions for generating species distribution or abundance models that account f
 * `spatiotemp_block()` Split occurrence records into spatial and temporal blocks for model fitting.
 * `brt_fit()` Fit boosted regression tree models to species distribution or abundance data.
 
-### 4) Projection functions
+### 4) Dynamic projection functions
 Functions for generating explanatory variable projection data frames at given spatiotemporal extent and resolution, and projecting species dynamic distribution and abundance patterns onto these. 
 
 * `dynamic_proj_dates()` Generate vector of dates for dynamic projections
