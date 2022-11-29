@@ -42,7 +42,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: rcmdcheck::rcmdcheck(args = c("--no-manual"),error_on="error")
+          extra-packages: rcmdcheck::rcmdcheck(error_on = "error")
 
       - uses: r-lib/actions/check-r-package@v2
         with:
