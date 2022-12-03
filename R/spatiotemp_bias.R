@@ -14,7 +14,7 @@
 #'spatiotemp_bias(occ.data = sample_occ_data,temporal.level = "month")
 #'@export
 #'
-spatiotemp_bias <- function(occ.data, temporal.level = NULL) {
+spatiotemp_bias <- function(occ.data, temporal.level) {
 
   # Match temporal.level to available options
   temporal.level <- match.arg(arg = temporal.level, choices = c("day",
