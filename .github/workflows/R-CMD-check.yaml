@@ -63,8 +63,8 @@ jobs:
 
       - name: Install dependencies
         run: |
+          install.packages("Rcpp")
           install.packages('terra', repos='https://rspatial.r-universe.dev')
-          remotes::install_github("rspatial/terra")
           remotes::install_deps(dependencies = TRUE)
           remotes::install_cran(c("rcmdcheck", "curl"))
         shell: Rscript {0}
