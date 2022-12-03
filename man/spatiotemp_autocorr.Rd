@@ -26,3 +26,7 @@ To test for spatial autocorrelation, the function calculates a distance matrix b
 
 As the spatial autocorrelation calculation involves computation of a distance matrix between all occurrence records. To reduce computation time, it is recommended that a sample of large occurrence datasets are input.
 }
+\examples{
+data("sample_model_data",package="dynamicSDM")
+spatiotemp_autocorr(sample_model_data,varname="Temperaturemean",temporal.level="year")
+}

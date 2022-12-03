@@ -15,103 +15,136 @@
 #'spatiotemp_check(sample_occ_data)
 #'@export
 
+spatiotemp_check <-
+  function(occ.data,
+           na.handle = "exclude",
+           duplicate.handle = "exclude",
+           coord.handle = "exclude",
+           date.handle = "exclude") {
 
-spatiotemp_check<-function(occ.data, na.handle="exclude",duplicate.handle="exclude",coord.handle="exclude",date.handle="exclude"){
+    # Check occurrence data present correct class
+    if (!class(occ.data) == "data.frame") {
+      stop("occ.data must be of class data.frame")
+    }
 
-    ### Check occurrence data present correct class
+    # Check column names correct for dynamicSDM functions
 
-    if (!class(occ.data)=="data.frame"){stop("occ.data must be of class data.frame")}
+    if (!"day" %in% colnames(occ.data)) {
+      stop("day column not found. Ensure record day col is named 'day'")
+    }
 
-    ### check column names for species occurrence records are correct for dynamicSDM functions
+    if (!"month" %in% colnames(occ.data)) {
+      stop("month column not found. Ensure record month col is named 'month'")
+    }
 
-    if(!"day" %in% colnames(occ.data)){stop("day column not found. Ensure the column containing species record day is named 'day'")}
+    if (!"year" %in% colnames(occ.data)) {
+      stop("year column not found. Ensure record year col is named 'year'")
+    }
 
-    if(!"month" %in% colnames(occ.data)){stop("month column not found. Ensure the column containing species record month is named 'month'")}
+    if (!"x" %in% colnames(occ.data)) {
+      stop("x column not found. Ensure record longitude is named 'x'")
+    }
 
-    if(!"year" %in% colnames(occ.data)){stop("year column not found. Ensure the column containing species record year is named 'year'")}
-
-    if(!"x" %in% colnames(occ.data)){stop("x column not found. Ensure the column containing species record longitude is named 'x'")}
-
-    if(!"y" %in% colnames(occ.data)){stop("y column not found. Ensure the column containing species record latitude is named 'y'")}
-
-
-    ### check column classes are correct for dynamicSDM functions
-
-    if (!class(occ.data$year)=="numeric"){stop("year must be of class numeric")}
-
-    if (!class(occ.data$month)=="numeric"){stop("month must be of class numeric")}
-
-    if (!class(occ.data$day)=="numeric"){stop("day must be of class numeric")}
-
-    if (!class(occ.data$x)=="numeric"){stop("x must be of class numeric")}
-
-    if (!class(occ.data$y)=="numeric"){stop("y must be of class numeric")}
-
-
-  ## check for NAs in record co-ordinates or dates - then exclude or identify
-
-  if(!missing(na.handle)){
-
-    na.handle<- match.arg(arg = na.handle, choices = c("exclude","ignore"))
-
-    if(na.handle=="exclude"){
-
-      occ.data<-occ.data[!is.na(occ.data[,"y"]),]
-      occ.data<-occ.data[!is.na(occ.data[,"x"]),]
-
-      message("omitting any species records with coordinates containing NA")
-
-      occ.data<-occ.data[!is.na(occ.data[,"day"]),]
-      occ.data<-occ.data[!is.na(occ.data[,"month"]),]
-      occ.data<-occ.data[!is.na(occ.data[,"year"]),]
-
-      message("omitting any species records with dates containing NA")
-      }}
+    if (!"y" %in% colnames(occ.data)) {
+      stop("y column not found. Ensure record latitude is named 'y'")
+    }
 
 
-  ## check for duplicate values in record co-ordinates or dates - then exclude or identify
+    # Check column classes are correct for dynamicSDM functions
 
-  if(!missing(duplicate.handle)){
+    if (!class(occ.data$year) == "numeric") {
+      stop("year must be of class numeric")
+    }
 
-    duplicate.handle<- match.arg(arg = duplicate.handle, choices = c("exclude","ignore"))
+    if (!class(occ.data$month) == "numeric") {
+      stop("month must be of class numeric")
+    }
 
-    if(duplicate.handle=="exclude"){
+    if (!class(occ.data$day) == "numeric") {
+      stop("day must be of class numeric")
+    }
 
-      occ.data<-unique(occ.data[,c("year","month","day","x","y")])
+    if (!class(occ.data$x) == "numeric") {
+      stop("x must be of class numeric")
+    }
 
-      message("omitting any duplicate records")}}
-
-
-  ########### Check co-ordinate validity
-
-  if(!missing(coord.handle)){
-
-    coord.handle<- match.arg(arg = coord.handle, choices = c("exclude","ignore"))
-
-    if(coord.handle=="exclude"){
-
-      occ.data<-occ.data[which(occ.data[,"x"]>=(-180)),] ## Check longitude within acceptable bounds
-      occ.data<-occ.data[which(occ.data[,"x"]<=(180)),]
-      occ.data<-occ.data[which(occ.data[,"y"]>=(-90)),]
-      occ.data<-occ.data[which(occ.data[,"y"]<=(90)),]  ## Check latitude within acceptable bounds
-
-      message("any records with invalid co-ordinates excluded")}}
+    if (!class(occ.data$y) == "numeric") {
+      stop("y must be of class numeric")
+    }
 
 
-########### Check date validity
+    ## check for NAs in record co-ordinates or dates - then exclude or ignore
 
-  if(!missing(date.handle)){
+    if (!missing(na.handle)) {
 
-   date.handle<- match.arg(arg = date.handle, choices = c("exclude","ignore"))
+      na.handle <- match.arg(arg = na.handle, choices = c("exclude", "ignore"))
 
-    if(date.handle=="exclude"){
+      if (na.handle == "exclude") {
+        occ.data <- occ.data[!is.na(occ.data[, "y"]), ]
+        occ.data <- occ.data[!is.na(occ.data[, "x"]), ]
 
-    occ.data<-occ.data[-c(which(is.na(as.character(as.Date(with(occ.data, paste(year, month, day,sep="-")), "%Y-%m-%d"))))),]  # Remove any dates that return NA when "Date" objects made from them
+        message("omitting any species records with coordinates containing NA")
 
-    message("any records with invalid dates excluded")}}
+        occ.data <- occ.data[!is.na(occ.data[, "day"]), ]
+        occ.data <- occ.data[!is.na(occ.data[, "month"]), ]
+        occ.data <- occ.data[!is.na(occ.data[, "year"]), ]
+
+        message("omitting any species records with dates containing NA")
+      }
+    }
 
 
-return(occ.data)}
+    # Check for duplicate values in record co-ordinates and dates
+
+    if (!missing(duplicate.handle)) {
+      duplicate.handle <- match.arg(arg = duplicate.handle,
+                                    choices = c("exclude", "ignore"))
+
+      if (duplicate.handle == "exclude") {
+
+        occ.data <- unique(occ.data[, c("year", "month", "day", "x", "y")])
+
+        message("omitting any duplicate records")
+      }
+    }
 
 
+    # Check co-ordinate validity
 
+    if (!missing(coord.handle)) {
+      coord.handle <- match.arg(arg = coord.handle,
+                                choices = c("exclude", "ignore"))
+
+      if (coord.handle == "exclude") {
+        # Check longitude within acceptable bounds
+        occ.data <- occ.data[which(occ.data[, "x"] >= (-180)), ]
+        occ.data <- occ.data[which(occ.data[, "x"] <= (180)), ]
+        # Check latitude within acceptable bounds
+        occ.data <- occ.data[which(occ.data[, "y"] >= (-90)), ]
+        occ.data <- occ.data[which(occ.data[, "y"] <= (90)), ]
+
+        message("any records with invalid co-ordinates excluded")
+      }
+    }
+
+
+    # Check date validity
+
+    if (!missing(date.handle)) {
+      date.handle <- match.arg(arg = date.handle,
+                               choices = c("exclude", "ignore"))
+
+      # Remove any dates that return NA when "Date" objects made from them
+      if (date.handle == "exclude") {
+        occ.data <- occ.data[-c(which(is.na(as.character(
+          as.Date(with(
+            occ.data, paste(year, month, day, sep = "-")
+          ), "%Y-%m-%d")
+        )))), ]
+
+        message("any records with invalid dates excluded")
+      }
+    }
+
+    return(occ.data)
+  }

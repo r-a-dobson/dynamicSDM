@@ -25,131 +25,326 @@
 #'Greenwell, B., Boehmke, B., Cunningham, J., & GBM Developers. 2019. Package ‘gbm’. R package version, 2.
 #' @examples
 #'
-#' data("sample_model_data",package ="dynamicSDM")
-#' split = sample(c(TRUE, FALSE), nrow(sample_model_data), replace=TRUE, prob=c(0.75, 0.25))
-#' training = sample_model_data[split, ]
-#' testing = sample_model_data[!split, ]
+#'data("sample_model_data", package = "dynamicSDM")
+#'split <- sample(c(TRUE, FALSE),
+#'                replace=TRUE,
+#'                nrow(sample_model_data),
+#'                prob = c(0.75, 0.25))
+#'training <- sample_model_data[split, ]
+#'testing <- sample_model_data[!split, ]
+
+#'brt_fit(
+#'  occ.data = training,
+#'  test.data = testing,
+#'  response.col = "presence.absence",
+#'  distribution = "bernoulli",
+#'  weights.col = "sampling_weights",
+#'  varnames = colnames(training)[9:12]
+#')
 #'
-#' brt_fit(occ.data=training,
-#'         test.data=testing,
-#'         response.col = "presence.absence",
-#'         distribution="bernoulli",
-#'         weights.col="sampling_weights",
-#'         varnames=colnames(training)[9:12])
-#'
-#' training = sample_model_data
-#' brt_fit(occ.data=training,
-#'         response.col = "presence.absence",
-#'         distribution="bernoulli",
-#'         block.col="blockno",
-#'         weights.col="sampling_weights",
-#'         varnames=colnames(training)[9:12])
+#'training <- sample_model_data
+#'brt_fit(
+#'  occ.data = training,
+#'  response.col = "presence.absence",
+#'  distribution = "bernoulli",
+#'  block.col = "blockno",
+#'  weights.col = "sampling_weights",
+#'  varnames = colnames(training)[9:12]
+#')
 #'@export
 
-brt_fit<-function(occ.data, response.col, varnames, distribution, block.col=NULL, weights.col=NULL, test.data=NULL,interaction.depth=NULL, n.trees=5000,shrinkage=0.001){
+brt_fit <-
+  function(occ.data,
+           response.col,
+           varnames,
+           distribution,
+           block.col = NULL,
+           weights.col = NULL,
+           test.data = NULL,
+           interaction.depth = NULL,
+           n.trees = 5000,
+           shrinkage = 0.001) {
 
-  ## Check column names for response and explanatory variables are within data given.
-  if((response.col %in% colnames(occ.data))==F){stop("response.col column not found. Provide name of the pesence-absence or abundance column in occurrence data.frame")}
-  if(!any(varnames %in% colnames(occ.data))){stop("one of varnames column not found in occurrence data.frame")}
 
-  # Inform user of the defauls being used in model fitting.
-  if(missing(block.col)){message("block.col not specified. Model will be fit on all occ.data records.")}
+    # Check column names for response and explanatory variables are within data
+    if (!response.col %in% colnames(occ.data)) {
+      stop("response.col column not found in occ.data.")
+    }
 
-  if(missing(weights.col)){message("weights.col column not specified. All records will be equally weighted in the fitted model.")}
+    if (!any(varnames %in% colnames(occ.data))) {
+      stop("one of varnames column not found in occ.data.")
+    }
 
-  if(missing(distribution)){stop("Distribution not specified. Please set model distribution")}
+    # Inform user of the defauls being used in model fitting.
+    if (missing(block.col)) {
+      message("block.col not specified. Model will be fit on all occ.data.")
+    }
 
-  if(!missing(block.col)){
-    if((block.col %in% colnames(occ.data))==F){stop("block.col column not found. Provide name of column containing spatiotemporal blocking categories in occ.data")}}
+    if (missing(weights.col)) {
+      message("weights.col not specified. All records equally weighted.")
+    }
 
-  if(missing(interaction.depth)){message("interaction.depth not set. Will vary between 1 and 4 and fit model with lowest RMSE")
-    if(missing(block.col)){if(missing(test.data)){stop("No test.data provided, required to optimise interaction.depth")}}}
+    if (missing(distribution)) {
+      stop("Distribution not specified. Please set model distribution")
+    }
 
-  formula <- as.formula(paste(response.col,paste(varnames, collapse = " + "),sep = " ~ ")) # Create formula using response and explanatory variables specified
+    if (!missing(block.col)) {
+      if (!block.col %in% colnames(occ.data)) {
+        stop(
+          "block.col column not found in occ.data."
+        )
+      }
+    }
 
-  # Set response variable as correct class for "bernoulli" distribution
-  if(distribution=="bernoulli"){if(!class( occ.data[,response.col])=="character"){occ.data[,response.col]<-as.character(occ.data[,response.col])}}
+    if (missing(interaction.depth)) {
+      message("interaction.depth not set. Optimisation taking place.")
+      if (missing(block.col) && missing(test.data)) {
+        stop("No test.data provided. Required to optimise interaction.depth")
+      }
+    }
 
-# Remove rows that contain NA in response variable or explanatory variable columns and spatiotemporal blocking/weights column if applicable.
-  occ.data<-occ.data[!is.na(occ.data[,response.col]),]
-  for(v in 1:length(varnames)){occ.data<-occ.data[!is.na(occ.data[,varnames[v]]),]}
 
-  if(!missing(block.col)){occ.data<-occ.data[!is.na(occ.data[,block.col]),]}
-  if(!missing(weights.col)){occ.data<-occ.data[!is.na(occ.data[,weights.col]),] }
+  # Create formula using response and explanatory variables specified
+formula <-
+  as.formula(paste(response.col, paste(varnames, collapse = " + "), sep = " ~ "))
 
-  #Fit models on standard training/testing data split
-    if(missing(block.col)){
+    # Set response variable as correct class for "bernoulli" distribution
+    if (distribution == "bernoulli") {
+      if (!is.character(occ.data[, response.col])) {
+        occ.data[, response.col] <- as.character(occ.data[, response.col])
+      }
+    }
 
+
+
+    # Remove rows that contain NA where applicable.
+    occ.data <- occ.data[!is.na(occ.data[, response.col]), ]
+    for (v in 1:length(varnames)) {
+      occ.data <- occ.data[!is.na(occ.data[, varnames[v]]), ]
+    }
+
+    if (!missing(block.col)) {
+      occ.data <- occ.data[!is.na(occ.data[, block.col]), ]
+    }
+    if (!missing(weights.col)) {
+      occ.data <- occ.data[!is.na(occ.data[, weights.col]), ]
+    }
+
+    # Fit models on standard training/testing data split
+    if (missing(block.col)) {
       # Create empty list to bind fitted models too
       modelvector <- vector("list", 1)
 
-      ## All parameters specified, fit the model.
-      if(!missing(interaction.depth)){
-        if(missing(weights.col)){modelvector[[1]]<-gbm::gbm(formula = formula,distribution = distribution,data = occ.data, n.trees = n.trees,shrinkage = shrinkage,interaction.depth = interaction.depth)}
-        if(!missing(weights.col)){modelvector[[1]]<-gbm::gbm(formula = formula,distribution = distribution,data = occ.data,weights=occ.data[,weights.col], n.trees = n.trees,shrinkage = shrinkage,interaction.depth = interaction.depth)}}
+      # All parameters specified, fit the model.
+      if (!missing(interaction.depth)) {
+        if (missing(weights.col)) {
+          modelvector[[1]] <-
+            gbm::gbm(
+              formula = formula,
+              distribution = distribution,
+              data = occ.data,
+              n.trees = n.trees,
+              shrinkage = shrinkage,
+              interaction.depth = interaction.depth
+            )
+        }
+        if (!missing(weights.col)) {
+          modelvector[[1]] <-
+            gbm::gbm(
+              formula = formula,
+              distribution = distribution,
+              data = occ.data,
+              weights = occ.data[, weights.col],
+              n.trees = n.trees,
+              shrinkage = shrinkage,
+              interaction.depth = interaction.depth
+            )
+        }
+      }
 
-      ## No interaction.depth specified so optimises using RMSE of each.
-      if(missing(interaction.depth)){
-        try.depth<-c(1,2,3,4)  ## Trying interaction.depth between 1 and 4, meaning interactions between explanatory variables up to 4-way.
+      # No interaction.depth specified so optimises between 1 and 4 using RMSE.
+      if (missing(interaction.depth)) {
+        try.depth <- c(1, 2, 3, 4)
+        OPTIMAL <- NULL # Empty vector to bind RMSE from each loop too.
 
-        OPTIMAL<-NULL # Empty vector to bind RMSE from each loop too.
+        # Loops through each interaction.depth and measures model performance.
 
-        for (x in 1:length(try.depth)){  # Loops through each interaction.depth and measures model performance with metric RMSE.
+        for (x in 1:length(try.depth)) {
 
-        if(missing(weights.col)){model<-gbm::gbm(formula = formula,distribution = distribution,data = occ.data,n.trees = n.trees,shrinkage = shrinkage,interaction.depth = try.depth[x])}
-        if(!missing(weights.col)){model<-gbm::gbm(formula = formula,distribution = distribution,data = occ.data,weights= occ.data[,weights.col],n.trees = n.trees,shrinkage = shrinkage,interaction.depth = try.depth[x])}
+          if (missing(weights.col)) {
+            model <-
+              gbm::gbm(
+                formula = formula,
+                distribution = distribution,
+                data = occ.data,
+                n.trees = n.trees,
+                shrinkage = shrinkage,
+                interaction.depth = try.depth[x]
+              )
+          }
+          if (!missing(weights.col)) {
+            model <-
+              gbm::gbm(
+                formula = formula,
+                distribution = distribution,
+                data = occ.data,
+                weights = occ.data[, weights.col],
+                n.trees = n.trees,
+                shrinkage = shrinkage,
+                interaction.depth = try.depth[x]
+              )
+          }
 
-        prediction <- gbm::predict.gbm(model, newdata = test.data,  type = "response")
+          prediction <-
+            gbm::predict.gbm(model, newdata = test.data,  type = "response")
 
-        RMSE<-sum((as.numeric(as.character(test.data[,response.col])) - prediction)^2)  # Calculate RMSE between model predicted and actual values
+          RMSE <-
+            sum((as.numeric(as.character(test.data[, response.col])) - prediction) ^
+                  2)  # Calculate RMSE between model predicted and actual values
 
-        OPTIMAL<-rbind(OPTIMAL,RMSE)}
+          OPTIMAL <- rbind(OPTIMAL, RMSE)
+        }
 
-      complexno<-which.min(OPTIMAL[,1]) # Extract interaction.depth that resulted in the lowest model RMSE
+        # Extract interaction.depth that resulted in the lowest model RMSE
+        complexno <- which.min(OPTIMAL[, 1])
 
-      if(missing(weights.col)){modelvector[[1]] <- gbm::gbm(formula = formula,distribution = distribution,data = occ.data,n.trees = n.trees,shrinkage = shrinkage,interaction.depth = complexno)} # Fit the final model with the optimal interaction.depth
-      if(!missing(weights.col)){modelvector[[1]] <- gbm::gbm(formula = formula,distribution = distribution,data = occ.data,  weights= occ.data[,weights.col],n.trees = n.trees,shrinkage = shrinkage,interaction.depth = complexno)}}} # Fit the final model with the optimal interaction.depth
+        # Fit the final model with the optimal interaction.depth
+        if (missing(weights.col)) {
+          modelvector[[1]] <-
+            gbm::gbm(
+              formula = formula,
+              distribution = distribution,
+              data = occ.data,
+              n.trees = n.trees,
+              shrinkage = shrinkage,
+              interaction.depth = complexno
+            )
+        }
+        if (!missing(weights.col)) {
+          modelvector[[1]] <-
+            gbm::gbm(
+              formula = formula,
+              distribution = distribution,
+              data = occ.data,
+              weights = occ.data[, weights.col],
+              n.trees = n.trees,
+              shrinkage = shrinkage,
+              interaction.depth = complexno
+            )
+        }
+      }
+    }
 
-    #Fit models using jacknife blocking. Each block is excluded in-turn and used as the test dataset
-    if(!missing(block.col)){
+    # Each block excluded in-turn and used as the test dataset
+    if (!missing(block.col)) {
+      # Create empty list to bind fitted models too
+      modelvector <- vector("list", length(unique(occ.data[, block.col])))
 
-      modelvector <- vector("list", length(unique(occ.data[,block.col])))  # Create empty list to bind fitted models too
+      # For every unique block
+      for (blocks in 1:length(unique(occ.data[, block.col]))) {
+        # Extract unique block name
+        blockname <- sort(unique(occ.data[, block.col]))[blocks]
+        # Train model on all blocks except the named one
+        trainocc <- occ.data[!occ.data[, block.col] == blockname, ]
+        # Named block becomes the test dataset
+        testocc <- occ.data[occ.data[, block.col] == blockname, ]
 
-    for(blocks in 1:length(unique(occ.data[,block.col]))){  # For every unique block ...
+        # All parameters specified, fit the model.
+        if (!missing(interaction.depth)) {
+          if (missing(weights.col)) {
+            modelvector[[blocks]] <-
+              gbm::gbm(
+                formula = formula,
+                distribution = distribution,
+                data = trainocc,
+                n.trees = n.trees,
+                shrinkage = shrinkage,
+                interaction.depth = interaction.depth
+              )
+          }
+          if (!missing(weights.col)) {
+            modelvector[[blocks]] <-
+              gbm::gbm(
+                formula = formula,
+                distribution = distribution,
+                data = trainocc,
+                weights = trainocc[, weights.col],
+                n.trees = n.trees,
+                shrinkage = shrinkage,
+                interaction.depth = interaction.depth
+              )
+          }
+        }
 
-      blockname<-sort(unique(occ.data[,block.col]))[blocks] # Extract unique block name
-      trainocc<-occ.data[!occ.data[,block.col]==blockname,] # Train model on all blocks except the named one
-      testocc<-occ.data[occ.data[,block.col]==blockname,] # Named block becomes the test dataset
+        # No interaction.depth specified so optimises between 1 and 4 using RMSE.
+        if (missing(interaction.depth)) {
+          try.depth <- c(1, 2, 3, 4)
+          OPTIMAL <- NULL # Empty vector to bind RMSE from each loop too.
 
-    ## All parameters specified, fit the model.
-    if(!missing(interaction.depth)){
-      if(missing(weights.col)){modelvector[[blocks]]<-gbm::gbm(formula = formula,distribution = distribution,data = trainocc, n.trees = n.trees,shrinkage = shrinkage,interaction.depth = interaction.depth)}
-      if(!missing(weights.col)){modelvector[[blocks]]<-gbm::gbm(formula = formula,distribution = distribution,data = trainocc,weights=trainocc[,weights.col], n.trees = n.trees,shrinkage = shrinkage,interaction.depth = interaction.depth)}}
+          # Loops through each interaction.depth and measures RMSE.
+          for (x in 1:length(try.depth)) {
 
-    ## No interaction.depth specified so optimises using RMSE of each.
-    if(missing(interaction.depth)){
+            if (missing(weights.col)) {
+              model <-
+                gbm::gbm(
+                  formula = formula,
+                  distribution = distribution,
+                  data = trainocc,
+                  n.trees = n.trees,
+                  shrinkage = shrinkage,
+                  interaction.depth = try.depth[x]
+                )
+            }
+            if (!missing(weights.col)) {
+              model <-
+                gbm::gbm(
+                  formula = formula,
+                  distribution = distribution,
+                  data = trainocc,
+                  weights = trainocc[, weights.col],
+                  n.trees = n.trees,
+                  shrinkage = shrinkage,
+                  interaction.depth = try.depth[x]
+                )
+            }
 
-      try.depth<-c(1,2,3,4) ## Trying interaction.depth between 1 and 4, meaning interactions between explanatory variables up to 4-way.
+    prediction <- gbm::predict.gbm(model, newdata = testocc,  type = "response")
 
-      OPTIMAL<-NULL # Empty vector to bind RMSE from each loop too.
+    # Calculate RMSE between model predicted and actual values
+    RMSE <- sum((as.numeric(as.character(testocc[, response.col])) - prediction) ^ 2)
 
-    for (x in 1:length(try.depth)){ # Loops through each interaction.depth and measures model performance with metric RMSE.
+            OPTIMAL <- rbind(OPTIMAL, RMSE)}
 
-      if(missing(weights.col)){model<-gbm::gbm(formula = formula,distribution = distribution,data = trainocc,n.trees = n.trees,shrinkage = shrinkage,interaction.depth = try.depth[x])}
-      if(!missing(weights.col)){model<-gbm::gbm(formula = formula,distribution = distribution,data = trainocc,weights= trainocc[,weights.col],n.trees = n.trees,shrinkage = shrinkage,interaction.depth = try.depth[x])}
+          # Extract interaction.depth that resulted in the lowest model RMSE
+          complexno <- which.min(OPTIMAL[, 1])
 
-      prediction <-  gbm::predict.gbm(model, newdata = testocc,  type = "response")
+          if (missing(weights.col)) {
+            modelvector[[blocks]]  <-
+              gbm::gbm(
+                formula = formula,
+                distribution = distribution,
+                data = trainocc,
+                n.trees = n.trees,
+                shrinkage = shrinkage,
+                interaction.depth = complexno
+              )
+          }
+          # Fit the final model with the optimal interaction.depth
+          if (!missing(weights.col)) {
+            modelvector[[blocks]]  <-
+              gbm::gbm(
+                formula = formula,
+                distribution = distribution,
+                data = trainocc,
+                weights = trainocc[, weights.col],
+                n.trees = n.trees,
+                shrinkage = shrinkage,
+                interaction.depth = complexno
+              )
+          }
+        }
+      }
+    }
 
-      RMSE<-sum((as.numeric(as.character(testocc[,response.col])) - prediction)^2)
-
-      OPTIMAL<-rbind(OPTIMAL,RMSE)} # Calculate RMSE between model predicted and actual values
-
-    complexno<-which.min(OPTIMAL[,1]) # Extract interaction.depth that resulted in the lowest model RMSE
-
-    if(missing(weights.col)){ modelvector[[blocks]]  <- gbm::gbm(formula = formula,distribution = distribution,data = trainocc,n.trees = n.trees,shrinkage = shrinkage,interaction.depth = complexno)} # Fit the final model with the optimal interaction.depth
-    if(!missing(weights.col)){ modelvector[[blocks]]  <- gbm::gbm(formula = formula,distribution = distribution,data = trainocc,  weights= trainocc[,weights.col],n.trees = n.trees,shrinkage = shrinkage,interaction.depth = complexno)}}}} # Fit the final model with the optimal interaction.depth
-
-  return(modelvector)}# Return list of fitted model
-
-
-
+    return(modelvector)
+  } # Return list of fitted model(s)

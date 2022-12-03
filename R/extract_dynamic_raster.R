@@ -27,91 +27,224 @@
 #'D'Agostino McGowan L., and Bryan J., 2022. googledrive: An Interface to Google Drive. https://googledrive.tidyverse.org, https://github.com/tidyverse/googledrive.
 #' @return Returns details of successful explanatory variable extractions for each projection date.
 #'@export
-extract_dynamic_raster<-function(dates,spatial.ext,datasetname,bandname,spatial.res.metres,GEE.math.fun,user.email,varname=NULL,temporal.res,temporal.direction,save.directory=NULL,save.drive.folder){
 
-  # Set default varname for saving raster
-  if (missing(varname)){message(paste0("varname is missing. Default varname set as: ",bandname,"_",temporal.res,"_",temporal.direction,"_",GEE.math.fun,"_raster"))
-      varname<-paste0(bandname,"_",temporal.res,"_",temporal.direction,"_",GEE.math.fun,"_raster")}
 
-  # Check user email provided
-  if (missing(user.email)){stop("user.email is missing. Please provide user email linked to Google Drive account")}
+extract_dynamic_raster <-
+  function(dates,
+           spatial.ext,
+           datasetname,
+           bandname,
+           spatial.res.metres,
+           GEE.math.fun,
+           user.email,
+           varname = NULL,
+           temporal.res,
+           temporal.direction,
+           save.directory = NULL,
+           save.drive.folder) {
 
-  #Import python module
-  ee <- reticulate::import("ee")
-  #Authorise and initiate Google Drive
-  googledrive::drive_auth(email=user.email)
-  googledrive::drive_user()
-  #Authorise and initiate Google Earth Engine
-  rgee::ee_check("rgee")
-  rgee::ee_Initialize(drive=T)
 
-  #Check arguments match available options/inputs
-  temporal.direction<-match.arg(arg = temporal.direction, choices = c("prior", "post"))
-  if(!any(class(spatial.ext)==c("numeric","Extent","RasterLayer","Polygon"))){stop("spatial.ext must be of class numeric, Extent, RasterLayer or Polygon")}
-  if(!missing(save.directory)){if(!dir.exists(save.directory)){stop("local save.directory provided does not exist. Please provide a valid path to save rasters to local directory")}}
-  if(missing(spatial.res.metres)){stop("spatial.res.metres is missing. Please provide the spatial resolution in metres to extract raster at.")}
-  if(missing(save.drive.folder)){stop("save.drive.folder is missing. Please provide the name of a Google Drive folder to download extracted rasters to.")}
+    # Set default varname for saving raster
 
-  if(class(spatial.ext)=="numeric" && !length(spatial.ext)==4){stop("spatial.ext numeric vector should be of length four c(xmin, xmax, ymin and ymax)")}
+    if (missing(varname)) {
+      varname <- paste0(bandname,
+                        "_",
+                        temporal.res,
+                        "_",
+                        temporal.direction,
+                        "_",
+                        GEE.math.fun,
+                        "_raster")
+      message(paste0("Default varname set as: ", varname))
 
-  xmin<-extract_xy_min_max(spatial.ext)[1]
-  xmax<-extract_xy_min_max(spatial.ext)[2]
-  ymin<-extract_xy_min_max(spatial.ext)[3]
-  ymax<-extract_xy_min_max(spatial.ext)[4]
+    }
 
-  geometry <- ee$Geometry$Polygon(list(c(xmin ,  ymin ),c(xmin , ymax),c(xmax, ymax),c(xmax,  ymin ))) #Create Google Earth Engine geometry object from co-ordinates
+    # Check user email provided
+    if (missing(user.email)) {
+      stop("Provide email linked to Google Drive.")
+    }
 
-  GEE.FUNC.LIST<-list(ee$Reducer$allNonZero(), ee$Reducer$anyNonZero(), ee$Reducer$count(), ee$Reducer$first(),ee$Reducer$firstNonNull(),
-                      ee$Reducer$last(), ee$Reducer$lastNonNull(), ee$Reducer$max(),ee$Reducer$mean(), ee$Reducer$median(),
-                      ee$Reducer$min(), ee$Reducer$mode(), ee$Reducer$product(), ee$Reducer$sampleStdDev(), ee$Reducer$sampleVariance(),
-                      ee$Reducer$stdDev(), ee$Reducer$sum(), ee$Reducer$variance()) ## This is a list of all GEE ImageCollection Reducer functions available
 
-  namelist<-c("allNonZero","anyNonZero", "count", "first","firstNonNull", "last", "lastNonNull", "max","mean", "median","min", "mode","product", "sampleStdDev", "sampleVariance",
-              "stdDev", "sum", "variance") # These are the names to match the GEE Reducer functions, which the user will specify in argument GEE.math.fun
+    # Import python module
+    ee <- reticulate::import("ee")
 
-  GEE.math.fun<-match.arg(arg = GEE.math.fun, choices = namelist) # Match GEE.math.fun to Google Earth Engine ImageCollection Reducer functions
+    # Initiate Google Drive
+    googledrive::drive_auth(email = user.email)
+    googledrive::drive_user()
 
-  completed.list<-NULL # Create empty vector to fill with raster dates successfully completed and return to user at end
+    # Initiate Google Earth Engine
+    rgee::ee_check("rgee")
+    rgee::ee_Initialize(drive = T)
 
-   for (x in 1:length(dates)){ # Iterate this process through each unique date in projection dates
+    # Check arguments match available options/inputs
+    temporal.direction <- match.arg(arg = temporal.direction,
+                                    choices = c("prior", "post"))
 
-    firstdate<-as.character(as.Date(dates[x]))
+    if (!any(class(spatial.ext) == c("numeric",
+                                     "Extent",
+                                     "RasterLayer",
+                                     "Polygon"))) {
+      stop("spatial.ext must be class numeric, Extent, RasterLayer or Polygon")
+    }
 
-    if(temporal.direction=="prior"){seconddate<-as.character(as.Date(dates[x])-temporal.res) # Take temporal.res days from projection date
 
-     image_collection <- ee$ImageCollection(paste0(datasetname))$
-        filterDate(seconddate,firstdate)$
-        select(paste0(bandname))} # Create ImageCollection object using rgee functions for the variable data between the two dates
+    if (!missing(save.directory) && !dir.exists(save.directory)) {
+      stop("save.directory not found.")
+    }
 
-      if(temporal.direction=="post"){seconddate<-as.character(as.Date(dates[x])+temporal.res) # Add temporal.res days to projection date
+    if (missing(spatial.res.metres)) {
+      stop("Provide the spatial resolution in metres to extract raster at.")
+    }
 
-        image_collection <- ee$ImageCollection(paste0(datasetname))$
-          filterDate(firstdate,seconddate)$
-          select(paste0(bandname))}# Create ImageCollection object using rgee functions for the variable data between the two dates
+    if (missing(save.drive.folder)) {
+      stop("Provide Google Drive folder name to save extracted rasters")
+    }
 
-      image_collection_reduced <- image_collection$reduce( GEE.FUNC.LIST[[match(GEE.math.fun,namelist)]]) ### Reduce the ImageCollection using GEE Reducer function chosen by user
+    if (class(spatial.ext) == "numeric" && !length(spatial.ext) == 4) {
+      stop("spatial.ext vector should be length 4: xmin, xmax, ymin and ymax")
+    }
 
-      tryCatch({rgee::ee_as_raster(
-        image = image_collection_reduced,
-        container=save.drive.folder, # Drive folder to save raster to
-        scale=spatial.res.metres, # Specifies spatial resolution of raster
-        dsn=paste0(varname,"_",firstdate),  ### Names raster file as variable name and date
-        region = geometry, # Crops to spatial.extent
-        timePrefix=FALSE,
-        via = "drive")},
-      error=function(e){cat("ERROR :",conditionMessage(e),"\n")})
+    xmin <- extract_xy_min_max(spatial.ext)[1]
+    xmax <- extract_xy_min_max(spatial.ext)[2]
+    ymin <- extract_xy_min_max(spatial.ext)[3]
+    ymax <- extract_xy_min_max(spatial.ext)[4]
 
-    #Authorise and initiate Google Drive
-      googledrive::drive_auth(email=user.email)
+    # Create Google Earth Engine geometry object from co-ordinates
+    geometry <- ee$Geometry$Polygon(list(c(xmin ,  ymin),
+                                         c(xmin , ymax),
+                                         c(xmax, ymax),
+                                         c(xmax,  ymin)))
+
+    # List all GEE ImageCollection Reducer functions available
+    GEE.FUNC.LIST <-
+      list(
+        ee$Reducer$allNonZero(),
+        ee$Reducer$anyNonZero(),
+        ee$Reducer$count(),
+        ee$Reducer$first(),
+        ee$Reducer$firstNonNull(),
+        ee$Reducer$last(),
+        ee$Reducer$lastNonNull(),
+        ee$Reducer$max(),
+        ee$Reducer$mean(),
+        ee$Reducer$median(),
+        ee$Reducer$min(),
+        ee$Reducer$mode(),
+        ee$Reducer$product(),
+        ee$Reducer$sampleStdDev(),
+        ee$Reducer$sampleVariance(),
+        ee$Reducer$stdDev(),
+        ee$Reducer$sum(),
+        ee$Reducer$variance()
+      )
+
+    # Names to match the GEE Reducer functions
+    namelist <-
+      c(
+        "allNonZero",
+        "anyNonZero",
+        "count",
+        "first",
+        "firstNonNull",
+        "last",
+        "lastNonNull",
+        "max",
+        "mean",
+        "median",
+        "min",
+        "mode",
+        "product",
+        "sampleStdDev",
+        "sampleVariance",
+        "stdDev",
+        "sum",
+        "variance"
+      )
+
+    # Match GEE.math.fun to Google Earth Engine ImageCollection Reducer function
+
+    GEE.math.fun <- match.arg(arg = GEE.math.fun, choices = namelist)
+
+    # Create empty vector to record dates completed
+    completed.list <- NULL
+
+    # Iterate this process through each unique date in projection dates
+    for (x in 1:length(dates)) {
+
+      firstdate <- as.character(as.Date(dates[x]))
+
+      # Take temporal.res days from projection date
+      if (temporal.direction == "prior") {
+        seconddate <- as.character(as.Date(dates[x]) - temporal.res)
+
+        # Create ImageCollection object for the variable  between the two dates
+        image_collection <-
+          ee$ImageCollection(paste0(datasetname))$
+          filterDate(seconddate, firstdate)$
+          select(paste0(bandname))
+      }
+
+      # Add temporal.res days to projection date
+      if (temporal.direction == "post") {
+        seconddate <- as.character(as.Date(dates[x]) + temporal.res)
+
+        # Create ImageCollection object for the variable  between the two dates
+        image_collection <-
+          ee$ImageCollection(paste0(datasetname))$
+          filterDate(firstdate, seconddate)$
+          select(paste0(bandname))
+      }
+
+      # Reduce the ImageCollection using GEE Reducer function chosen by user
+      image_collection_reduced <-
+        image_collection$reduce(GEE.FUNC.LIST[[match(GEE.math.fun, namelist)]])
+
+      tryCatch({
+        rgee::ee_as_raster(
+          image = image_collection_reduced,
+          container = save.drive.folder,# Drive folder to save raster to
+          scale = spatial.res.metres, # Specifies spatial resolution of raster
+          dsn = paste0(varname, "_", firstdate),# Names raster file
+          region = geometry,# Crops to spatial.extent
+          timePrefix = FALSE,
+          via = "drive"
+        )
+      },
+      error = function(e) {
+        cat("ERROR :", conditionMessage(e), "\n")
+      })
+
+      # Initiate Google Drive
+      googledrive::drive_auth(email = user.email)
       googledrive::drive_user()
 
-    #Save file to local directory from Google Drive if given
-    if(!missing(save.directory)){googledrive::drive_download(paste0(varname,"_",firstdate,".tif"),path=paste0(save.directory,"/",varname,"_",firstdate,".tif"),overwrite=T)} # Download raster from Google Drive to local directory
+      # Save file to local directory if required
+      if (!missing(save.directory)) {
+        googledrive::drive_download(
+          paste0(varname, "_", firstdate, ".tif"),
+          path = paste0(save.directory, "/", varname, "_", firstdate, ".tif"),
+          overwrite = T
+        )
+      }
 
-    completed.list<-rbind(completed.list,paste0(varname,"_",firstdate))} #Record that this date has been processed
+      # Record that this date has been processed
+      completed.list <-rbind(completed.list, paste0(varname, "_", firstdate))
+    }
 
-  if(missing(save.directory)){print(paste0("Data successfully extracted and saved to Google Drive folder:",save.drive.folder))}
-  if(!missing(save.directory)){print(paste0("Data successfully extracted and saved to Google Drive folder:",save.drive.folder, "and local directory:",save.directory))}
+    if (missing(save.directory)) {
+      print(paste0("Data extracted to Google Drive folder:", save.drive.folder))
+    }
 
-  return(completed.list)}
+    if (!missing(save.directory)) {
+      print(
+        paste0(
+          "Data extracted to Google Drive folder:",
+          save.drive.folder,
+          "and local directory:",
+          save.directory
+        )
+      )
+    }
 
+    return(completed.list)
+  }

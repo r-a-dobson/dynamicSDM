@@ -20,53 +20,82 @@
 #'                  temporal.ext=c("2012-01-01","2017-01-01"),
 #'                 spatial.ext =c(28,31,-30,-26))
 #'@export
-spatiotemp_extent<-function(occ.data, temporal.ext=NA,spatial.ext=NA){
-
-  if(!missing(temporal.ext)){
-
-    if(!class(temporal.ext)=="character"){stop("temporal.ext must be character vector of length 2")}
-
-      if(!length(temporal.ext)==2){stop("two dates must be provided for temporal extent")}
-
-        tryCatch({dates<-as.Date(temporal.ext)},error=function(e){stop("Invalid dates provided in temporal.ext. Ensure format YYYY-MM-DD")})
-
-        if(any(is.na(dates))){stop("Invalid date given in temporal.ext. Ensure format YYYY-MM-DD")}
-
-        firstdate<-as.Date(temporal.ext)[1]
-        seconddate<-as.Date(temporal.ext)[2]
-
-          if(firstdate-seconddate>0){stop("First date given in temporal.ext must be earlier than second date given")}
+#'
+spatiotemp_extent <- function(occ.data,
+                              temporal.ext = NULL,
+                              spatial.ext = NULL) {
 
 
-    ## Create date object from occurrence data frame year, month and day columns
+  # Check formatting of temporal.ext
 
-    occdates<-as.Date(with(occ.data, paste(year, month, day,sep="-")), "%Y-%m-%d")
+  if (!missing(temporal.ext)) {
+    if (!is.character(temporal.ext)) {
+      stop("temporal.ext must be character vector of length 2")
+    }
 
-    if(any(is.na(as.character(as.Date(occdates))))){warning("occ.data contains invalid date. NAs may be present in returned data.frame.")}
+    if (!length(temporal.ext) == 2) {
+      stop("two dates must be provided for temporal extent")
+    }
 
-        occ.data <- occ.data[occdates >= firstdate &    # subset occurrence record dataframe to records within specified temporal extent
-                 occdates <= seconddate, ]}
+    # Check validity of temporal.ext dates
+    tryCatch({
+      dates <- as.Date(temporal.ext)
+    }, error = function(e) {
+      stop("Invalid dates provided in temporal.ext. Ensure format YYYY-MM-DD")
+    })
 
+    if (any(is.na(dates))) {
+      stop("Invalid date given in temporal.ext. Ensure format YYYY-MM-DD")
+    }
 
-  if(!missing(spatial.ext)){
+    firstdate <- as.Date(temporal.ext)[1]
+    seconddate <- as.Date(temporal.ext)[2]
 
-  if(!any(class(spatial.ext)==c("numeric","Extent","RasterLayer","Polygon"))){stop("spatial.ext must be of class numeric, Extent, RasterLayer or Polygon")}
-
-
- ### Numeric extent to co-ords
-
-  if(class(spatial.ext)=="numeric" && !length(spatial.ext)==4){stop("spatial.ext numeric vector should be of length four c(xmin, xmax, ymin and ymax)")}
-
-  ### Subset dataframe by spatial extent given
-    occ.data<-occ.data[which(occ.data[,"x"]>=(extract_xy_min_max(spatial.ext)[1])),]
-    occ.data<-occ.data[which(occ.data[,"x"]<=(extract_xy_min_max(spatial.ext)[2])),]
-    occ.data<-occ.data[which(occ.data[,"y"]>=(extract_xy_min_max(spatial.ext)[3])),]
-    occ.data<-occ.data[which(occ.data[,"y"]<=(extract_xy_min_max(spatial.ext)[4])),]}
-
-  return(occ.data)}
-
-
-
-
+    if (firstdate - seconddate > 0) {
+      stop("First date in temporal.ext must be earlier than second date given")
+    }
 
 
+    # Create date object from occurrence data frame year, month and day columns
+
+    occdates <-
+      as.Date(with(occ.data, paste(year, month, day, sep = "-")), "%Y-%m-%d")
+
+    if (any(is.na(as.character(as.Date(occdates))))) {
+      warning("occ.data contains invalid date. NAs may be present in output.")
+    }
+
+    # Subset occurrence record dataframe to records within specified temporal extent
+    occ.data <- occ.data[occdates >= firstdate &
+                 occdates <= seconddate, ]
+  }
+
+
+  if (!missing(spatial.ext)) {
+    if (!any(class(spatial.ext) == c("numeric",
+                                     "Extent",
+                                     "RasterLayer",
+                                     "Polygon"))) {
+      stop("spatial.ext must be class numeric, Extent, RasterLayer or Polygon")
+    }
+
+
+    # Numeric extent to co-ords
+
+    if (class(spatial.ext) == "numeric" && !length(spatial.ext) == 4) {
+      stop("spatial.ext vector should be length 4: xmin, xmax, ymin and ymax")
+    }
+
+    ### Subset dataframe by spatial extent given
+    occ.data <-
+      occ.data[which(occ.data[, "x"] >= (extract_xy_min_max(spatial.ext)[1])),]
+    occ.data <-
+      occ.data[which(occ.data[, "x"] <= (extract_xy_min_max(spatial.ext)[2])),]
+    occ.data <-
+      occ.data[which(occ.data[, "y"] >= (extract_xy_min_max(spatial.ext)[3])),]
+    occ.data <-
+      occ.data[which(occ.data[, "y"] <= (extract_xy_min_max(spatial.ext)[4])),]
+  }
+
+  return(occ.data)
+}

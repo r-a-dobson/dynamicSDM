@@ -41,6 +41,16 @@ Following temporal thinning, spatial thinning occurs across entire dataset. The 
 
 As random selection could alter the total number of occurrence records remaining in the occurrence record dataset, this process is iterated through a specified number of times and the thinned data frame with the highest number of records remaining is returned.
 }
+\examples{
+x<-c(27.79125, 28.54125, 25.54125, 30.04125, 29.95792)
+y<-c(-26.79125, -26.37458, -26.70792, -29.37458, -28.45792)
+year<-c(2014, 2016, 2011, 2011, 2015)
+month<-c(1, 2, 3, 2, 4)
+day<-c(27, 25, 16, 25, 26)
+occ.data<-data.frame(cbind(x,y,year,month,day))
+
+spatiotemp_thin(occ.data=occ.data, temporal.method="day", temporal.dist=14,spatial.split.degrees=3,spatial.dist=100000, iterations=5)
+}
 \references{
 Aiello-Lammens, M. E., Boria, R. A., Radosavljevic, A., Vilela, B. & Anderson, R. P. 2015. spThin: an R package for spatial thinning of species occurrence records for use in ecological niche models. Ecography, 38, 541-545.
 }

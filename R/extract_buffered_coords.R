@@ -42,229 +42,476 @@
 #'Hijmans, R. J., Van Etten, J., Cheng, J., Mattiuzzi, M., Sumner, M., Greenberg, J. A., Lamigueiro, O. P., Bevan, A., Racine, E. B. & Shortridge, A. 2015. Package ‘raster’. R package, 734.
 #' @return Returns details of successful explanatory variable extractions.
 #'@export
-extract_buffered_coords<-function(occ.data,datasetname,bandname,spatial.res.metres, GEE.math.fun,moving.window.matrix,extraction.drive.folder,user.email,save.method,varname=NULL,temporal.res=NULL,temporal.level=NULL,temporal.direction=NULL,categories=NULL,save.directory=NULL){
 
-  if(missing(extraction.drive.folder)){stop("No extraction.drive.folder specified. Please create and provide the name of folder within your Google Drive")}
-
-  # Check user email provided
-  if (missing(user.email)){stop("user.email is missing. Please provide user email linked to Google Drive account")}
-
-  ## Check formatting of arguments to avoid common errors
-  if (!length(GEE.math.fun)==1){stop("Only provide one GEE.math.fun")}
-  if(!dir.exists(save.directory)){stop("save.directory does not exist")}
-  save.method<-match.arg(arg = save.method, choices = c("split", "combined"))
-  temporal.level<-match.arg(arg = temporal.level, choices = c("day", "month","year")) # Check arguments match available options
-
-  if (!missing(temporal.res)){if (missing(temporal.direction)){ stop("temporal.res specfied but temporal.direction is missing. Please specifiy if the temporal.res period is to be prior or post the occurrence record date")}
-      temporal.direction<-match.arg(arg = temporal.direction, choices = c("prior", "post"))}
-
-  if (missing(temporal.res)){message("temporal.res missing, assuming temporally static variable.")}
-
-  #Set default varname - depending on whether spatial and temporal or spatial only.
-  if (missing(varname)){
-    if(!missing(temporal.res)){
-      message(paste0("varname is missing. Default varname set as: ",bandname,"_",temporal.res,"_",temporal.direction,"_",GEE.math.fun,"_buffered"))
-      varname<-paste0(bandname,"_",temporal.res,"_",temporal.direction,"_",GEE.math.fun,"_buffered")}
-
-    if(missing(temporal.res)){
-      message(paste0("varname is missing. Default varname set as: ",bandname,"_",GEE.math.fun,"_buffered"))
-      varname<-paste0(bandname,"_",GEE.math.fun,"_buffered")}}
-
-  ## Load Google Drive to download rasters from GEE to
-  ee <- reticulate::import("ee")
-  googledrive::drive_auth(email=user.email)
-  googledrive::drive_user()
-
-  ## Load Google Earth Engine
-  rgee::ee_check("rgee")
-  rgee::ee_Initialize(drive=T)
-
-  # Warning for categorical datasets where categories have not been specifed using argument categories
-  if(missing(categories)){message("No categories specified. If data are categorical all categories will be included in calculation.")}
-
-  occ.data$unique.ID.DYN<-rep(1:nrow(occ.data)) # Assign each occurrence record a unique ID for saving files.
-
-
-  ### Split occurrence by temporal.level - if annual resolution only matters then can use raster data from that year all at once, instead of redownloading it for each individual record in that year
-
-  if(temporal.level=="day"){
-    uniqueocc<-unique(occ.data[,c("day","month","year")])}
-
-  if(temporal.level=="month"){
-    uniqueocc<-unique(occ.data[,c("month","year")])}
-
-  if(temporal.level=="year"){
-    uniqueocc<-data.frame(unique(occ.data[,c("year")]))
-    colnames(uniqueocc)<-"year"}
-
-  #### for each uniqueocc level, need to download the appropriate raster from GEE, cropped to minimum extent needed to cover all occurrence co-ordinates in this level.
-
-  combined_data_set=NULL
-  rowscomplete=NULL
-
-  for (x in 1:nrow(uniqueocc)){
-
-  if(temporal.level=="year"){
-      year<-as.numeric(uniqueocc[x,"year"])
-      month<-1# Set arbitrary values for month and day as need complete date for GEE but only the year actually matters here.
-      day<-1
-      occforperiod<-occ.data[occ.data$year==year,]
-      nameofsplitfile<-year}
-
-  if(temporal.level=="month"){
-      year<-as.numeric(uniqueocc[x,"year"])
-      month<-as.numeric(uniqueocc[x,"month"]) # Add leading zero for date format
-      day<- 1 # Set arbitrary value for day as need complete date for GEE but only the year and month actually matters here.
-      occforperiod<-occ.data[occ.data$year==year,]
-      occforperiod<-occforperiod[occforperiod$month==month,]
-      nameofsplitfile<-paste0(year,"-", sprintf("%02d",month))}
-
-  if(temporal.level=="day"){
-      year<-as.numeric(uniqueocc[x,"year"])
-      month<-as.numeric(uniqueocc[x,"month"])
-      day<-as.numeric(uniqueocc[x,"day"]) # Use full dates from each individual occurrence record as each will have different data.
-      occforperiod<-occ.data[occ.data$year==year,]
-      occforperiod<-occforperiod[occforperiod$month==month,]
-      occforperiod<-occforperiod[occforperiod$day==day,]
-      nameofsplitfile<-paste0(year,"-",sprintf("%02d",month),"-",sprintf("%02d",day))}
-
-    date1<-as.Date(paste(year, month,day,sep="-"), "%Y-%m-%d")
-
-
-  ## Next step is to work out minimum area of environmental data to download for extraction of moving window matrix around each occurrence record (to minimise computing time)
-
-  # Using environmental data resolution (spatial.res.metres) and cell length of matrix (nrow(moving.window.matrix)) calculate radius (divide circumference by 2) from occurrence co-ordinate to edge of matrix.
-  spatial.buffer<-nrow(moving.window.matrix)*spatial.res.metres/2
-
-  ## The matrix is square not circular, so then need to work out the radius to furthers corner of matrix away from co-ordinate, using pythagorus theorem (a2 + b2 = c2), so c = square root of a2 + b2 (the radius from previous calculation)
-  spatial.buffer<- sqrt((spatial.buffer^2)+(spatial.buffer^2)) # Matrix is square not circular so work out radius to furthest corner away from co-ordinate using pythagorus theorem
-
-  ## To ensure that all cells are definitely included round to nearest 5
-  spatial.buffer<-ceiling(spatial.buffer/5)*5
-
-  # From each occurrence record point in this loop, add the calculated radius in metres using the rangemap package. Requires >1 co-ord. If only 1, just bind same co-ord twice and take first.
-  if(nrow(occforperiod)>1){spatial.buffer<-rangemap::geobuffer_points(occforperiod[, c("x","y")],radius=spatial.buffer,by_point = T)} # Add this radius to all occurrence record co-ordinates that are being extracted in this loop
-  if(nrow(occforperiod)==1){spatial.buffer<-rangemap::geobuffer_points(rbind(occforperiod[, c("x","y")],occforperiod[, c("x","y")]),radius=spatial.buffer,by_point = T)[1]}
-
-  # Extract min and max longtiude and latitude co-ordinates, this is the minimum possible area to extract from environmental dataset
-  xmin<-sp::bbox(raster::extent(spatial.buffer))[1,1]
-  xmax<-sp::bbox(raster::extent(spatial.buffer))[1,2]
-  ymin<-sp::bbox(raster::extent(spatial.buffer))[2,1]
-  ymax<-sp::bbox(raster::extent(spatial.buffer))[2,2]
-
-  geometry <- ee$Geometry$Polygon(list(c(xmin ,  ymin ),c(xmin , ymax),c(xmax, ymax),c(xmax,  ymin))) # Create GEE Geometry Polygon using min and max co-ordinates required for this loop
-
-  ## Static variable
-  if(missing(temporal.res)){
-
-    date1<-as.character(date1)
-
-    image_collection <- ee$ImageCollection(paste0(datasetname))$  ## Google Earth Engine function to create ImageCollection for specified dataset, band and date for this loop.
-      filterDate(date1)$
-      select(paste0(bandname))
-
-    image_collection_reduced <- image_collection$reduce(ee$Reducer$first())} # As this is static, there should only be one Image in the ImageCollection, so we reduce it to select the first Image.
-
-
-  ## Temporally dynamic variable
-  if(!missing(temporal.res)){
-
-      firstdate<-date1
-
-      if(temporal.direction=="prior"){
-        seconddate<-as.character(date1-temporal.res) # Prior selected so minus temporal.res days from the record date
-        firstdate<-as.character(firstdate)
-
-        image_collection <- ee$ImageCollection(paste0(datasetname))$
-          filterDate(seconddate,firstdate)$    # Create ImageCollection of all Images of specified dataset and band between these two dates
-          select(paste0(bandname))}
-
-      if(temporal.direction=="post"){
-        seconddate<-as.character(date1+temporal.res) # Post selected so minus temporal.res days from the record date
-        firstdate<-as.character(firstdate)
-
-        image_collection <- ee$ImageCollection(paste0(datasetname))$
-          filterDate(firstdate,seconddate)$ # Create ImageCollection of all Images of specified dataset and band between these two dates
-          select(paste0(bandname))}
-
-
-      GEE.FUNC.LIST<-list(ee$Reducer$allNonZero(), ee$Reducer$anyNonZero(), ee$Reducer$count(), ee$Reducer$first(),ee$Reducer$firstNonNull(),
-                          ee$Reducer$last(), ee$Reducer$lastNonNull(), ee$Reducer$max(),ee$Reducer$mean(), ee$Reducer$median(),
-                          ee$Reducer$min(), ee$Reducer$mode(), ee$Reducer$product(), ee$Reducer$sampleStdDev(), ee$Reducer$sampleVariance(),
-                          ee$Reducer$stdDev(), ee$Reducer$sum(), ee$Reducer$variance()) ## This is a list of all GEE ImageCollection Reducer functions available
-
-      namelist<-c("allNonZero","anyNonZero", "count", "first","firstNonNull", "last", "lastNonNull", "max","mean", "median","min", "mode","product", "sampleStdDev", "sampleVariance",
-                  "stdDev", "sum", "variance") # These are the names to match the GEE Reducer functions, which the user will specify in argument GEE.math.fun
-
-      GEE.math.fun<-match.arg(arg = GEE.math.fun, choices = namelist) # Match named function to actual function for use. Error if no match found.
-
-
-      image_collection_reduced <- image_collection$reduce( GEE.FUNC.LIST[[match(GEE.math.fun,namelist)]])} # Reduce ImageCollection using function specified in GEE.math.fun
-
-  # Download raster of Reduced ImageCollection to users Google Drive folder
-    tryCatch({raster<-rgee::ee_as_raster(
-      image = image_collection_reduced,
-      container=extraction.drive.folder,
-      scale=spatial.res.metres,
-      dsn=paste0(varname,"_",date1),
-      region = geometry,
-      timePrefix=FALSE,
-      via = "drive")},error=function(e){cat("ERROR :",conditionMessage(e),"\n")})
-
-    pathforthisfile<-paste0(tempfile(),".tif")
-
-    googledrive::drive_auth(email=user.email) # Authenticate Google Drive
-    googledrive::drive_user() # Check Google Drive user information
-
-    googledrive::drive_download(paste0(varname,"_",date1,".tif"),path=pathforthisfile,overwrite=T) # Download raster from Google Drive to temp directory for processing
-    raster<-raster::raster(pathforthisfile) # Read in the raster from the temp directory
-
-    # Match GEE.math.fun argument to analogous R function
-    R.FUNC.LIST<-list(allNonZero,anyNonZero,count,First,firstNonNull,last,lastNonNull,max,mean,stats::median,
-                      min,mode,prod,sd,var,stdDev,sum,variance)
-
-    namelist<-c("allNonZero","anyNonZero", "count", "first","firstNonNull", "last", "lastNonNull", "max","mean", "median","min", "mode","product", "sampleStdDev", "sampleVariance",
-                "stdDev", "sum", "variance") # These are the names to match the GEE Reducer functions, which the user will specify in argument GEE.math.fun
-
-    GEE.math.fun<-match.arg(arg = GEE.math.fun, choices = namelist) # Match named function to actual function for use. Error if no match found.
-
-    math.fun<-R.FUNC.LIST[[match(GEE.math.fun,namelist)]]# Match GEE.math.fun argument to analogous R function
-
-
-  ## Process categorical data raster
-  if(!missing(categories)){
-  #### Convert the categorical raster into binary 1 (categories specified by user) and 0 (any other category)
-  rast<-raster==categories[1]
-  if(length(categories)>1){for(cat in 2:length(categories)){rast<-rast+raster==categories[cat]}} # If more than one category, iterate through each category and add binary rasters together
-  moving.window.matrix[1:nrow(moving.window.matrix),1:ncol(moving.window.matrix)]<-1 ## If data are categorical then focal should be completed using moving.window.matrix with weights = 1 for each cell.
-  focalraster<-raster::focal(rast,moving.window.matrix,FUN=math.fun,na.rm=T)} ## Calculate the math.fun function across moving.window.matrix for the raster with focal function in R.
-
-  ## Process continuous data raster
-  if(missing(categories)){focalraster<-raster::focal(raster,moving.window.matrix,FUN=math.fun)} ## Calculate the math.fun function across moving.window.matrix for the raster with focal function in R.
-
-  # Extract value at co-ordinates of each occurrence record from focal raster
-  extracted_data<-as.data.frame(raster::extract(focalraster,sp::SpatialPoints(cbind(occforperiod[,"x"],occforperiod[,"y"]))))
-  colnames(extracted_data)<-varname
-
-  if(save.method=="split"){write.csv(extracted_data,file=paste0(save.directory,"/",nameofsplitfile,"_",varname,"_.csv"),row.names=FALSE) # If split chosen, save individual .csv file with record and value
-      print(paste0("Records for temporal.level: ",nameofsplitfile," saved to ",save.directory,"/",nameofsplitfile,"_",varname,"_.csv"))}
-
-  if(save.method=="combined"){combined_data_set<-rbind(combined_data_set,extracted_data)} # If combined chosen, bind the value to the results data.frame
-
-  #Record uniqueID of records explanatory data have now been extracted for in this loop
-  rowscomplete<-c(rowscomplete, nameofsplitfile)
-
-  ## Remove the raster used in this loop from Google Drive
-  googledrive::drive_rm(paste0(varname,"_",date1,".tif"))}
-
-  if(save.method=="split"){ ## Print names of occurrence records data successfully extracted for
-  print("Data successfully extracted for:")
-  return(sort(rowscomplete))}
-
-  if(save.method=="combined"){ ## Save combined data.frame to given directory
-  write.csv(combined_data_set,file=paste0(save.directory,"/all_records_combined_",varname,"_.csv"),row.names=FALSE)
-  print(paste0("Data successfully extracted and saved to ",save.directory,"/all_records_combined_",varname,"_.csv"))
-  return(combined_data_set)}}
-
-
+extract_buffered_coords <-
+  function(occ.data,
+           datasetname,
+           bandname,
+           spatial.res.metres,
+           GEE.math.fun,
+           moving.window.matrix,
+           extraction.drive.folder,
+           user.email,
+           save.method,
+           varname = NULL,
+           temporal.res = NULL,
+           temporal.level = NULL,
+           temporal.direction = NULL,
+           categories = NULL,
+           save.directory = NULL) {
+
+
+    if (missing(extraction.drive.folder)) {
+      stop("Missing extraction.drive.folder")
+    }
+
+    # Check user email provided
+    if (missing(user.email)) {stop("Provide email linked to Google Drive")}
+
+    # Check formatting of arguments to avoid common errors
+    if (!length(GEE.math.fun) == 1) {stop("Only provide one GEE.math.fun")}
+
+    if (!dir.exists(save.directory)) {stop("save.directory not found")}
+
+    # Check arguments match available options
+    save.method <- match.arg(arg = save.method,
+                             choices = c("split", "combined"))
+
+    temporal.level <- match.arg(arg = temporal.level,
+                                choices = c("day", "month", "year"))
+
+    if (!missing(temporal.res)) {
+      if (missing(temporal.direction)) {stop("temporal.direction missing.")}
+
+      temporal.direction <- match.arg(arg = temporal.direction,
+                                      choices = c("prior", "post"))
+    }
+
+    if (missing(temporal.res)) {
+      message("temporal.res missing, assuming static")
+    }
+
+    #Set default varname
+    if (missing(varname)) {
+      if (!missing(temporal.res)) {
+        varname <- paste0(bandname,
+                          "_",
+                          temporal.res,
+                          "_",
+                          temporal.direction,
+                          "_",
+                          GEE.math.fun,
+                          "_buffered")
+
+        message(paste0("Default varname: ",varname))
+      }
+
+      if (missing(temporal.res)) {
+        varname <- paste0(bandname, "_", GEE.math.fun, "_buffered")
+        message(paste0("Default varname: ", varname))
+      }
+    }
+
+    # Load Google Drive
+    ee <- reticulate::import("ee")
+    googledrive::drive_auth(email = user.email)
+    googledrive::drive_user()
+
+    # Load Google Earth Engine
+    rgee::ee_check("rgee")
+    rgee::ee_Initialize(drive = T)
+
+    # Assign occurrence record a unique ID for saving files.
+    occ.data$unique.ID.DYN <- rep(1:nrow(occ.data))
+
+
+    # Split occurrence by temporal.level
+    # e.g. if annual can use raster data from each year at once, saving time
+
+    if (temporal.level == "day") {
+      uniqueocc <- unique(occ.data[, c("day", "month", "year")])
+    }
+
+    if (temporal.level == "month") {
+      uniqueocc <- unique(occ.data[, c("month", "year")])
+    }
+
+    if (temporal.level == "year") {
+      uniqueocc <- data.frame(unique(occ.data[, c("year")]))
+      colnames(uniqueocc) <- "year"
+    }
+
+    # For each uniqueocc step, download appropriate raster from GEE
+    # cropped to minimum extent needed to cover all co-ordinates in this step
+
+    combined_data_set = NULL
+    rowscomplete = NULL
+
+    for (x in 1:nrow(uniqueocc)) {
+      if (temporal.level == "year") {
+        year <- as.numeric(uniqueocc[x, "year"])
+        month <-  1 # Set arbitrary values as need complete date for GEE and
+        day <- 1 # only the year actually matters here.
+        occforperiod <- occ.data[occ.data$year == year, ]
+        nameofsplitfile <- year
+      }
+
+      if (temporal.level == "month") {
+        year <- as.numeric(uniqueocc[x, "year"])
+        month <- as.numeric(uniqueocc[x, "month"]) # Add leading zero for date
+        day <- 1 # Set arbitrary values as need complete date for GEE and
+                # only year and month matters here.
+        occforperiod <- occ.data[occ.data$year == year, ]
+        occforperiod <- occforperiod[occforperiod$month == month, ]
+        nameofsplitfile <- paste0(year, "-", sprintf("%02d", month))
+      }
+
+      if (temporal.level == "day") {
+        year <- as.numeric(uniqueocc[x, "year"])
+        month <- as.numeric(uniqueocc[x, "month"])
+        day <- as.numeric(uniqueocc[x, "day"]) # Use dates from each recored
+        occforperiod <- occ.data[occ.data$year == year, ]
+        occforperiod <- occforperiod[occforperiod$month == month, ]
+        occforperiod <- occforperiod[occforperiod$day == day, ]
+        nameofsplitfile <- paste0(year,
+                                  "-",
+                                  sprintf("%02d", month),
+                                  "-",
+                                  sprintf("%02d", day))
+      }
+
+      date1 <- as.Date(paste(year, month, day, sep = "-"), "%Y-%m-%d")
+
+      # Work out minimum area to download for extraction of moving window matrix
+      # around each occurrence record (to minimise computing time)
+
+      # Using data resolution and matrix cell length, calc radius from occ
+      # occurrence co-ordinate to edge of matrix. (circumference/2)
+      spatial.buffer <- nrow(moving.window.matrix) * spatial.res.metres / 2
+
+      # The matrix is square not circular, so then need to work out the radius
+      # to furthest corner of matrix away from co-ordinate.
+      # Rearrange pythagorus theorem (a2 + b2 = c2),
+      # so c = square root of a2 + b2 (a and b= radius from previous calc)
+      spatial.buffer <- sqrt((spatial.buffer ^ 2) + (spatial.buffer ^ 2))
+
+      ## To ensure that all cells are definitely included round to nearest 5
+      spatial.buffer <- ceiling(spatial.buffer / 5) * 5
+
+      # From each occurrence record point in this step, add the radius using the rangemap package.
+      #Requires >1 co-ord. If only 1, just bind same co-ord twice and take first.
+      if (nrow(occforperiod) > 1) {
+        spatial.buffer <-
+          rangemap::geobuffer_points(occforperiod[, c("x", "y")],
+                                     radius = spatial.buffer,
+                                     by_point = T)
+      }
+
+      if (nrow(occforperiod) == 1) {
+        spatial.buffer <-
+          rangemap::geobuffer_points(rbind(occforperiod[, c("x", "y")],
+                                           occforperiod[, c("x", "y")]),
+                                     radius = spatial.buffer,
+                                     by_point = T)[1]
+      }
+
+      # Extract min and max longtiude and latitude co-ordinates
+      # This is the minimum possible area to extract from environmental dataset
+      xmin <- sp::bbox(raster::extent(spatial.buffer))[1, 1]
+      xmax <- sp::bbox(raster::extent(spatial.buffer))[1, 2]
+      ymin <- sp::bbox(raster::extent(spatial.buffer))[2, 1]
+      ymax <- sp::bbox(raster::extent(spatial.buffer))[2, 2]
+
+      # Create GEE Geometry Polygon using min and max co-ordinates
+      geometry <- ee$Geometry$Polygon(list(c(xmin ,  ymin),
+                                           c(xmin , ymax),
+                                           c(xmax, ymax),
+                                           c(xmax,  ymin)))
+      # Static variable
+      if (missing(temporal.res)) {
+        date1 <- as.character(date1)
+
+        # Create GEE ImageCollection for specified dataset, band and date
+        image_collection <-
+          ee$ImageCollection(paste0(datasetname))$
+          filterDate(date1)$select(paste0(bandname))
+
+        # As static, only one Image in ImageCollection, so select the first Image
+        image_collection_reduced <- image_collection$reduce(ee$Reducer$first())
+      }
+
+
+      # Temporally dynamic variable
+      if (!missing(temporal.res)) {
+        firstdate <- date1
+
+        # Prior selected so minus temporal.res days from the record date
+        if (temporal.direction == "prior") {
+          seconddate <- as.character(date1 - temporal.res)
+          firstdate <- as.character(firstdate)
+
+          # ImageCollection of specified dataset and band between two dates
+          image_collection <-
+            ee$ImageCollection(paste0(datasetname))$
+            filterDate(seconddate, firstdate)$
+            select(paste0(bandname))
+        }
+
+        # Post selected so minus temporal.res days from the record date
+        if (temporal.direction == "post") {
+          seconddate <- as.character(date1 + temporal.res)
+          firstdate <- as.character(firstdate)
+
+          # ImageCollection of specified dataset and band between two dates
+          image_collection <- ee$ImageCollection(paste0(datasetname))$
+            filterDate(firstdate, seconddate)$
+            select(paste0(bandname))
+        }
+
+        # This is a list of all GEE ImageCollection Reducer functions available
+        GEE.FUNC <-
+          list(
+            ee$Reducer$allNonZero(),
+            ee$Reducer$anyNonZero(),
+            ee$Reducer$count(),
+            ee$Reducer$first(),
+            ee$Reducer$firstNonNull(),
+            ee$Reducer$last(),
+            ee$Reducer$lastNonNull(),
+            ee$Reducer$max(),
+            ee$Reducer$mean(),
+            ee$Reducer$median(),
+            ee$Reducer$min(),
+            ee$Reducer$mode(),
+            ee$Reducer$product(),
+            ee$Reducer$sampleStdDev(),
+            ee$Reducer$sampleVariance(),
+            ee$Reducer$stdDev(),
+            ee$Reducer$sum(),
+            ee$Reducer$variance()
+          )
+
+        # Character names matching the GEE Reducer functions
+        namelist <-
+          c(
+            "allNonZero",
+            "anyNonZero",
+            "count",
+            "first",
+            "firstNonNull",
+            "last",
+            "lastNonNull",
+            "max",
+            "mean",
+            "median",
+            "min",
+            "mode",
+            "product",
+            "sampleStdDev",
+            "sampleVariance",
+            "stdDev",
+            "sum",
+            "variance"
+          )
+
+        # Match named function to actual function for use.
+        GEE.math.fun <- match.arg(arg = GEE.math.fun, choices = namelist)
+
+        # Reduce ImageCollection using function specified in GEE.math.fun
+        image_collection_reduced <-
+          image_collection$reduce(GEE.FUNC[[match(GEE.math.fun, namelist)]])
+      }
+
+      # Download raster of Reduced ImageCollection to Google Drive
+      tryCatch({
+        raster <- rgee::ee_as_raster(
+          image = image_collection_reduced,
+          container = extraction.drive.folder,
+          scale = spatial.res.metres,
+          dsn = paste0(varname, "_", date1),
+          region = geometry,
+          timePrefix = FALSE,
+          via = "drive"
+        )
+      }, error = function(e) {
+        cat("ERROR :", conditionMessage(e), "\n")
+      })
+
+      # Get temp file name for downloading raster
+      pathforthisfile <- paste0(tempfile(), ".tif")
+
+      # Authenticate Google Drive
+      googledrive::drive_auth(email = user.email)
+      googledrive::drive_user()
+
+      # Download raster from Google Drive to temp directory for processing
+      googledrive::drive_download(paste0(varname, "_", date1, ".tif"),
+                                  path = pathforthisfile,
+                                  overwrite = T)
+      raster <- raster::raster(pathforthisfile) # Read in raster from temp dir
+
+      # Match GEE.math.fun argument to analogous R function
+      R.FUNC <-
+        list(
+          allNonZero,
+          anyNonZero,
+          count,
+          First,
+          firstNonNull,
+          last,
+          lastNonNull,
+          max,
+          mean,
+          stats::median,
+          min,
+          mode,
+          prod,
+          sd,
+          var,
+          stdDev,
+          sum,
+          variance
+        )
+
+      namelist <-
+        c(
+          "allNonZero",
+          "anyNonZero",
+          "count",
+          "first",
+          "firstNonNull",
+          "last",
+          "lastNonNull",
+          "max",
+          "mean",
+          "median",
+          "min",
+          "mode",
+          "product",
+          "sampleStdDev",
+          "sampleVariance",
+          "stdDev",
+          "sum",
+          "variance"
+        )
+
+      # Match named function to actual function for use. Error if no match.
+
+      GEE.math.fun <- match.arg(arg = GEE.math.fun, choices = namelist)
+
+      # Match GEE.math.fun argument to analogous R function
+      math.fun <- R.FUNC[[match(GEE.math.fun, namelist)]]
+
+
+      # Process categorical raster
+
+      if (!missing(categories)) {
+
+        # Convert the categorical raster into binary 1 (categories specified by user) and 0 (any other category)
+        rast <- raster == categories[1]
+
+        # If more than one category, iterate through each category and add binary rasters together
+        if (length(categories) > 1) {
+          for (cat in 2:length(categories)) {
+            rast <- rast + raster == categories[cat]
+          }
+        }
+
+        # If data are categorical then moving.window.matrix with weights = 1
+        moving.window.matrix[1:nrow(moving.window.matrix),
+                             1:ncol(moving.window.matrix)] <- 1
+
+        ## Calculate math.fun across moving.window.matrix for the raster
+        focalraster <- raster::focal(rast,
+                                     moving.window.matrix,
+                                     FUN = math.fun,
+                                     na.rm = T)
+      }
+
+
+      # Process continuous data raster
+      # Calculate math.fun across moving.window.matrix for the raster
+      if (missing(categories)) {
+        focalraster <- raster::focal(raster,
+                                     moving.window.matrix,
+                                     FUN = math.fun)
+      }
+
+      # Extract value at co-ordinates of each occurrence record
+      extracted_data <- as.data.frame(raster::extract(focalraster,
+                                                      sp::SpatialPoints(cbind(
+                                                        occforperiod[, "x"],
+                                                        occforperiod[, "y"]
+                                                      ))))
+
+      colnames(extracted_data) <- varname
+
+      # If split chosen, save individual .csv file with record and value
+      if (save.method == "split") {
+        write.csv(
+          extracted_data,
+          file = paste0(save.directory,
+                        "/",
+                        nameofsplitfile,
+                        "_",
+                        varname,
+                        "_.csv"),
+          row.names = FALSE
+        )
+
+        print(
+          paste0(
+            "Records for temporal.level: ",
+            nameofsplitfile,
+            " saved to ",
+            save.directory,
+            "/",
+            nameofsplitfile,
+            "_",
+            varname,
+            "_.csv"
+          )
+        )
+      }
+
+      if (save.method == "combined") {
+        combined_data_set <- rbind(combined_data_set, extracted_data)
+      }
+
+      # Record uniqueID of records explanatory data extracted for in this loop
+      rowscomplete <- c(rowscomplete, nameofsplitfile)
+
+      # Remove the raster used in this loop from Google Drive
+      googledrive::drive_rm(paste0(varname, "_", date1, ".tif"))
+    }
+
+    # Print names of occurrence records data successfully extracted for
+    if (save.method == "split") {
+      print("Data successfully extracted for:")
+      return(sort(rowscomplete))
+    }
+
+
+    # Save combined data.frame to given directory
+    if (save.method == "combined") {
+      write.csv(
+        combined_data_set,
+        row.names = FALSE,
+        file = paste0(save.directory,
+                      "/all_records_combined_",
+                      varname,
+                      "_.csv")
+      )
+      print(
+        paste0(
+          "Data successfully extracted to: ",
+          save.directory,
+          "/all_records_combined_",
+          varname,
+          "_.csv"
+        )
+      )
+      return(combined_data_set)
+    }
+  }
 

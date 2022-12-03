@@ -19,139 +19,280 @@
 #'If temporal.method is "'random'", then occurrence record co-ordinates are randomly generated within the two temporal.ext dates given.
 #' @return Returns data frame of pseudo-absence coordinates and dates.
 #' @examples
-#'data("sample_occ_data",package="dynamicSDM")
-#'spatiotemp_pseudoabs(sample_occ_data,
-#'                    spatial.method="random",
-#'                    temporal.method="random",
-#'                    spatial.ext =c(20,36,-35,-12),
-#'                    temporal.ext = c("2011-01-01","2017-01-01"))
+#'data("sample_occ_data", package = "dynamicSDM")
+#'spatiotemp_pseudoabs(
+#'  sample_occ_data,
+#'  spatial.method = "random",
+#'  temporal.method = "random",
+#'  spatial.ext = c(20, 36, -35, -12),
+#'  temporal.ext = c("2011-01-01", "2017-01-01")
+#')
 #'@export
-spatiotemp_pseudoabs<-function(spatial.method,temporal.method,occ.data=NULL,spatial.ext=NULL,temporal.ext=NULL,spatial.buffer=NULL,temporal.buffer=NULL,n.pseudoabs=100){
-
-if(!class(n.pseudoabs)=="numeric"){stop("n.pseudoabs should be a numeric value")}
-
-# Match argument to available options
-temporal.method<-match.arg(arg = temporal.method, choices = c( "buffer","random"))
-spatial.method<-match.arg(arg = spatial.method, choices = c( "buffer","random"))
 
 
-## Random generation of pseudo-absence co-ordinates
+spatiotemp_pseudoabs <-  function(spatial.method,
+                                  temporal.method,
+                                  occ.data = NULL,
+                                  spatial.ext = NULL,
+                                  temporal.ext = NULL,
+                                  spatial.buffer = NULL,
+                                  temporal.buffer = NULL,
+                                  n.pseudoabs = 100) {
 
-  if(spatial.method=="random"){
+  # Check n.pseudoabs argument is correct class
+  if (!is.numeric(n.pseudoabs)) {
+    stop("n.pseudoabs should be a numeric value")
+  }
 
-  ### Check that if spatial random chosen, a spatial extent of appropriate class, length and order is provided
-  if (missing(spatial.ext)){stop("No spatial.ext specified to randomly generate pseudo-absence co-ordinates within.")}
-    if(!any(class(spatial.ext)==c("numeric","Extent","RasterLayer","Polygon"))){
-      stop("spatial.ext must be of class numeric, Extent, RasterLayer or Polygon")}
+  # Match argument to available options
+  temporal.method <- match.arg(arg = temporal.method,
+                               choices = c("buffer", "random"))
 
-   ### Numeric vector to polygon
-    if(class(spatial.ext)=="numeric" && length(spatial.ext)==4){spatial.ext<-as(raster::extent(spatial.ext[1],spatial.ext[2],spatial.ext[3],spatial.ext[4]), 'SpatialPolygons')}
+  spatial.method <- match.arg(arg = spatial.method,
+                              choices = c("buffer", "random"))
 
-    ### Extent object to polygon
-    if(class(spatial.ext)=="Extent"){spatial.ext<-as(spatial.ext, 'SpatialPolygons')}
+  #------------------------------------------------------------------
+  # Random generation of pseudo-absence co-ordinates
+  #------------------------------------------------------------------
+  if (spatial.method == "random") {
 
-    ### RasterLayer object to polygon
-    if(class(spatial.ext)=="RasterLayer"){spatial.ext<-as(raster::extent(spatial.ext), 'SpatialPolygons')}
-
-    pseudoabs_coords<-as.data.frame(sp::spsample(spatial.ext ,type='random', n=n.pseudoabs,iter=30))} ## Randomly generate specified number of pseudo-absence co-ordinates within extent polygon
-
-
-
-## Random generation of pseudo-absence dates
-
-if(temporal.method=="random"){
-
-  ### Check that if temporal random chosen, a temporal extent of appropriate class, length and order is provided
-  if (missing(temporal.ext)){stop("No temporal.ext specified to randomly generate pseudo-absence dates within.")}
-  if(!class(temporal.ext)=="character"){stop("temporal.ext must be character vector of length 2")}
-  if(!length(temporal.ext)==2){stop("two dates must be provides for temporal extent")}
-
-  tryCatch({dates<-as.Date(temporal.ext)},error=function(e){stop("Both dates invalid given in temporal.ext. Ensure format YYYY-MM-DD")})  ## Check dates are valid
-  if(any(is.na(dates))){stop("Invalid date given in temporal.ext. Ensure format YYYY-MM-DD")}
-  firstdate<-as.Date(temporal.ext)[1]
-  seconddate<-as.Date(temporal.ext)[2]
-  if(firstdate-seconddate>0){stop("First date must be before second date")} # Check dates are in order
+    # Check spatial extent of appropriate class, length and order is provided
+    if (missing(spatial.ext)) {
+      stop("No spatial.ext specified to generate pseudo-absence co-ordinates")}
 
 
-  pseudoabs_dates<- firstdate + sample(1:(seconddate-firstdate), size=n.pseudoabs,replace=T) ## Randomly generate dates within given extent
-  pseudoabs_dates<-tidyr::separate(as.data.frame(pseudoabs_dates), "pseudoabs_dates", c("year", "month", "day"), sep = "-")} ## Split dates into year, month and day columns for returned dataframe
+    if (!any(class(spatial.ext) == c("numeric",
+                                     "Extent",
+                                     "RasterLayer",
+                                     "Polygon"))) {
+      stop("spatial.ext must be class numeric, Extent, RasterLayer or Polygon")
+    }
+
+    # Numeric vector to polygon
+
+    if (class(spatial.ext) == "numeric" && length(spatial.ext) == 4) {
+      spatial.ext <- as(
+        raster::extent(spatial.ext[1],
+                       spatial.ext[2],
+                       spatial.ext[3],
+                       spatial.ext[4]),
+        'SpatialPolygons'
+      )
+    }
+
+    #  Extent object to polygon
+    if (class(spatial.ext) == "Extent") {
+      spatial.ext <- as(spatial.ext, 'SpatialPolygons')
+    }
+
+    # RasterLayer object to polygon
+    if (class(spatial.ext) == "RasterLayer") {
+      spatial.ext <- as(raster::extent(spatial.ext), 'SpatialPolygons')
+    }
+
+    # Randomly generate pseudo-absence co-ordinates within extent polygon
+    PA_coords <-
+      as.data.frame(sp::spsample(
+        spatial.ext ,
+        type = 'random',
+        n = n.pseudoabs,
+        iter = 30
+      ))
+  }
+
+
+  #------------------------------------------------------------------
+  # Random generation of pseudo-absence dates
+  #------------------------------------------------------------------
+
+  if (temporal.method == "random") {
+
+    # Check that if temporal random chosen, temporal extent appropriate
+
+    if (missing(temporal.ext)) {
+      stop("No temporal.ext specified to randomly generate pseudo-absence dates within.")
+    }
+
+    if (!class(temporal.ext) == "character") {
+      stop("temporal.ext must be character vector of length 2")
+    }
+
+    if (!length(temporal.ext) == 2) {
+      stop("two dates must be provides for temporal extent")
+    }
+
+    # Check dates are valid
+    tryCatch({
+      dates <- as.Date(temporal.ext)
+    }, error = function(e) {
+      stop("Both dates invalid given in temporal.ext. Ensure format YYYY-MM-DD")
+    })
+
+    if (any(is.na(dates))) {
+      stop("Invalid date given in temporal.ext. Ensure format YYYY-MM-DD")
+    }
+
+    firstdate <- as.Date(temporal.ext)[1]
+
+    seconddate <- as.Date(temporal.ext)[2]
+
+    # Check dates are in order
+
+    if (firstdate - seconddate > 0) {
+      stop("First date must be before second date")
+    }
+
+    # Randomly generate dates within given extent
+    PA_dates <-
+      firstdate + sample(1:(seconddate - firstdate),
+                         size = n.pseudoabs,
+                         replace = T)
+
+    # Split dates into year, month and day columns for returned dataframe
+    PA_dates <-
+      tidyr::separate(as.data.frame(PA_dates),
+                      "PA_dates",
+                      c("year", "month", "day"),
+                      sep = "-")
+  }
 
 
 
 
+  #------------------------------------------------------------------
+  # Buffered generation of pseudo-absence co-ordinates
+  #------------------------------------------------------------------
+
+  if (spatial.method == "buffer") {
+
+    # Check that if spatial buffer chosen, a temporal buffer of appropriate class, length and order is provided
+    if (missing(spatial.buffer)) {
+      stop("No spatial.buffer to generate pseudo-absence co-ordinates within.")
+    }
+
+    if (!is.numeric(spatial.buffer)) {
+      stop("spatial.buffer must be numeric")
+    }
+
+    if (!length(spatial.buffer) == 2) {
+      stop("spatial.buffer must be length 2.")
+    }
+
+    if (spatial.buffer[1] - spatial.buffer[2] > 0) {
+      stop("Second spatial.buffer must be further away than first")
+    }
 
 
-## Buffered generation of pseudo-absence co-ordinates
+    # Calculate the number of pseudo-absences to generate in buffer
+    # from each occurrence record to meet or slightly exceed the required amount
+    value <- ceiling(n.pseudoabs / nrow(occ.data))
 
-if(spatial.method=="buffer"){
+    # Create buffer shapefiles for given buffer min and max size from occ coords
 
-  ### Check that if spatial buffer chosen, a temporal buffer of appropriate class, length and order is provided
-  if(missing(spatial.buffer)){stop("No spatial.buffer specified to generate pseudo-absence co-ordinates within.")}
-  if(!class(spatial.buffer)=="numeric"){stop("spatial.buffer must be numeric")}
-  if(!length(spatial.buffer)==2){stop("spatial.buffer must be length  2 representing the buffer in metres to generate coords in. e.g. c(500,3000) buffer of 500m to 3000m")}
-  if(spatial.buffer[1]-spatial.buffer[2]>0){stop("Second spatial.buffer must be further away than first")}
+    first.buff <- rangemap::geobuffer_points(occ.data[, c("x", "y")],
+                                             radius = spatial.buffer[1],
+                                             by_point = T)
 
+    second.buff <- rangemap::geobuffer_points(occ.data[, c("x", "y")],
+                                              radius = spatial.buffer[2],
+                                              by_point = T)
 
-  ## Calculate the number of pseudo-absences to generate in buffer from each occurrence record to meet or slightly exceed the required amount
-  value<-ceiling(n.pseudoabs/nrow(occ.data))
+    raster::crs(second.buff) <- NA
+    raster::crs(first.buff) <- NA
 
-  # Create buffer shapefiles for given buffer min and max size from each occurrence record co-ordinates as specified by the user
+    PA_coords = NULL # Create vector for pseudoabsence co-ordinates
 
-  first.buff<-rangemap::geobuffer_points(occ.data[, c("x","y")],radius=spatial.buffer[1],by_point = T)
+    for (x in 1:nrow(occ.data)) {
+      PA_coords <- rbind(PA_coords, sp::coordinates(
+        sp::spsample(
+          rgeos::gDifference(second.buff[x], first.buff[x]),
+          type = 'random',
+          n = value,
+          iter = 30
+        )
+      ))
+    }
 
-  second.buff<-rangemap::geobuffer_points(occ.data[, c("x","y")],radius=spatial.buffer[2],by_point = T)
-
-  raster::crs(second.buff)<-NA
-  raster::crs(first.buff)<-NA
-
-  pseudoabs_coords=NULL ## Create vector for binding pseudoabsence co-ordinates too
-
-  for (x in 1:nrow(occ.data)){pseudoabs_coords<-rbind(pseudoabs_coords,sp::coordinates(sp::spsample(rgeos::gDifference(second.buff[x], first.buff[x]),type='random', n=value,iter=30)))}
-
-  colnames(pseudoabs_coords)<-c("x","y")}# Set pseudoabsence co-ordinate column names as "x" for co-ordinate longitude and "y" for co-ordinate latitude
-
-
-
-## Buffered generation of pseudo-absence dates
-
-if(temporal.method=="buffer"){
-
-  ### Check that if temporal buffer chosen, a temporal buffer of appropriate class, length and order is provided
-  if (missing(temporal.buffer)){stop("No temporal.buffer specified specified to generate pseudo-absence dates within.")}
-    if(!class(temporal.buffer)=="numeric"){stop("temporal.buffer must be numeric")}
-      if(!length(temporal.buffer)==2){stop("temporal.buffer must be length(2) representing the buffer to generate coords in")}
-          if(temporal.buffer[1]-temporal.buffer[2]>0){stop("Second temporal.buffer must be higher than first")}
-
-  ## Calculate the number of pseudo-absences to generate in buffer from each occurrence record to meet or slightly exceed the required amount
-  value<-ceiling(n.pseudoabs/nrow(occ.data))
-
-  ## Generate list of max temporal buffer distance (specified by user) away from each occurrence record date
-  date1<-as.Date(with(occ.data, paste(year, month, day,sep="-")), "%Y-%m-%d")+ temporal.buffer[2]
-
-  pseudoabs_dates=date1[1] ## Create "Date" vector for binding pseudoabsence dates too
-
-for (x in 1:length(date1)){pseudoabs_dates<-c(pseudoabs_dates,as.Date(date1[x]- sample(c(0:temporal.buffer[1],0:(-temporal.buffer[1])), value,replace=T)))} # For each occ.data record date, randomly select the calculated number of dates (object "value") within the buffer period
-
-    pseudoabs_dates<-pseudoabs_dates[2:length(pseudoabs_dates)] ## Remove first one as used to set vector class as "Date"
-    pseudoabs_dates<-as.data.frame(pseudoabs_dates)
-    pseudoabs_dates<-tidyr::separate(pseudoabs_dates, "pseudoabs_dates", c("year", "month", "day"), sep = "-")  }
+    colnames(PA_coords) <- c("x", "y")
+  }
 
 
+  #------------------------------------------------------------------
+  # Buffered generation of pseudo-absence dates
+  #------------------------------------------------------------------
 
-# If either method "buffer" is chosen, there may be slightly more generated than specified by n.pseudoabs, so randomly select this amount from generated lists
+  if (temporal.method == "buffer") {
 
-if(temporal.method=="buffer" && spatial.method=="buffer"){
-  pseudo.df<-dplyr::sample_n(as.data.frame(cbind(pseudoabs_coords,pseudoabs_dates)),n.pseudoabs)} ## Keeps co-ordinates and dates relevant to same occurrence record together before randomly selecting
+    # Check temporal buffer of appropriate class, length and order is provided
 
-if(temporal.method=="buffer" && spatial.method=="random"){
-pseudoabs_dates<-dplyr::sample_n(as.data.frame(pseudoabs_dates),n.pseudoabs) ## As ceiling used to calculate maximum number of points in buffer to generate to meet specified number of pseudo.abs, this may be slightly too many. This randomyl selects the exact number specified by the user
-pseudo.df<-as.data.frame(cbind(pseudoabs_coords,pseudoabs_dates))}
+    if (missing(temporal.buffer)) {
+      stop("No temporal.buffer specified specified to generate pseudo-absence dates within.")
+    }
 
-if(temporal.method=="random" && spatial.method=="buffer"){
-pseudoabs_coords<-dplyr::sample_n(as.data.frame(pseudoabs_coords),n.pseudoabs)
-pseudo.df<-as.data.frame(cbind(pseudoabs_coords,pseudoabs_dates))}
+    if (!class(temporal.buffer) == "numeric") {
+      stop("temporal.buffer must be numeric")
+    }
 
-if(temporal.method=="random" && spatial.method=="random"){
-pseudo.df<-as.data.frame(cbind(pseudoabs_coords,pseudoabs_dates))}
+    if (!length(temporal.buffer) == 2) {
+      stop("temporal.buffer must be length(2) representing the buffer to generate coords in")
+    }
 
-return(pseudo.df)}
+    if (temporal.buffer[1] - temporal.buffer[2] > 0) {
+      stop("Second temporal.buffer must be higher than first")
+    }
+
+    # Calculate number of pseudo-absences to generate in buffer from each
+    # occurrence record to meet or slightly exceed the required amount
+    value <- ceiling(n.pseudoabs / nrow(occ.data))
+
+    # Generate list of max temporal buffer distance away from each record date
+    date1 <- as.Date(with(occ.data, paste(year, month, day, sep = "-")), "%Y-%m-%d")
+    date1 <- date1 + temporal.buffer[2]
+
+    # Create "date" vector for binding pseudoabsence dates too
+    PA_dates = date1[1]
+
+
+    # For each record date, randomly select the number of dates  within buffer
+    for (x in 1:length(date1)) {
+      PA_dates <- c(PA_dates, as.Date(date1[x] - sample(
+        c(0:temporal.buffer[1], 0:(-temporal.buffer[1])), value, replace = T
+      )))
+    }
+
+
+    # Remove first one as used to set vector class as "Date"
+    PA_dates <- PA_dates[2:length(PA_dates)]
+    PA_dates <- as.data.frame(PA_dates)
+    PA_dates <- tidyr::separate(PA_dates,
+                                       "PA_dates",
+                                       c("year", "month", "day"),
+                                       sep = "-")
+  }
+
+
+  # If either "buffer" is chosen, there may be slightly more generated than
+  # specified by n.pseudoabs, so randomly select this amount from generated
+
+  # Keeps co-ordinates and dates relevant to same occurrence record together before randomly selecting
+  if (temporal.method == "buffer" && spatial.method == "buffer") {
+    pseudo.df <- dplyr::sample_n(as.data.frame(cbind(PA_coords, PA_dates)),
+                      n.pseudoabs)
+  }
+
+  if (temporal.method == "buffer" && spatial.method == "random") {
+    PA_dates <- dplyr::sample_n(as.data.frame(PA_dates), n.pseudoabs)
+    pseudo.df <- as.data.frame(cbind(PA_coords, PA_dates))
+  }
+
+  if (temporal.method == "random" && spatial.method == "buffer") {
+    PA_coords <- dplyr::sample_n(as.data.frame(PA_coords), n.pseudoabs)
+    pseudo.df <- as.data.frame(cbind(PA_coords, PA_dates))
+  }
+
+  if (temporal.method == "random" && spatial.method == "random") {
+    pseudo.df <- as.data.frame(cbind(PA_coords, PA_dates))
+  }
+
+  return(pseudo.df)
+}

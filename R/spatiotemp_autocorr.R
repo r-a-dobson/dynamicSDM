@@ -12,42 +12,81 @@
 #'
 #' As the spatial autocorrelation calculation involves computation of a distance matrix between all occurrence records. To reduce computation time, it is recommended that a sample of large occurrence datasets are input.
 #' @return Returns a list of temporal and spatial autocorrelation test results for each variable.
-#' @example
-#'data("sample_model_data")
+#' @examples
+#'data("sample_model_data",package="dynamicSDM")
 #'spatiotemp_autocorr(sample_model_data,varname="Temperaturemean",temporal.level="year")
 #'@export
-spatiotemp_autocorr<-function(occ.data,varname,temporal.level){
 
-  temporal_ordered<-occ.data[order(occ.data[,temporal.level]),] ### Re-order the data into time order (based upon temporal.level specified by user)
+spatiotemp_autocorr <- function(occ.data, varname, temporal.level) {
 
-  distance_matrix <- geodist::geodist(data.frame(occ.data$x,occ.data$y), measure = 'geodesic' ) ## Calculate spatial distance matrix between each occurrence record co-ordinate for spatial autocorrelation
-  diag(distance_matrix) <-FALSE ### Set diagonal combinations as FALSE
+  # Re-order the data into chronological order (based on temporal.level)
 
-  list.of.results <- vector("list", length(varname))  # Create list to contain all variables results
-  list.of.results.split<-vector("list", 2) # Create list to contain each variables spatial and temporal autocorrelation results
-  temporal.level="year"
-
-  for(v in 1:length(varname)){
-
-  #### Temporal autocorrelation
-  temporal_agg<-aggregate(as.formula(paste0(varname[v],"~",temporal.level)),FUN=mean,data=temporal_ordered,na.rm=T) ## Aggregate variable data by taking the mean for each distinct temporal.level specified by user.
-  data <-temporal_agg[,varname[v]] # Extract aggregate data for the variable at each time step
-  first_obs <- data[-length(data)] ## Remove final timestep (as this will not have a value for the following timestep for temporal autocorrelation calculation)
-  second_obs<-data[-1]  ## Obtain value at following timestep
-  plot(first_obs, second_obs, xlab=paste0(varname[v],'(t)'), ylab=paste0(varname[v],'(t-1)'),pch = 19) ## Plot relationship between variable value at one timestep compared to the following timestep
-  abline(lm(first_obs ~ second_obs))
-  list.of.results.split[[1]]<-cor.test(first_obs,second_obs) ## Calculate correlation between variable value at one timestep compared to the following timestep
-
-    #### Spatial autocorrelation
-
-  list.of.results.split[[2]]<-as.data.frame(ape::Moran.I(occ.data[,varname[v]], distance_matrix)) ## Calculate Moran's I statistic for specified variable using distance matrix
-  names(list.of.results.split)<-c("Temporal autocorrelation","Spatial autocorrelation") ### Names the test results
-  list.of.results[[v]]<-list.of.results.split}
-
-  names(list.of.results)<-c(varname) ## Names the list of results for each variable as the variables name
-  return(list.of.results)}
+  temporal_ordered <- occ.data[order(occ.data[, temporal.level]), ]
 
 
+  # Create list to contain all variables results
+  list.of.results <- vector("list", length(varname))
 
+  # Create list for results
+  list.of.results.split <- vector("list", 2)
 
+ for (v in 1:length(varname)) {
 
+   # ----------------------------------------------------------------------
+   # Temporal autocorrelation
+   # ----------------------------------------------------------------------
+
+   # Aggregate variable data by taking the mean for each temporal.level
+   temporal_agg <-
+     aggregate(as.formula(paste0(varname[v], "~", temporal.level)),
+               FUN = mean,
+               data = temporal_ordered,
+               na.rm = T)
+
+    # Extract aggregated data for variable at each time step
+    data <- temporal_agg[, varname[v]]
+
+    # Remove final timestep (as will not have value for the following timestep)
+    first_obs <- data[-length(data)]
+    second_obs <- data[-1]  # Obtain values at following timestep
+
+    # Plot relationship between value at one timestep compared to following
+    plot(
+      first_obs,
+      second_obs,
+      xlab = paste0(varname[v], '(t)'),
+      ylab = paste0(varname[v], '(t-1)'),
+      pch = 19
+    )
+    abline(lm(first_obs ~ second_obs))
+
+    # Calculate correlation statistic
+    list.of.results.split[[1]] <- cor.test(first_obs, second_obs)
+
+    # ----------------------------------------------------------------------
+    # Spatial autocorrelation
+    # ----------------------------------------------------------------------
+
+    # Calculate spatial distance matrix between each record co-ordinate
+    distance_matrix <- geodist::geodist(data.frame(occ.data$x, occ.data$y),
+                                        measure = 'geodesic')
+
+    # Set diagonal combinations as FALSE
+    diag(distance_matrix) <- FALSE
+
+    ## Calculate Moran's I statistic for specified variable using distance matrix
+    list.of.results.split[[2]] <-
+      as.data.frame(ape::Moran.I(occ.data[, varname[v]], distance_matrix))
+
+    # Names the results
+    names(list.of.results.split) <- c("Temporal autocorrelation",
+                                      "Spatial autocorrelation")
+
+    list.of.results[[v]] <- list.of.results.split # Bind results to list
+  }
+
+  # Names list of results for each variable as variables name
+  names(list.of.results) <- c(varname)
+
+  return(list.of.results)
+}

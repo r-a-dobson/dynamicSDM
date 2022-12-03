@@ -37,153 +37,335 @@
 #'Hijmans, R. J., Van Etten, J., Cheng, J., Mattiuzzi, M., Sumner, M., Greenberg, J. A., Lamigueiro, O. P., Bevan, A., Racine, E. B. & Shortridge, A. 2015. Package ‘raster’. R package, 734.
 #' @return Returns details of successful explanatory variable extractions for each projection date.
 #'@export
-extract_buffered_raster<-function(dates,spatial.ext,datasetname,bandname,spatial.res.metres,GEE.math.fun,moving.window.matrix,user.email,varname=NULL,temporal.res=NULL,temporal.direction=NULL,categories=NULL,save.directory=NULL,save.drive.folder){
 
-  # Check all arguments that are required have been given and are valid .
-  if (missing(spatial.res.metres)){stop("spatial.res.metres is missing")}
-  if (missing(save.drive.folder)){stop("save.drive.folder is missing")}
-  if(!any(class(spatial.ext)==c("numeric","Extent","RasterLayer","Polygon"))){stop("spatial.ext must be of class numeric, Extent, RasterLayer or Polygon")}
+extract_buffered_raster <-
+  function(dates,
+           spatial.ext,
+           datasetname,
+           bandname,
+           spatial.res.metres,
+           GEE.math.fun,
+           moving.window.matrix,
+           user.email,
+           varname = NULL,
+           temporal.res = NULL,
+           temporal.direction = NULL,
+           categories = NULL,
+           save.directory = NULL,
+           save.drive.folder) {
 
-  # Check user email provided
-  if (missing(user.email)){stop("user.email is missing. Please provide user email linked to Google Drive account")}
+    # Check all arguments that are required have been given and are valid .
 
-  # Set default variable names
-  # Temporally dynamic variable name
-  if(!missing(temporal.res)){
-    if (missing(varname)){message(paste0("varname is missing. Default varname set as: ",bandname,"_",temporal.res,"_",temporal.direction,"_",GEE.math.fun,"_buffered_raster"))
-      varname<-paste0(bandname,"_",temporal.res,"_",temporal.direction,"_",GEE.math.fun,"_buffered_raster")}}
-  # Temporally static variable name
-  if (missing(temporal.res)){message("temporal.res missing. Explanatory variable assumed to be static.")
-    message(paste0("varname is missing. Default varname set as: ",bandname,"_",GEE.math.fun,"_buffered_raster"))
-    varname<-paste0(bandname,"_",GEE.math.fun,"_buffered_raster")}
+    if (missing(spatial.res.metres)) {stop("spatial.res.metres is missing")}
 
-  #Import python module
-  ee <- reticulate::import("ee")
+    if (missing(save.drive.folder)) {stop("save.drive.folder is missing")}
 
-  #Initiate Google Drive
-  googledrive::drive_auth(email=user.email)
-  googledrive::drive_user()
+    if (!any(class(spatial.ext) == c("numeric",
+                                     "Extent",
+                                     "RasterLayer",
+                                     "Polygon"))) {
+      stop("spatial.ext must be class numeric, Extent, RasterLayer or Polygon")
+    }
 
-  #Initiate Google Earth Engine
-  rgee::ee_check("rgee")
-  rgee::ee_Initialize(drive=T)
+    # Check user email provided
+    if (missing(user.email)) {stop("Provide user.email for Google Drive")}
 
-  completed.list<-NULL
+    # Set default variable names
 
-  for (x in 1:length(dates)){
+    # Temporally dynamic variable name
+    if (!missing(temporal.res) && missing(varname)) {
+      varname <- paste0(bandname,
+                        "_",
+                        temporal.res,
+                        "_",
+                        temporal.direction,
+                        "_",
+                        GEE.math.fun,
+                        "_buffered_raster")
+      message(paste0("Default varname set as: ", varname))
+    }
 
-    date1<-as.character(as.Date(dates[x]))
+    # Temporally static variable name
+    if (missing(temporal.res) && missing(varname)) {
+      varname <- paste0(bandname, "_", GEE.math.fun, "_buffered_raster")
+      message(paste0("Default varname set as: ", varname))
+    }
 
-    ### Numeric extent to co-ords
-    if(class(spatial.ext)=="numeric" && !length(spatial.ext)==4){stop("spatial.ext numeric vector should be of length four c(xmin, xmax, ymin and ymax)")}
+    # Import python module
+    ee <- reticulate::import("ee")
 
-    xmin<-extract_xy_min_max(spatial.ext)[1]
-    xmax<-extract_xy_min_max(spatial.ext)[2]
-    ymin<-extract_xy_min_max(spatial.ext)[3]
-    ymax<-extract_xy_min_max(spatial.ext)[4]
+    # Initiate Google Drive
+    googledrive::drive_auth(email = user.email)
+    googledrive::drive_user()
+
+    # Initiate Google Earth Engine
+    rgee::ee_check("rgee")
+    rgee::ee_Initialize(drive = T)
+
+    completed.list <- NULL
+
+    for (x in 1:length(dates)) {
+
+      date1 <- as.character(as.Date(dates[x]))
+
+      ### Numeric extent to co-ords
+
+      if (class(spatial.ext) == "numeric" && !length(spatial.ext) == 4) {
+        stop("spatial.ext should be length four: xmin, xmax, ymin and ymax")
+      }
+
+      xmin <- extract_xy_min_max(spatial.ext)[1]
+      xmax <- extract_xy_min_max(spatial.ext)[2]
+      ymin <- extract_xy_min_max(spatial.ext)[3]
+      ymax <- extract_xy_min_max(spatial.ext)[4]
 
 
-    # Create Google Earth Engine Geometry Polygon for extracting set spatial extent of raster
-    geometry <- ee$Geometry$Polygon(list(c(xmin ,  ymin ),c(xmin , ymax),c(xmax, ymax),c(xmax,  ymin )))
+      # Create Google Earth Engine Geometry Polygon for extracting set spatial extent of raster
+      geometry <- ee$Geometry$Polygon(list(c(xmin ,  ymin),
+                                           c(xmin , ymax),
+                                           c(xmax, ymax),
+                                           c(xmax,  ymin)))
 
-    if(missing(temporal.res)){
+      if (missing(temporal.res)) {
 
-      date1<-as.character(date1)
+        date1 <- as.character(date1)
 
-      image_collection <- ee$ImageCollection(paste0(datasetname))$ # Google Earth Engine function to create ImageCollection for specified dataset, band and date for this loop.
-        filterDate(paste0(date1))$
-        select(paste0(bandname))
-
-      image_collection_reduced <- image_collection$reduce(ee$Reducer$first())} # As this is static, there should only be one Image in the ImageCollection, so we reduce it to select the first Image.
-
-
-    if(!missing(temporal.res)){
-
-      firstdate<-as.Date(dates[x])
-
-      GEE.FUNC.LIST<-list(ee$Reducer$allNonZero(), ee$Reducer$anyNonZero(), ee$Reducer$count(), ee$Reducer$first(),ee$Reducer$firstNonNull(),
-                          ee$Reducer$last(), ee$Reducer$lastNonNull(), ee$Reducer$max(),ee$Reducer$mean(), ee$Reducer$median(),
-                          ee$Reducer$min(), ee$Reducer$mode(), ee$Reducer$product(), ee$Reducer$sampleStdDev(), ee$Reducer$sampleVariance(),
-                          ee$Reducer$stdDev(), ee$Reducer$sum(), ee$Reducer$variance()) ## This is a list of all GEE ImageCollection Reducer functions available
-
-      namelist<-c("allNonZero","anyNonZero", "count", "first","firstNonNull", "last", "lastNonNull", "max","mean", "median","min", "mode","product", "sampleStdDev", "sampleVariance",
-                  "stdDev", "sum", "variance") # These are the names to match the GEE Reducer functions, which the user will specify in argument GEE.math.fun
-
-      GEE.math.fun<-match.arg(arg = GEE.math.fun, choices = namelist)  # Match named function to actual function for use. Error if no match found.
-
-      if(temporal.direction=="prior"){
-        seconddate<-as.character(firstdate-temporal.res)# Prior selected so minus temporal.res days from the record date
-        firstdate<-as.character(firstdate)
-
+        # Create Google Earth Engine ImageCollection for dataset, band and date
         image_collection <- ee$ImageCollection(paste0(datasetname))$
-          filterDate(seconddate,firstdate)$ # Create ImageCollection of all Images of specified dataset and band between these two dates
-          select(paste0(bandname))}
+          filterDate(paste0(date1))$select(paste0(bandname))
+        # As static, only one Image in ImageCollection, so select the first.
+        image_collection_reduced <- image_collection$reduce(ee$Reducer$first())
+      }
+
+      if (!missing(temporal.res)) {
+
+        firstdate <- as.Date(dates[x])
+
+        # List of all GEE ImageCollection Reducer functions available
+        GEE.FUNC <-
+          list(
+            ee$Reducer$allNonZero(),
+            ee$Reducer$anyNonZero(),
+            ee$Reducer$count(),
+            ee$Reducer$first(),
+            ee$Reducer$firstNonNull(),
+            ee$Reducer$last(),
+            ee$Reducer$lastNonNull(),
+            ee$Reducer$max(),
+            ee$Reducer$mean(),
+            ee$Reducer$median(),
+            ee$Reducer$min(),
+            ee$Reducer$mode(),
+            ee$Reducer$product(),
+            ee$Reducer$sampleStdDev(),
+            ee$Reducer$sampleVariance(),
+            ee$Reducer$stdDev(),
+            ee$Reducer$sum(),
+            ee$Reducer$variance()
+          )
+
+        # Names to match the GEE Reducer functions
+        namelist <-
+          c(
+            "allNonZero",
+            "anyNonZero",
+            "count",
+            "first",
+            "firstNonNull",
+            "last",
+            "lastNonNull",
+            "max",
+            "mean",
+            "median",
+            "min",
+            "mode",
+            "product",
+            "sampleStdDev",
+            "sampleVariance",
+            "stdDev",
+            "sum",
+            "variance"
+          )
+
+        # Match named function to actual function for use.
+        GEE.math.fun <- match.arg(arg = GEE.math.fun, choices = namelist)
+
+        # Prior selected so minus temporal.res days from the record date
+        if (temporal.direction == "prior") {
+          seconddate <- as.character(firstdate - temporal.res)
+          firstdate <- as.character(firstdate)
+
+          # ImageCollection of all Images of dataset and band between dates
+          image_collection <- ee$ImageCollection(paste0(datasetname))$
+            filterDate(seconddate, firstdate)$
+            select(paste0(bandname))
+        }
+
+        # Post selected so minus temporal.res days from the record date
+        if (temporal.direction == "post") {
+          seconddate <- as.character(firstdate + temporal.res)
+          firstdate <- as.character(firstdate)
+
+          # ImageCollection of all Images of dataset and band between dates
+          image_collection <- ee$ImageCollection(paste0(datasetname))$
+            filterDate(firstdate, seconddate)$
+            select(paste0(bandname))
+        }
 
 
-      if(temporal.direction=="post"){
-        seconddate<-as.character(firstdate+temporal.res)# Post selected so minus temporal.res days from the record date
-        firstdate<-as.character(firstdate)
+        # Reduce ImageCollection using function specified in GEE.math.fun
+        image_collection_reduced <-
+          image_collection$reduce(GEE.FUNC[[match(GEE.math.fun, namelist)]])
+      }
 
-        image_collection <- ee$ImageCollection(paste0(datasetname))$
-          filterDate(firstdate,seconddate)$ # Create ImageCollection of all Images of specified dataset and band between these two dates
-          select(paste0(bandname))}
+      # Download raster of Reduced ImageCollection to users Google Drive folder
+      tryCatch({
+        raster <- rgee::ee_as_raster(
+          image = image_collection_reduced,
+          container = save.drive.folder,
+          scale = spatial.res.metres,
+          dsn = paste0(varname, "_", date1, "_unprocessed"),
+          region = geometry,
+          timePrefix = FALSE,
+          via = "drive"
+        )
+      }, error = function(e) {
+        cat("ERROR :", conditionMessage(e), "\n")
+      })
 
-      image_collection_reduced <- image_collection$reduce(GEE.FUNC.LIST[[match(GEE.math.fun,namelist)]])} # Reduce ImageCollection using function specified in GEE.math.fun
+      # Authenticate Google Drive
+      googledrive::drive_auth(email = user.email)
+      googledrive::drive_user()
 
-    # Download raster of Reduced ImageCollection to users Google Drive folder
-    tryCatch({raster<-rgee::ee_as_raster(
-      image = image_collection_reduced,
-      container=save.drive.folder,
-      scale=spatial.res.metres,
-      dsn=paste0(varname,"_",date1,"_unprocessed"), # Name unprocessed to identify which to delete later. This raster has not been spatial buffered so cannot be used in projections yet.
-      region = geometry,
-      timePrefix=FALSE,
-      via = "drive")},error=function(e){cat("ERROR :",conditionMessage(e),"\n")})
+      pathforthisfile <- paste0(tempfile(), ".tif") # Create temp file name
 
-    googledrive::drive_auth(email=user.email) # Authenticate Google Drive
-    googledrive::drive_user()  # Check Google Drive user information
+      # Download unprocessed raster to temporary directory
+      googledrive::drive_download(
+        paste0(varname, "_", date1, "_unprocessed.tif"),
+        path = pathforthisfile,
+        overwrite = T
+      )
+      raster <- raster::raster(pathforthisfile) # Import raster from temp
 
-    pathforthisfile<-paste0(tempfile(),".tif") # Create temp file name for unprocessed (not spatially buffered) raster
-    googledrive::drive_download(paste0(varname,"_",date1,"_unprocessed.tif"),path=pathforthisfile,overwrite=T)  # Download unprocessed (not spatially buffered) raster to temporary directory
-    raster<-raster::raster(pathforthisfile) # Read unprocessed (not spatially buffered) raster in for processing
-
-    googledrive::drive_rm(paste0(varname,"_",date1,"_unprocessed.tif")) # Delete unprocessed (not spatially buffered) raster from Google Drive.
-
-
-    # Match GEE.math.fun argument to analogous R function
-    R.FUNC.LIST<-list(allNonZero,anyNonZero,count,First,firstNonNull,last,lastNonNull,max,mean,stats::median,
-                      min,mode,prod,sd,var,stdDev,sum,variance)
-
-    namelist<-c("allNonZero","anyNonZero", "count", "first","firstNonNull", "last", "lastNonNull", "max","mean", "median","min", "mode","product", "sampleStdDev", "sampleVariance",
-                "stdDev", "sum", "variance") # These are the names to match the GEE Reducer functions, which the user will specify in argument GEE.math.fun
-
-    GEE.math.fun<-match.arg(arg = GEE.math.fun, choices = namelist)  # Match named function to actual function for use. Error if no match found.
-
-    math.fun<-R.FUNC.LIST[[match(GEE.math.fun,namelist)]]# Match GEE.math.fun argument to analogous R function
+      # Delete unprocessed raster from Google Drive.
+      googledrive::drive_rm(paste0(varname, "_", date1, "_unprocessed.tif"))
 
 
-    ## Process a categorical data raster
-    if(!missing(categories)){
-      rast<-raster==categories[1]
-      if(length(categories)>1){for(cat in 2:length(categories)){rast<-rast+raster==categories[cat]}} # If more than one category, iterate through each category and add binary rasters together
-      moving.window.matrix[1:nrow(moving.window.matrix),1:ncol(moving.window.matrix)]<-1 ## If data are categorical then focal should be completed using moving.window.matrix with weights = 1 for each cell.
-      focalraster<-raster::focal(rast,moving.window.matrix,FUN=math.fun,na.rm=T)} ## Calculate the math.fun function across moving.window.matrix for the raster with focal function in R.
+      # Match GEE.math.fun argument to analogous R function
+      R.FUNC.LIST <-
+        list(
+          allNonZero,
+          anyNonZero,
+          count,
+          First,
+          firstNonNull,
+          last,
+          lastNonNull,
+          max,
+          mean,
+          stats::median,
+          min,
+          mode,
+          prod,
+          sd,
+          var,
+          stdDev,
+          sum,
+          variance
+        )
 
-    ## Process a continuous data raster
-    if(missing(categories)){focalraster<-raster::focal(raster,moving.window.matrix,FUN=math.fun)} ## Calculate the math.fun function across moving.window.matrix for the raster with focal function in R.
+      namelist <-
+        c(
+          "allNonZero",
+          "anyNonZero",
+          "count",
+          "first",
+          "firstNonNull",
+          "last",
+          "lastNonNull",
+          "max",
+          "mean",
+          "median",
+          "min",
+          "mode",
+          "product",
+          "sampleStdDev",
+          "sampleVariance",
+          "stdDev",
+          "sum",
+          "variance"
+        )
 
-    if(!missing(save.directory)){pathforthisfile<-save.directory}
+      # Match named function to actual function for use. Error if no match found
+      GEE.math.fun <- match.arg(arg = GEE.math.fun, choices = namelist)
 
-    raster::writeRaster(focalraster,pathforthisfile,overwrite=T) # Write spatially buffered raster to temporary directory or save directory if specified
+      # Match GEE.math.fun argument to analogous R function
+      math.fun <- R.FUNC.LIST[[match(GEE.math.fun, namelist)]]
 
-    # Find folder path of save.drive.folder and upload the processed raster to this folder
-    folderpath<-  googledrive::drive_find(pattern=paste0(save.drive.folder), type='folder')
-    googledrive::drive_upload(media=pathforthisfile,path=googledrive::as_id(folderpath$id),name=paste0(varname,"_",date1,".tif"),overwrite=T)
 
-    completed.list<-rbind(completed.list,paste0(varname,"_",date1))} # Record that this has been successfully downloaded and iterate onto next date
+      # Process a categorical data raster
+      # If more than one category, iterate through each category and add rasters
 
-  if(missing(save.directory)){print(paste0("Data successfully extracted and saved to Google Drive folder:",save.drive.folder))}
-  if(!missing(save.directory)){print(paste0("Data successfully extracted and saved to Google Drive folder:",save.drive.folder," and local directory:",save.directory))}
+      if (!missing(categories)) {
+        rast <- raster == categories[1]
 
-  return(completed.list)}
+        if (length(categories) > 1) {
+          for (cat in 2:length(categories)) {
+            rast <- rast + raster == categories[cat]
+          }
+        }
+        # If data are categorical then moving.window.matrix with weights = 1
+        moving.window.matrix[1:nrow(moving.window.matrix),
+                             1:ncol(moving.window.matrix)] <- 1
 
+        # Calculate math.fun function across moving.window.matrix for the raster
+        focalraster <- raster::focal(rast,
+                                     moving.window.matrix,
+                                     FUN = math.fun,
+                                     na.rm = T)
+      }
+
+      # Process a continuous data raster
+      if (missing(categories)) {
+        # Calculate math.fun function across moving.window.matrix for the raster
+        focalraster <- raster::focal(raster,
+                                     moving.window.matrix,
+                                     FUN = math.fun)
+      }
+
+      if (!missing(save.directory)) {pathforthisfile <- save.directory}
+
+      # Write spatially buffered raster to temp dir or save dir
+      raster::writeRaster(focalraster, pathforthisfile, overwrite = T)
+
+      # Find folder path of save.drive.folder and upload the processed raster to this folder
+      folderpath <- googledrive::drive_find(pattern = paste0(save.drive.folder),
+                                            type = 'folder')
+      googledrive::drive_upload(
+        media = pathforthisfile,
+        path = googledrive::as_id(folderpath$id),
+        name = paste0(varname, "_", date1, ".tif"),
+        overwrite = T
+      )
+
+      # Record successful download and iterate onto next date
+      completed.list <- rbind(completed.list, paste0(varname, "_", date1))
+    }
+
+    if (missing(save.directory)) {
+      print(paste0("Data extracted to Google Drive folder:", save.drive.folder))
+    }
+
+    if (!missing(save.directory)) {
+      print(
+        paste0(
+          "Data extracted to Google Drive folder:",
+          save.drive.folder,
+          " and local directory:",
+          save.directory
+        )
+      )
+    }
+
+    return(completed.list)
+  }

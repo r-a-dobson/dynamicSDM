@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/r-a-dobson/dynamicSDM/branch/main/graph/badge.svg)](https://app.codecov.io/gh/r-a-dobson/dynamicSDM?branch=main)
 [![rcmdcheck](https://github.com/r-a-dobson/dynamicSDM/actions/workflows/rcmdcheck.yml/badge.svg)](https://github.com/r-a-dobson/dynamicSDM/actions/workflows/rcmdcheck.yml)
 
+[![R-CMD-check](https://github.com/r-a-dobson/dynamicSDM/workflows/R-CMD-check/badge.svg)](https://github.com/r-a-dobson/dynamicSDM/actions)
 <!-- badges: end -->
 
 

@@ -55,25 +55,31 @@ If weights.col given, records are weighted by their associated value in the weig
 }
 \examples{
 
-data("sample_model_data",package ="dynamicSDM")
-split = sample(c(TRUE, FALSE), nrow(sample_model_data), replace=TRUE, prob=c(0.75, 0.25))
-training = sample_model_data[split, ]
-testing = sample_model_data[!split, ]
+data("sample_model_data", package = "dynamicSDM")
+split <- sample(c(TRUE, FALSE),
+               replace=TRUE,
+               nrow(sample_model_data),
+               prob = c(0.75, 0.25))
+training <- sample_model_data[split, ]
+testing <- sample_model_data[!split, ]
+brt_fit(
+ occ.data = training,
+ test.data = testing,
+ response.col = "presence.absence",
+ distribution = "bernoulli",
+ weights.col = "sampling_weights",
+ varnames = colnames(training)[9:12]
+)
 
-brt_fit(occ.data=training,
-        test.data=testing,
-        response.col = "presence.absence",
-        distribution="bernoulli",
-        weights.col="sampling_weights",
-        varnames=colnames(training)[9:12])
-
-training = sample_model_data
-brt_fit(occ.data=training,
-        response.col = "presence.absence",
-        distribution="bernoulli",
-        block.col="blockno",
-        weights.col="sampling_weights",
-        varnames=colnames(training)[9:12])
+training <- sample_model_data
+brt_fit(
+ occ.data = training,
+ response.col = "presence.absence",
+ distribution = "bernoulli",
+ block.col = "blockno",
+ weights.col = "sampling_weights",
+ varnames = colnames(training)[9:12]
+)
 }
 \references{
 Bagchi, R., Crosby, M., Huntley, B., Hole, D. G., Butchart, S. H. M., Collingham, Y., Kalra, M., Rajkumar, J., Rahmani, A. & Pandey, M. 2013. Evaluating the effectiveness of conservation site networks under climate change: accounting for uncertainty. Global Change Biology, 19, 1236-1248.

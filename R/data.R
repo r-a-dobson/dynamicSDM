@@ -1,5 +1,6 @@
-#' Sample species occurrence records with associated dynamic explanatory variables
-#'
+#' @name sample_model_data
+#' @title Sample species occurrence records with associated dynamic explanatory variables
+#' @description
 #' A dataset containing a sample of the bird species, the red-billed quelea (Quelea quelea), distribution and abundance records from between 2002-2017 including generated pseudo-absence records and associated extracted dynamic explanatory variables.
 #' The variables are as follows:
 #'
@@ -20,6 +21,7 @@
 #'   \item{watercount}{total number of MODIS Land Cover Type Yearly 500m "	Water Bodies: at least 60% of area is covered by permanent water bodies" cells in surrounding area of record co-ordinate in record year.}
 #'   \item{blockno}{Block group assinged for model fitting by jacknife approach to account for spatial and temporal autocorrelation}
 #' }
+#' @docType data
 #' @references
 #' Friedl, M., Sulla-Menashe, D. (2019). MCD12Q1 MODIS/Terra+Aqua Land Cover Type Yearly L3 Global 500m SIN Grid V006 [Data set]. NASA EOSDIS Land Processes DAAC. Accessed 2022-11-24 from https://doi.org/10.5067/MODIS/MCD12Q1.006
 #'
@@ -30,13 +32,12 @@
 #' GBIF.org (25 July 2022) GBIF Occurrence Download https://doi.org/10.15468/dl.k2kftv
 #'
 #' Wan, Z., Hook, S., Hulley, G. (2015). MOD11A1 MODIS/Terra Land Surface Temperature/Emissivity Daily L3 Global 1km SIN Grid V006 [Data set]. NASA EOSDIS Land Processes DAAC. Accessed 2022-11-24 from https://doi.org/10.5067/MODIS/MOD11A1.006
-#' @noRd
-"sample_model_data"
+data("sample_model_data")
 
 
-
-#' Sample species occurrence records with pseudo-absence records
-#'
+#' @name sample_occ_abs_data
+#' @title Sample species occurrence records with pseudo-absence records
+#' @description
 #' A dataset containing a sample of the bird species, the red-billed quelea (Quelea quelea), distribution and abundance records between 2002-2017 with generated spatiotemporal pseudo-absence records.
 #' The variables are as follows:
 #'
@@ -50,16 +51,17 @@
 #'   \item{presence.absence}{binary species presence or absence at record location and date.}
 #'   \item{individualCount}{number of individuals of the species present at record location and date.}
 #' }
+#' @docType data
 #' @references
 #' GBIF.org (12 July 2021) GBIF Occurrence Download https://doi.org/10.15468/dl.ppcu6q
 #'
 #' GBIF.org (25 July 2022) GBIF Occurrence Download https://doi.org/10.15468/dl.k2kftv
-#'@noRd
-"sample_occ_abs_data"
+data("sample_occ_abs_data")
 
-
-#' Sample species occurrence records
+#' @name sample_occ_data
 #'
+#' @title Sample species occurrence records
+#'@description
 #' A dataset containing a sample of the bird species, the red-billed quelea (Quelea quelea), distribution and abundance records between 2002-2017.
 #' The variables are as follows:
 #'
@@ -73,16 +75,16 @@
 #'   \item{presence.absence}{binary species presence or absence at record location and date.}
 #'   \item{individualCount}{number of individuals of the species present at record location and date.}
 #' }
+#' @docType data
 #' @references
 #' GBIF.org (12 July 2021) GBIF Occurrence Download https://doi.org/10.15468/dl.ppcu6q
 #'
 #' GBIF.org (25 July 2022) GBIF Occurrence Download https://doi.org/10.15468/dl.k2kftv
-#' @noRd
-"sample_occ_data"
+data("sample_occ_data")
 
-
-#' Categorical raster.
-#'
+#' @name biome_layer
+#' @title Categorical raster.
+#' @description
 #' Categorical RasterLayer cropped to southern Africa at 10 degree resolution.
 #' Represents a biome classification RasterLayer that could be used when spatially blocking species occurrence data.
 #'
@@ -97,13 +99,13 @@
 #'   \item{names}{layer}
 #'   \item{values}{Numerical categorical value.}
 #' }
-#' @noRd
-#'
-"biome_layer"
+#' @docType data
+data("biome_layer")
 
 
-#' Sample e-Bird sampling event records
-#'
+#' @name sample_surveyeffort
+#' @title  Sample e-Bird sampling event records
+#'@description
 #' A dataset containing a sample of e-Bird sampling events for all bird species across southern Africa between 2000-2020.
 #' The variables are as follows:
 #'
@@ -115,12 +117,13 @@
 #'   \item{y}{avian e-Bird sampling event latitude.}
 #'   \item{x}{avian e-Bird sampling event longitude.}
 #' }
+#'
+#' @docType data
 #' @references
 #' Fink, D., T. Auer, A. Johnston, M. Strimas-Mackey, O. Robinson, S. Ligocki, W. Hochachka, L. Jaromczyk, C. Wood, I. Davies, M. Iliff, L. Seitz. 2021. eBird Status and Trends, Data Version: 2020; Released: 2021. Cornell Lab of Ornithology, Ithaca, New York. https://doi.org/10.2173/ebirdst.2020
 #'
 #'GBIF.org (12 July 2021) GBIF Occurrence Download  https://doi.org/10.15468/dl.ppcu6q
-#' @noRd
-"sample_surveyeffort"
+data("sample_surveyeffort")
 
 
 

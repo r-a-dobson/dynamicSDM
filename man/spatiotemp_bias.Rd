@@ -24,3 +24,7 @@ To assess spatial sampling bias, the function returns a scatterplot of the spati
 
 As the spatial bias calculation involves calculation of a distance matrix. To reduce computation time, it is recommended that a sample of large occurrence datasets are input.
 }
+\examples{
+data("sample_occ_data",package="dynamicSDM")
+spatiotemp_bias(occ.data = sample_occ_data,temporal.level = "month")
+}

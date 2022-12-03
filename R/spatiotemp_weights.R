@@ -11,70 +11,125 @@
 #'
 #'Output could be used as model weights to correct spatial and temporal biases in occurrence record collections.
 #' @return Returns input occurrence record data frame with additional columns for sampling effort "SAMP_EFFORT" and relative sampling effort "REL_SAMP_EFFORT".
-#' @example
+#' @examples
 #' data("sample_occ_abs_data",package="dynamicSDM")
 #' data("sample_surveyeffort",package="dynamicSDM")
 #' spatiotemp_weights(occ.data = sample_occ_abs_data,sampling.events.df = sample_surveyeffort,spatial.dist = 200000,temporal.dist = 20)
 #'@export
 #'
-spatiotemp_weights<-function(occ.data,sampling.events.df, spatial.dist=NA,temporal.dist=NA){
+spatiotemp_weights <-  function(occ.data,
+                                sampling.events.df,
+                                spatial.dist = NULL,
+                                temporal.dist = NULL) {
 
-  # Check formatting of sampling events data frame provided
-  if(!"day" %in% colnames(sampling.events.df)){stop("sampling.events.df day column not found. Ensure sampling.event.df day column is named day")}
-  if(!"month" %in% colnames(sampling.events.df)){stop("sampling.events.df month column not found. Ensure sampling.event.df month column is named month")}
-  if(!"year" %in% colnames(sampling.events.df)){stop("sampling.events.df year column not found. Ensure sampling.event.df year column is named year")}
-  if(!"x" %in% colnames(sampling.events.df)){stop("sampling.events.df x column not found. Ensure sampling.event.df longitude column is named x")}
-  if(!"y" %in% colnames(sampling.events.df)){stop("sampling.events.df y column not found. Ensure sampling.event.df latitude column is named y")}
+# Check formatting of sampling events data frame provided
+  if (!"day" %in% colnames(sampling.events.df)) {
+    stop("sampling.events.df day column not found.")
+  }
 
-  ### check column classes correct
-  if (!class(sampling.events.df$year)=="numeric"){stop("sampling.events.df year must be of class numeric")}
-  if (!class(sampling.events.df$month)=="numeric"){stop("sampling.events.df month must be of class numeric")}
-  if (!class(sampling.events.df$day)=="numeric"){stop("sampling.events.df day must be of class numeric")}
-  if (!class(sampling.events.df$x)=="numeric"){stop("sampling.events.df x must be of class numeric")}
-  if (!class(sampling.events.df$y)=="numeric"){stop("sampling.events.df y must be of class numeric")}
+  if (!"month" %in% colnames(sampling.events.df)) {
+    stop("sampling.events.df month column not found.")
+  }
+  if (!"year" %in% colnames(sampling.events.df)) {
+    stop("sampling.events.df year column not found.")
+  }
+  if (!"x" %in% colnames(sampling.events.df)) {
+    stop("sampling.events.df x column not found.")
+  }
+  if (!"y" %in% colnames(sampling.events.df)) {
+    stop("sampling.events.df y column not found.")
+  }
+
+  # check column classes correct
+
+  if (!is.numeric(sampling.events.df$year)) {
+    stop("sampling.events.df year must be of class numeric")
+  }
+  if (!is.numeric(sampling.events.df$month)) {
+    stop("sampling.events.df month must be of class numeric")
+  }
+  if (!is.numeric(sampling.events.df$day)) {
+    stop("sampling.events.df day must be of class numeric")
+  }
+  if (!is.numeric(sampling.events.df$x)) {
+    stop("sampling.events.df x must be of class numeric")
+  }
+  if (!is.numeric(sampling.events.df$y)) {
+    stop("sampling.events.df y must be of class numeric")
+  }
 
   # Check formatting of spatial.dist argument
-  if(!class(spatial.dist)=="numeric"){stop("spatial.dist must be numeric")}
-  if(!length(spatial.dist)==1){stop("spatial.dist must be length  1 representing the distance from record to sum sampling effort across")}
+
+  if (!is.numeric(spatial.dist)) {
+    stop("spatial.dist must be numeric")
+  }
+
+  if (!length(spatial.dist) == 1) {
+    stop("spatial.dist must be length  1")
+  }
 
   # Check formatting of temporal.dist argument
-  if(!class(temporal.dist)=="numeric"){stop("temporal.dist must be numeric")}
-  if(!length(temporal.dist)==1){stop("temporal.dist must be length 1 representing the temporal distance from record date to sum sampling effort across")}
 
+  if (!is.numeric(temporal.dist)) {
+    stop("temporal.dist must be numeric")
+  }
+  if (!length(temporal.dist) == 1) {
+    stop("temporal.dist must be length 1")
+  }
 
-  SAMP_EFFORT=NULL  ## Create empty vector to bind extracted sampling effort values to
+  # Create empty vector to bind extracted sampling effort values to
+  SAMP_EFFORT = NULL
 
-  surroundingarea_points<-rangemap::geobuffer_points(occ.data[, c("x","y")],radius=spatial.dist,by_point = T) # Create polygon of spatial area surrounding occurrence co-ordinate to extract sampling effort across
+  # Create polygon of area surrounding co-ordinates to extract sampling effort
 
+  surroundingarea_points <- rangemap::geobuffer_points(occ.data[, c("x", "y")],
+                                                       radius = spatial.dist,
+                                                       by_point = T)
 
-  for(x in 1:nrow(occ.data)){
+  for (x in 1:nrow(occ.data)) {
+    # Get the earliest date to include in the sampling effort calculation
+    date1 <-
+      as.Date(with(occ.data, paste(year, month, day, sep = "-")), "%Y-%m-%d")[x]
+    date1 <- date1 - temporal.dist
 
-  date1<-as.Date(with(occ.data, paste(year, month, day,sep="-")), "%Y-%m-%d")[x] - temporal.dist ## Get the earliest date to include in the sampling effort calculation
-  date2<-as.Date(with(occ.data, paste(year, month, day,sep="-")), "%Y-%m-%d")[x] + temporal.dist  ## Get the latest date to include in the sampling effort calculation
+    # Get the latest date to include in the sampling effort calculation
+    date2 <-
+      as.Date(with(occ.data, paste(year, month, day, sep = "-")), "%Y-%m-%d")[x]
+    date2 <- date2 + temporal.dist
 
-  samplingeffortdates<-as.Date(with(sampling.events.df, paste(year, month, day,sep="-")), "%Y-%m-%d")  ## Convert data frame columns to Date objects
+    # Convert data frame columns to Date objects
+    samplingeffortdates <-
+      as.Date(with(sampling.events.df,
+                   paste(year, month, day, sep = "-")), "%Y-%m-%d")
 
-  samplingefforttemp <-as.data.frame(sampling.events.df[samplingeffortdates >= date1 &    # Extract sampling events between earliest and latest date
-               samplingeffortdates <= date2, ])
+    # Extract sampling events between earliest and latest date
+    samplingefforttemp <-
+      as.data.frame(sampling.events.df[samplingeffortdates >= date1 &
+                                         samplingeffortdates <= date2,])
 
-  surroundingarea_point<-surroundingarea_points[x] # Select radius for this co-ordinate
+    # Select polygon of radius for this co-ordinate
+    surroundingarea_point <- surroundingarea_points[x]
 
-  xmin<-sp::bbox(raster::extent(surroundingarea_point))[1,1] # Extract co-ordinates for buffer area
-  xmax<-sp::bbox(raster::extent(surroundingarea_point))[1,2]
-  ymin<-sp::bbox(raster::extent(surroundingarea_point))[2,1]
-  ymax<-sp::bbox(raster::extent(surroundingarea_point))[2,2]
+    # Extract co-ordinates for buffer area
+    xmin <- sp::bbox(raster::extent(surroundingarea_point))[1, 1]
+    xmax <- sp::bbox(raster::extent(surroundingarea_point))[1, 2]
+    ymin <- sp::bbox(raster::extent(surroundingarea_point))[2, 1]
+    ymax <- sp::bbox(raster::extent(surroundingarea_point))[2, 2]
 
-  samplingefforttemp <-as.data.frame(samplingefforttemp[samplingefforttemp$x <= xmax &    # Filter temporally filtered sampling events to include only records within spatial limits in longitude
-                                                          samplingefforttemp$x >= xmin, ])
+    # Filter sampling events to include only records within spatial limits
+    samplingefforttemp <-
+      as.data.frame(samplingefforttemp[samplingefforttemp$x <= xmax &
+                                         samplingefforttemp$x >= xmin, ])
 
-  samplingefforttemp <-as.data.frame(samplingefforttemp[samplingefforttemp$y <= ymax &    # Filter temporally filtered sampling events to include only records within spatial limits in latitude
-                                                      samplingefforttemp$y >= ymin, ])
+    samplingefforttemp <-
+      as.data.frame(samplingefforttemp[samplingefforttemp$y <= ymax &
+                                         samplingefforttemp$y >= ymin,])
 
-  SAMP_EFFORT<-rbind(SAMP_EFFORT,nrow(samplingefforttemp))} ## Continue iterating through each record
+    SAMP_EFFORT <- rbind(SAMP_EFFORT, nrow(samplingefforttemp)) # Bind result
+  }
 
-  REL_SAMP_EFFORT<-SAMP_EFFORT/(sum(SAMP_EFFORT,na.rm=T)) ## Calculate relative sampling effort
+  # Calculate relative sampling effort
+  REL_SAMP_EFFORT <- SAMP_EFFORT / (sum(SAMP_EFFORT, na.rm = T))
 
-  return(cbind(occ.data,SAMP_EFFORT,REL_SAMP_EFFORT)) }
-
-
-
+  return(cbind(occ.data, SAMP_EFFORT, REL_SAMP_EFFORT))
+}

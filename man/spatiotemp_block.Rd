@@ -44,6 +44,11 @@ Spatial splitting: If the spatial.layer raster has categories that take up large
 Temporal splitting: If temporal.block is given, then occurrence records with unique values for given level are considered unique sampling unit. For instance, if temporal.block = “year”, then records from the same year are considered a sampling unit to be grouped into blocks. However, if spatial splitting is also used, then spatial characteristics may split these further into separate sampling units.
 Once split into sampling units based upon temporal and spatial characteristics, these units are then assigned into given number of blocks (n.blocks), so that the mean and range of explanatory variables (vars.to.block.by) are similar across each.
 }
+\examples{
+data("sample_model_data", package ="dynamicSDM")
+data("biome_layer", package ="dynamicSDM")
+spatiotemp_block(occ.data = sample_model_data,spatial.layer = biome_layer,spatial.split.degrees=3,temporal.block=c("month"),vars.to.block.by=colnames(sample_model_data)[9:12],n.blocks=10)
+}
 \references{
 Bagchi, R., Crosby, M., Huntley, B., Hole, D. G., Butchart, S. H. M., Collingham, Y., Kalra, M., Rajkumar, J., Rahmani, A. & Pandey, M. 2013. Evaluating the effectiveness of conservation site networks under climate change: accounting for uncertainty. Global Change Biology, 19, 1236-1248.
 }

@@ -21,41 +21,57 @@
 #'occ.data<-data.frame(cbind(x,y,year,month,day))
 #'spatiotemp_resolution(occ.data,spatial.res=5,temporal.res="day")
 #'@export
-spatiotemp_resolution<-function(occ.data, spatial.res=NULL, temporal.res=NULL){
+spatiotemp_resolution <-  function(occ.data,
+                                   spatial.res = NULL,
+                                   temporal.res = NULL) {
 
-  ## Filter by spatial resolution if specified
-
-  if(!missing(spatial.res)){
-
-    if(!class(spatial.res)=="numeric"){stop("spatial.res should be numeric")}
-
-    res<-nchar(stringr::str_split_fixed(as.character(occ.data$x),"[.]",2)[,2]) ## Counts number of digits after the decimal places
-
-    occ.data<-occ.data[res>=spatial.res,]} ##Filter records by given acceptable resolution specified in number of decimal places
+  #--------------------------------------------------
+  # Filter by spatial resolution
+  #--------------------------------------------------
 
 
-  if(!missing(temporal.res)){
+  if (!missing(spatial.res)) {
 
-   temporal.res<-match.arg(arg = temporal.res, choices = c("day", "month","year")) # Check argument given for temporal.res
+    if (!is.numeric(spatial.res)) {stop("spatial.res should be numeric")}
 
-  ### If temporal.res is year, function exclude records with missing year values
+    # Count number of digits after the decimal places
+    res <-
+      nchar(stringr::str_split_fixed(as.character(occ.data$x), "[.]", 2)[, 2])
 
-  if(temporal.res=="year"){occ.data<-occ.data[!is.na(occ.data[,'year']),]}
+    # Filter records by given acceptable number of decimal places
+    occ.data <- occ.data[res >= spatial.res,]
+  }
 
-  ### If temporal.res is month, function exclude records with missing year or month values
 
-  if(temporal.res=="month"){
-    occ.data<-occ.data[!is.na(occ.data[,'month']),]
-    occ.data<-occ.data[!is.na(occ.data[,'year']),]}
+  if (!missing(temporal.res)) {
 
-  ### If temporal.res is day, function exclude records with missing year, month and day values
+    # Match argument given to choices available
+    temporal.res <- match.arg(arg = temporal.res, choices = c("day",
+                                                              "month",
+                                                              "year"))
 
-  if(temporal.res=="day"){
-    occ.data<-occ.data[!is.na(occ.data[,'month']),]
-    occ.data<-occ.data[!is.na(occ.data[,'year']),]
-    occ.data<-occ.data[!is.na(occ.data[,'day']),]}}
+    # If temporal.res is year, exclude records with missing year
+
+    if (temporal.res == "year") {
+      occ.data <- occ.data[!is.na(occ.data[, 'year']), ]
+    }
+
+    # If temporal.res is month, exclude records with missing year or month
+
+    if (temporal.res == "month") {
+      occ.data <- occ.data[!is.na(occ.data[, 'month']),]
+      occ.data <- occ.data[!is.na(occ.data[, 'year']),]
+    }
+
+    # If temporal.res is day, exclude records with missing year, month and day
+
+    if (temporal.res == "day") {
+      occ.data <- occ.data[!is.na(occ.data[, 'month']),]
+      occ.data <- occ.data[!is.na(occ.data[, 'year']),]
+      occ.data <- occ.data[!is.na(occ.data[, 'day']),]
+    }
+  }
 
   return(occ.data)
 
 }
-

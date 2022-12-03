@@ -11,30 +11,37 @@
 #'To prevent error, the “.csv” files must be uniquely named within the folder and include an exact character match for the varnames provided. All “.csv” files matching the varnames should have the same number and names of columns, which the default output of extract_dynamic_coords and extract_buffered_coords will if given the same occ.data data frame.
 #' @return Returns a data frame containing all occurrence records with associated explanatory variable data.
 #'@export
-extract_coords_combine<-function(varnames,local.directory){
+#'
+extract_coords_combine <- function(varnames, local.directory) {
 
-  if(any(!dir.exists(local.directory))){stop("One of the directories given in local.directory argument does not exist")}
+  if (any(!dir.exists(local.directory))) {
+    stop("One or more local directory(s) not found")
+  }
 
-  df_list = vector(mode = "list", length = length(varnames))  ### Create empty list to add dataframes to before merging
+  # Create empty list to add dataframes to before merging
+  df_list = vector(mode = "list", length = length(varnames))
 
-# Read in and combine if neccessary data for each variable and store in list
+  # Read in and combine data for each variable
 
-  for (v in 1:length(varnames)){
+  for (v in 1:length(varnames)) {
 
-  list<-list.files(local.directory,full.names = T, pattern="*.csv") ### List all csv. files in local.directory
+    list <- list.files(local.directory,full.names = T,pattern = "*.csv")
 
-  if(length(list)==0){stop("no files found in local.directory" )}
+    if (length(list) == 0) {stop("no files found in local.directory")}
 
-  list<-list[grep(varnames[v],list)] ## Get file names matching each variable name given
+    # Get file names matching variable name
+    list <- list[grep(varnames[v], list)]
 
-  if(length(list)==0){stop(paste0("no files found in local.directory for varnames: ",varnames[v]))}
+    if (length(list) == 0) {stop(paste0("no files for varname:", varnames[v]))}
 
-    df_list[[v]]<-list  %>% # list files to read in - only important if "split" method used to extract explanatory variable data.
+    df_list[[v]] <- list  %>%
       lapply(read.csv) %>% # read in each one as csv
-        dplyr::bind_rows(, .id = "column_label")} ## bind csv. by column labels
+      dplyr::bind_rows(, .id = "column_label") # bind csv. by column labels
+  }
 
-  merged.data.frame = Reduce(function(...) merge(..., all=T), df_list) ### Merge all data frames within the list into single, merged data frame
+  # Merge all data frames within the list into single data frame
+  merged.data.frame = Reduce(function(...)
+    merge(..., all = T), df_list)
 
-  return(merged.data.frame)}
-
-
+  return(merged.data.frame)
+}

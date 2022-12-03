@@ -21,7 +21,7 @@
 #' Aiello-Lammens, M. E., Boria, R. A., Radosavljevic, A., Vilela, B. & Anderson, R. P. 2015. spThin: an R package for spatial thinning of species occurrence records for use in ecological niche models. Ecography, 38, 541-545.
 
 #' @return Returns data frame of occurrence records thinned by specified temporal and spatial distance.
-#' @example
+#' @examples
 #' x<-c(27.79125, 28.54125, 25.54125, 30.04125, 29.95792)
 #' y<-c(-26.79125, -26.37458, -26.70792, -29.37458, -28.45792)
 #' year<-c(2014, 2016, 2011, 2011, 2015)
@@ -31,180 +31,231 @@
 #'
 #' spatiotemp_thin(occ.data=occ.data, temporal.method="day", temporal.dist=14,spatial.split.degrees=3,spatial.dist=100000, iterations=5)
 #'@export
-spatiotemp_thin <- function(occ.data, temporal.method, temporal.dist,spatial.split.degrees,spatial.dist, iterations=100) {
 
-  ## Check correct formatting of iterations argument
-  if(!class(iterations)=="numeric"){stop("iterations must be of class numeric")}
-  if(!length(iterations)==1){stop("iterations must be of length(1)")}
+spatiotemp_thin <-  function(occ.data,
+                             temporal.method,
+                             temporal.dist,
+                             spatial.split.degrees,
+                             spatial.dist,
+                             iterations = 100) {
 
-  if(!class(temporal.dist)=="numeric"){stop("temporal.dist must be of class numeric")}
-  if(!length(temporal.dist)==1){stop("temporal.dist must be of length(1)")}
 
-  xmin<-floor(min(occ.data$x)/10)*10  # Round min co-ordinates down to the nearest 10 to ensure that all points are included within a grid cell
-  xmax<-ceiling(max(occ.data$x)/10)*10 # Round max co-ordinates up to the nearest 10 to ensure that all points are included within a grid cell
-  ymin<-floor(min(occ.data$y)/10)*10
-  ymax<-ceiling(max(occ.data$y)/10)*10
+  # Check correct formatting of iterations argument
+
+  if (!is.numeric(iterations)) {
+    stop("iterations must be of class numeric")
+  }
+
+  if (!length(iterations) == 1) {
+    stop("iterations must be of length(1)")
+  }
+
+  if (!is.numeric(temporal.dist)) {
+    stop("temporal.dist must be of class numeric")
+  }
+
+  if (!length(temporal.dist) == 1) {
+    stop("temporal.dist must be of length(1)")
+  }
+
+  # Round min coords down to nearest 10 to ensure all points included in a cell
+  xmin <- floor(min(occ.data$x) / 10) * 10
+  ymin <- floor(min(occ.data$y) / 10) * 10
+  # Round max coords up to nearest 10 to ensure all points included in a cell
+  xmax <- ceiling(max(occ.data$x) / 10) * 10
+  ymax <- ceiling(max(occ.data$y) / 10) * 10
 
   # Create a grid using the rounded minimum and maximum longitude and latitude
-  split_grid<-raster::raster(raster::extent(c(xmin, xmax, ymin, ymax)))
-  raster::res(split_grid)<-spatial.split.degrees # Ensure grid is the resolution in degrees specified by the user
+  split_grid <- raster::raster(raster::extent(c(xmin, xmax, ymin, ymax)))
 
-  split_grid <- raster::setValues(split_grid,  1:raster::ncell(split_grid)) #fill grid squares with numerical value to create label
+  # Set grid as resolution specified by the user
+  raster::res(split_grid) <- spatial.split.degrees
 
-  occ.data.points<- sp::SpatialPointsDataFrame(data = occ.data, coords = cbind(occ.data$x, occ.data$y)) # Convert occ.data co-ordinates into spatial points with same CRS as the grid
+  # Fill grid squares with numerical value to create label
+  split_grid <- raster::setValues(split_grid,  1:raster::ncell(split_grid))
 
-  split2<-raster::extract(split_grid, occ.data.points) #Extract the grid cell number each record belongs to, to group by before thinning temporally
-  occ.data$split2<-split2
+  # Convert occ.data co-ordinates into spatial points
+  occ.data.points <- sp::SpatialPointsDataFrame(data = occ.data,
+                                                coords = cbind(occ.data$x,
+                                                               occ.data$y))
+  # Extract grid cell number each record belongs to, to group before thinning
+   split2 <- raster::extract(split_grid, occ.data.points)
 
+   occ.data$split2 <- split2
 
-  # Create an empty list to fill with resulting thinned dataset after each iteration
+  #-------------------------------------------------------
+  # Temporal thinning
+  #-------------------------------------------------------
+
+  # Create empty list to fill with thinned dataset after each iteration
   list.of.thinned.dfs <- vector("list", iterations)
 
   for (It in 1:iterations) {
+    # Create null vector to bind results to in each split
+    results <- NULL
 
-  results<-NULL # Create null vector to bind results to in each split
+    # Filter occurrence data to each individual grid cell
+    for (split in 1:length(unique(split2))) {
 
-  for(split in 1:length(unique(split2))){
+      occ.data.split <- dplyr::filter(occ.data, split2 == unique(split2)[split])
 
-    occ.data.split<-dplyr::filter(occ.data, split2 == unique(split2)[split]) # Filter occurrence data to each individual grid cell
+      # Create distance matrix between points
 
-  ### create distance matrix between points
-
-    temporal.method<-match.arg(temporal.method,choices=c("DOY","day"))
-
-
-  if(temporal.method=="DOY"){
-
-    ### Turn dates into "day of year"
-    dayofyear<-c(lubridate::yday(as.Date(with(occ.data.split, paste(year, month, day,sep="-")), "%Y-%m-%d")))
-
-    ### Create matrix of distance in days between records based on day of year (will not be over 365)
-
-    matrix<-matrix(NA,nrow=length(dayofyear),length(dayofyear))
-
-    for (x in 1:length(dayofyear)){
-    value<-dayofyear[x]
-    a<-value-dayofyear
-    b<-365-(dayofyear)+(value-1) ### Cyclical nature of DOY means that DOY 360 is only 6 days from DOY 1, following calculation works out which distance is closest
-    c<-365-(value)+(dayofyear-1)
-
-    matrix[x,]<- apply(data.frame(a,b,c), 1, FUN = min)} #Extract the minimum distance measured (e.g. 1st January from 15th December you want 17 days distance instead of 348 days)
-
-    matrix<-abs(matrix) ## Make distances positive
-
-    matrix<-matrix< temporal.dist ### Compare to set minimum distance to thin by.
-    diag(matrix) <- FALSE  } ### Set diagonal combinations as FALSE as these will always be 0
+      temporal.method <- match.arg(temporal.method, choices = c("DOY", "day"))
 
 
+      if (temporal.method == "DOY") {
 
-  if(temporal.method=="day"){
+        # Turn dates into "day of year"
+        dayofyear <-
+          c(lubridate::yday(as.Date(with(
+            occ.data.split, paste(year, month, day, sep = "-")
+          ), "%Y-%m-%d")))
 
-    dayssince<-as.Date(with(occ.data.split, paste(year, month, day,sep="-")), "%Y-%m-%d")-min(as.Date(with(occ.data.split, paste(year, month, day,sep="-")), "%Y-%m-%d")) ### standardise all dates compared to earliest data in data.frame
-    matrix<-as.matrix(dist(dayssince))  ### Create matrix of distance apart in days of each date (can be over 365)
-    matrix<-matrix< temporal.dist
-    diag(matrix) <-FALSE} ### Set diagonal combinations as FALSE
+        # Create matrix of distance in days between records based on day of year
+        matrix <- matrix(NA, nrow = length(dayofyear), length(dayofyear))
+
+        for (x in 1:length(dayofyear)) {
+          value <- dayofyear[x]
+          a <- value - dayofyear
+          b <- 365 - (dayofyear) + (value - 1)
+          c <- 365 - (value) + (dayofyear - 1)
+          matrix[x,] <- apply(data.frame(a, b, c), 1, FUN = min) # Extract min
+        }
+
+        matrix <- abs(matrix) # Make distances positive
+
+        # Compare to set minimum distance to thin by.
+        matrix <- matrix < temporal.dist
+        diag(matrix) <- FALSE # Set diagonal combinations as FALSE as always 0
+      }
 
 
-  matrix.original<-matrix
+      if (temporal.method == "day") {
+
+        # Standardise all dates compared to earliest data in data.frame
+        dayssince <-
+          as.Date(with(occ.data.split, paste(year, month, day, sep = "-")),
+                  "%Y-%m-%d") -
+          min(as.Date(with(
+            occ.data.split, paste(year, month, day, sep = "-")
+          ), "%Y-%m-%d"))
+
+        # Create matrix of distance apart in days of each date
+        matrix <- as.matrix(dist(dayssince))
+        matrix <- matrix < temporal.dist
+        diag(matrix) <- FALSE
+      }
+
+      matrix.original <- matrix
+
+      # Work out how many records each record is under the temporal thinning
+      # distance from (when one is removed, others may not longer need removing)
+      level.of.overlap <- rowSums(matrix.original, na.rm = T)
+
+      # Create vector of TRUE to record which row gets removed in the iteration
+      record.of.removal <- rep(TRUE, length(level.of.overlap))
+
+      # For each iteration reset values
+      matrix <- matrix.original
+      overlap <- level.of.overlap
+      remove <- record.of.removal
+
+      # While there are still records too close together,
+      # keep iterating through and randomly removing them
+      # and look at impact on others to select next record to remove
+
+      while (any(matrix)) {
+
+        # Identify rows with highest overlap as we want to exclude these first
+        rows.to.remove <- as.numeric(which(overlap == max(overlap, na.rm = T)))
+
+        # Randomly select one of the rows with highest overlap to exclude first
+        rows.to.remove <- sample(rows.to.remove, 1)
+
+        # Remove therow from the distance matrix & minus its from overlap vector
+        overlap <- overlap - matrix[rows.to.remove, ]
+
+        # Removed row no longer overlaps any others, set to 0
+        overlap[rows.to.remove] <- 0
+
+        # Change value of removed row from TRUE to FALSE as removed from matrix
+        matrix[rows.to.remove, ] <- FALSE
+        matrix[, rows.to.remove] <- FALSE
+
+        # Keep record of which rows to remove from final occurrence data.frame
+        remove[rows.to.remove] <- FALSE
+      }
+
+      # Make the new, thinned, data set
+      thinned.data.frame <- occ.data.split[remove, , drop = FALSE]
+      results <- rbind(results, thinned.data.frame)
+    }
 
 
-  ##### work out how many records each record is under the temporal thinning distance from (when one is removed, others may not longer need removing)
-  level.of.overlap<-rowSums(matrix.original,na.rm=T)
+    #-------------------------------------------------------
+    # Spatial thinning
+    #-------------------------------------------------------
 
-  ## Make a vector of TRUE to record which row gets removed in the iteration
+    # Which distances between records are below the distance set by user
+    distance_matrix <- geodist::geodist(data.frame(results$x, results$y),
+                                        measure = 'geodesic') < spatial.dist
 
-  record.of.removal <- rep(TRUE, length(level.of.overlap))
+    # Set diagonal as FALSE as these will always be below the spatial.dist
+    diag(distance_matrix) <- FALSE
 
+    # Create empty list to fill with thinned dataset after each iteration
 
-  ## For each iteration rest the matrix, measure of overlap between records and the record of rows removed
+    matrix.original <- distance_matrix
+
+    # Work out how many records each record is under the thinning distance from
+    level.of.overlap <- rowSums(matrix.original, na.rm = T)
+
+    # Make a vector of TRUE to record which row gets removed in the iteration
+    record.of.removal <- rep(TRUE, length(level.of.overlap))
+
+    # For each iteration reset these
     matrix <- matrix.original
     overlap <- level.of.overlap
     remove <- record.of.removal
 
-    ## While there are still records too close together, keep iterating through and randomly removing them, and look at impact on others to select next record to remove
+    # While there are still records too close together,
+    # keep iterating through and randomly removing them
+    # and look at impact on others to select next record to remove
 
     while (any(matrix)) {
 
-      rows.to.remove <- as.numeric(which(overlap == max(overlap,na.rm=T))) ### Identify rows with highest overlap as we want to exclude these first
-      rows.to.remove <- sample(rows.to.remove,1) ##randomly select one of the rows with highest overlap to exclude first
+      # Identify rows with highest overlap as we want to exclude these first
+      rows.to.remove <- as.numeric(which(overlap == max(overlap, na.rm = T)))
 
-      ## Remove the randomly selected row from the distance matrix, and minus its impact from the overlap vector
+      # Randomly select one of the rows with highest overlap to exclude first
+      rows.to.remove <- sample(rows.to.remove, 1)
+
+      # Remove the row from  distance matrix, minus its impact from overlap
       overlap <- overlap - matrix[rows.to.remove, ]
 
-      ## Removed row no longer overlaps any others
+      # Removed row no longer overlaps any others
       overlap[rows.to.remove] <- 0
 
-      ## Change value of removed row from TRUE to FALSE as removed from matrix and no longer below thinning distance
+      # Change value of removed row from TRUE to FALSE as removed from matrix
       matrix[rows.to.remove, ] <- FALSE
       matrix[, rows.to.remove] <- FALSE
 
-      ## Keep record of which rows to remove from final occurrence data.frame
+      # Keep record of which rows to remove from final occurrence data frame
       remove[rows.to.remove] <- FALSE
     }
 
-    ## Make the new, thinned, data set
-    thinned.data.frame <- occ.data.split[remove, , drop=FALSE]
-    results<-rbind(results,thinned.data.frame)
+    # Make the new, thinned, data set
+    thinned.data.frame <- results[remove, , drop = FALSE]
+
+    list.of.thinned.dfs[[It]] <- thinned.data.frame
   }
 
-
-
-  distance_matrix <- geodist::geodist(data.frame(results$x,results$y), measure = 'geodesic' )< spatial.dist  ## Which distances between records are below the distance set by user
-  diag(distance_matrix) <-FALSE ### Set diagonal combinations as FALSE as these will always be below the spatial.dist (as they are 0 away from each other)
-
-
-  # Create an empty list to fill with resulting thinned dataset after each iteration
-
-  matrix.original<-distance_matrix
-
-
-  ##### work out how many records each record is under the temporal thinning distance from (when one is removed, others may not longer need removing)
-  level.of.overlap<-rowSums(matrix.original,na.rm=T)
-
-  ## Make a vector of TRUE to record which row gets removed in the iteration
-
-  record.of.removal <- rep(TRUE, length(level.of.overlap))
-
-    ## For each iteration rest the matrix, measure of overlap between records and the record of rows removed
-    matrix <- matrix.original
-    overlap <- level.of.overlap
-    remove <- record.of.removal
-
-    ## While there are still records too close together, keep iterating through and randomly removing them, and look at impact on others to select next record to remove
-
-    while (any(matrix)) {
-
-      rows.to.remove <- as.numeric(which(overlap == max(overlap,na.rm=T))) ### Identify rows with highest overlap as we want to exclude these first
-      rows.to.remove <- sample(rows.to.remove,1) ##randomly select one of the rows with highest overlap to exclude first
-
-      ## Remove the randomly selected row from the distance matrix, and minus its impact from the overlap vector
-      overlap <- overlap - matrix[rows.to.remove, ]
-
-      ## Removed row no longer overlaps any others
-      overlap[rows.to.remove] <- 0
-
-      ## Change value of removed row from TRUE to FALSE as removed from matrix and no longer below thinning distance
-      matrix[rows.to.remove, ] <- FALSE
-      matrix[, rows.to.remove] <- FALSE
-
-      ## Keep record of which rows to remove from final occurrence data.frame
-      remove[rows.to.remove] <- FALSE
-    }
-
- ## Make the new, thinned, data set
- thinned.data.frame <- results[remove, , drop=FALSE]
-
- list.of.thinned.dfs[[It]] <- thinned.data.frame}
-
-  ## Work out which thinned dataframe has the most records remaining
+  # Calculate which thinned dataframe has the most records remaining
 
   n.records <- unlist(lapply(list.of.thinned.dfs, nrow))
 
-  thinned.df<-as.data.frame(list.of.thinned.dfs[which.max(n.records)])
+  thinned.df <- as.data.frame(list.of.thinned.dfs[which.max(n.records)])
 
-    return(thinned.df)
+  return(thinned.df)
 }
-
-
-
-
