@@ -34,7 +34,7 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v2
 
       - name: Query dependencies
-        if: runner.os == "Windows"
+        if: runner.os == 'Windows'
         run: |
           install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
@@ -43,7 +43,7 @@ jobs:
 
 
       - name: Query dependencies
-        if: runner.os == "macOS"
+        if: runner.os == 'macOS'
         run: |
           install.packages('remotes')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
@@ -58,7 +58,7 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install pak
-        if: runner.os == "macOS"
+        if: runner.os == 'macOS"
         run: |
           install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
         shell: Rscript {0}
