@@ -58,7 +58,7 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install pak
-        if: runner.os == 'macOS"
+        if: runner.os == 'macOS'
         run: |
           install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
         shell: Rscript {0}
