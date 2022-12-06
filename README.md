@@ -36,7 +36,7 @@ projections. See the package manual
 for more details on each
 function.
 
-<a href='https://r-a-dobson.github.io/dynamicSDM'><img src="https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/blob/main/man/figures/Figure1.png" align="centre" height="320"/></a>
+<a href='https://r-a-dobson.github.io/dynamicSDM'><img src="https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/main/man/figures/Figure1.png" align="centre" height="320"/></a>
 
 ### 1\) Response data functions
 
