@@ -14,6 +14,9 @@ A data frame with 10000 rows and 5 variables:
 \item{x}{avian e-Bird sampling event longitude.}
 }
 }
+\usage{
+sample_surveyeffort
+}
 \description{
 A dataset containing a sample of e-Bird sampling events for all bird species across southern Africa between 2000-2020.
 The variables are as follows:
@@ -23,3 +26,4 @@ Fink, D., T. Auer, A. Johnston, M. Strimas-Mackey, O. Robinson, S. Ligocki, W. H
 
 GBIF.org (12 July 2021) GBIF Occurrence Download  https://doi.org/10.15468/dl.ppcu6q
 }
+\keyword{datasets}

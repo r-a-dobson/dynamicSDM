@@ -4,7 +4,7 @@
 \alias{spatiotemp_bias}
 \title{Test for spatial and temporal bias in species occurrence records}
 \usage{
-spatiotemp_bias(occ.data, temporal.level = NA)
+spatiotemp_bias(occ.data, temporal.level)
 }
 \arguments{
 \item{occ.data}{a data frame, with columns for occurrence record co-ordinates and dates with column names as follows; record longitude as "x", latitude as "y", year as "year", month as "month", and day as "day".}

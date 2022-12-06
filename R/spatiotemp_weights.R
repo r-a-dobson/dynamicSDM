@@ -12,9 +12,14 @@
 #'Output could be used as model weights to correct spatial and temporal biases in occurrence record collections.
 #' @return Returns input occurrence record data frame with additional columns for sampling effort "SAMP_EFFORT" and relative sampling effort "REL_SAMP_EFFORT".
 #' @examples
-#' data("sample_occ_abs_data",package="dynamicSDM")
-#' data("sample_surveyeffort",package="dynamicSDM")
-#' spatiotemp_weights(occ.data = sample_occ_abs_data,sampling.events.df = sample_surveyeffort,spatial.dist = 200000,temporal.dist = 20)
+#' data("sample_occ_abs_data")
+#' data("sample_surveyeffort")
+#' spatiotemp_weights(
+#'  occ.data = sample_occ_abs_data,
+#'  sampling.events.df = sample_surveyeffort,
+#'  spatial.dist = 200000,
+#'  temporal.dist = 20
+#')
 #'@export
 #'
 spatiotemp_weights <-  function(occ.data,

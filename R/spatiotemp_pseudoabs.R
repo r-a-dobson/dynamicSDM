@@ -19,7 +19,7 @@
 #'If temporal.method is "'random'", then occurrence record co-ordinates are randomly generated within the two temporal.ext dates given.
 #' @return Returns data frame of pseudo-absence coordinates and dates.
 #' @examples
-#'data("sample_occ_data", package = "dynamicSDM")
+#'data("sample_occ_data")
 #'spatiotemp_pseudoabs(
 #'  sample_occ_data,
 #'  spatial.method = "random",

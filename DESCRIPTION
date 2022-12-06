@@ -1,9 +1,19 @@
 Package: dynamicSDM
 Title: Dynamic species distribution and abundance modelling
-Version: 0.0.0.9000
-Authors@R: 
+Version: 1.0
+Authors@R: c(
     person("Rachel", "Dobson", , "eerdord@gmail.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+           comment = c(ORCID = "0000-0003-3990-267X")),
+    person("Andy J.", "Challinor", , "A.J.Challinor@leeds.ac.uk", role = "aut",
+           comment = c(ORCID = "0000-0002-8551-6617")),
+    person("Robert A.", "Cheke", , "R.A.Cheke@greenwich.ac.uk", role = "aut",
+           comment = c(ORCID = "0000-0002-7437-1934")),
+    person("Stewart", "Jennings", , "S.A.Jennings@leeds.ac.uk", role = "aut",
+           comment = c(ORCID = "0000-0002-1267-8623")),
+    person("Stephen G.", "Willis", , "s.g.willis@durham.ac.uk", role = "aut",
+           comment = c(ORCID = "0000-0002-8656-5808")),
+    person("Martin", "Dallimer", , "M.Dallimer@leeds.ac.uk", role = "aut",
+           comment = c(ORCID = "0000-0001-8120-3309"))) 
 Description: This package enables the generation of species distribution and abundance models that are dynamic through space and time. dynamicSDM presents highly-flexible functions for incorporating both spatial and temporal aspects at key species distribution modelling stages, including when cleaning and filtering species occurrence data, assessing and correcting biases and autocorrelation, generating pseudo-absence records, extracting dynamic explanatory variables and projecting species distribution and abundance patterns at high spatiotemporal resolution. Functions take advantage of Google Earth Engine and Google Drive to minimise computing power and storage demands.
 License: GPL (>= 3)
 Encoding: UTF-8

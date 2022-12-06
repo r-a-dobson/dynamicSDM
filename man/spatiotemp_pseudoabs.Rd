@@ -48,10 +48,12 @@ If temporal.method is "'buffer'", then occurrence record dates are randomly gene
 If temporal.method is "'random'", then occurrence record co-ordinates are randomly generated within the two temporal.ext dates given.
 }
 \examples{
-data("sample_occ_data",package="dynamicSDM")
-spatiotemp_pseudoabs(sample_occ_data,
-                   spatial.method="random",
-                   temporal.method="random",
-                   spatial.ext =c(20,36,-35,-12),
-                   temporal.ext = c("2011-01-01","2017-01-01"))
+data("sample_occ_data")
+spatiotemp_pseudoabs(
+ sample_occ_data,
+ spatial.method = "random",
+ temporal.method = "random",
+ spatial.ext = c(20, 36, -35, -12),
+ temporal.ext = c("2011-01-01", "2017-01-01")
+)
 }

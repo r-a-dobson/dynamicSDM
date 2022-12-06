@@ -29,7 +29,14 @@
 #' day<-c(27, 25, 16, 25, 26)
 #' occ.data<-data.frame(cbind(x,y,year,month,day))
 #'
-#' spatiotemp_thin(occ.data=occ.data, temporal.method="day", temporal.dist=14,spatial.split.degrees=3,spatial.dist=100000, iterations=5)
+#'spatiotemp_thin(
+#'  occ.data = occ.data,
+#'  temporal.method = "day",
+#'  temporal.dist = 14,
+#'  spatial.split.degrees = 3,
+#'  spatial.dist = 100000,
+#'  iterations = 5
+#')
 #'@export
 
 spatiotemp_thin <-  function(occ.data,

@@ -11,7 +11,7 @@
 #' Record dates and co-ordinates are checked for validity using the following rules. Dates must be real dates that could exist. For example, 50th February 2000 is not a valid date. Co-ordinates must have longitude (x) values between -180 and 180, and latitude (y) values between -90 and 90 to be considered valid.
 #' @return By default, returns occurrence record data frame, filtered to exclude records containing missing, duplicate or invalid data in record co-ordinates and dates.
 #' @examples
-#'data("sample_occ_data",package="dynamicSDM")
+#'data("sample_occ_data")
 #'spatiotemp_check(sample_occ_data)
 #'@export
 

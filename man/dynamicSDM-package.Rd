@@ -9,7 +9,16 @@
 This package enables the generation of species distribution and abundance models that are dynamic through space and time. dynamicSDM presents highly-flexible functions for incorporating both spatial and temporal aspects at key species distribution modelling stages, including when cleaning and filtering species occurrence data, assessing and correcting biases and autocorrelation, generating pseudo-absence records, extracting dynamic explanatory variables and projecting species distribution and abundance patterns at high spatiotemporal resolution. Functions take advantage of Google Earth Engine and Google Drive to minimise computing power and storage demands.
 }
 \author{
-\strong{Maintainer}: Rachel Dobson \email{eerdord@gmail.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
+\strong{Maintainer}: Rachel Dobson \email{eerdord@gmail.com} (\href{https://orcid.org/0000-0003-3990-267X}{ORCID})
+
+Authors:
+\itemize{
+  \item Andy J. Challinor \email{A.J.Challinor@leeds.ac.uk} (\href{https://orcid.org/0000-0002-8551-6617}{ORCID})
+  \item Robert A. Cheke \email{R.A.Cheke@greenwich.ac.uk} (\href{https://orcid.org/0000-0002-7437-1934}{ORCID})
+  \item Stewart Jennings \email{S.A.Jennings@leeds.ac.uk} (\href{https://orcid.org/0000-0002-1267-8623}{ORCID})
+  \item Stephen G. Willis \email{s.g.willis@durham.ac.uk} (\href{https://orcid.org/0000-0002-8656-5808}{ORCID})
+  \item Martin Dallimer \email{M.Dallimer@leeds.ac.uk} (\href{https://orcid.org/0000-0001-8120-3309}{ORCID})
+}
 
 }
 \keyword{internal}

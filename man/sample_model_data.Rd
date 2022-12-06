@@ -23,6 +23,9 @@ A data frame with 10000 rows and 14 variables:
 \item{blockno}{Block group assinged for model fitting by jacknife approach to account for spatial and temporal autocorrelation}
 }
 }
+\usage{
+sample_model_data
+}
 \description{
 A dataset containing a sample of the bird species, the red-billed quelea (Quelea quelea), distribution and abundance records from between 2002-2017 including generated pseudo-absence records and associated extracted dynamic explanatory variables.
 The variables are as follows:
@@ -38,3 +41,4 @@ GBIF.org (25 July 2022) GBIF Occurrence Download https://doi.org/10.15468/dl.k2k
 
 Wan, Z., Hook, S., Hulley, G. (2015). MOD11A1 MODIS/Terra Land Surface Temperature/Emissivity Daily L3 Global 1km SIN Grid V006 \link{Data set}. NASA EOSDIS Land Processes DAAC. Accessed 2022-11-24 from https://doi.org/10.5067/MODIS/MOD11A1.006
 }
+\keyword{datasets}

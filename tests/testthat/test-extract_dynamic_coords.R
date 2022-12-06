@@ -83,10 +83,7 @@ test_that("stops if bandname not character", {
   skip_if_no_GEE_credentials()
   expect_error(extract_dynamic_coords(occ.data=sample_occ_abs_data_fortest,datasetname=test_datasetname,bandname=88,spatial.res.metres=1000,temporal.res=7,temporal.direction="prior",GEE.math.fun="mean",
                                       save.method="split",save.directory=tempdir()))})
-test_that("stops if varname not character", {
-  skip_if_no_GEE_credentials()
-  expect_error(extract_dynamic_coords(occ.data=sample_occ_abs_data_fortest,datasetname=test_datasetname,bandname=test_bandname,varname=300,spatial.res.metres=1000,temporal.res=7,temporal.direction="prior",GEE.math.fun="mean",
-                                      save.method="split",save.directory=tempdir()))})
+
 
 test_that("stops if spatial.res.metres data not numeric", {
   skip_if_no_GEE_credentials()

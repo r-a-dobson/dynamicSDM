@@ -49,7 +49,14 @@ month<-c(1, 2, 3, 2, 4)
 day<-c(27, 25, 16, 25, 26)
 occ.data<-data.frame(cbind(x,y,year,month,day))
 
-spatiotemp_thin(occ.data=occ.data, temporal.method="day", temporal.dist=14,spatial.split.degrees=3,spatial.dist=100000, iterations=5)
+spatiotemp_thin(
+ occ.data = occ.data,
+ temporal.method = "day",
+ temporal.dist = 14,
+ spatial.split.degrees = 3,
+ spatial.dist = 100000,
+ iterations = 5
+)
 }
 \references{
 Aiello-Lammens, M. E., Boria, R. A., Radosavljevic, A., Vilela, B. & Anderson, R. P. 2015. spThin: an R package for spatial thinning of species occurrence records for use in ecological niche models. Ecography, 38, 541-545.

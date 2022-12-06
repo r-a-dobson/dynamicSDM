@@ -22,9 +22,16 @@
 #'
 #' @return Returns occurrence data frame with column "BLOCK.CATS", assigning each record to a spatiotemporal block.
 #' @examples
-#' data("sample_model_data", package ="dynamicSDM")
-#' data("biome_layer", package ="dynamicSDM")
-#' spatiotemp_block(occ.data = sample_model_data,spatial.layer = biome_layer,spatial.split.degrees=3,temporal.block=c("month"),vars.to.block.by=colnames(sample_model_data)[9:12],n.blocks=10)
+#' data("sample_model_data")
+#' data("biome_layer")
+#'spatiotemp_block(
+#'  occ.data = sample_model_data,
+#'  spatial.layer = biome_layer,
+#'  spatial.split.degrees = 3,
+#'  temporal.block = c("month"),
+#'  vars.to.block.by = colnames(sample_model_data)[9:12],
+#'  n.blocks = 10
+#')
 #'@export
 
 spatiotemp_block <-

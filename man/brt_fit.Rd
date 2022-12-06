@@ -55,7 +55,7 @@ If weights.col given, records are weighted by their associated value in the weig
 }
 \examples{
 
-data("sample_model_data", package = "dynamicSDM")
+data("sample_model_data")
 split <- sample(c(TRUE, FALSE),
                replace=TRUE,
                nrow(sample_model_data),

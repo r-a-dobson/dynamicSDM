@@ -13,7 +13,7 @@
 #' As the spatial autocorrelation calculation involves computation of a distance matrix between all occurrence records. To reduce computation time, it is recommended that a sample of large occurrence datasets are input.
 #' @return Returns a list of temporal and spatial autocorrelation test results for each variable.
 #' @examples
-#'data("sample_model_data",package="dynamicSDM")
+#'data("sample_model_data")
 #'spatiotemp_autocorr(sample_model_data,varname="Temperaturemean",temporal.level="year")
 #'@export
 

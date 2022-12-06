@@ -25,7 +25,7 @@
 #'Greenwell, B., Boehmke, B., Cunningham, J., & GBM Developers. 2019. Package ‘gbm’. R package version, 2.
 #' @examples
 #'
-#'data("sample_model_data", package = "dynamicSDM")
+#'data("sample_model_data")
 #'split <- sample(c(TRUE, FALSE),
 #'                replace=TRUE,
 #'                nrow(sample_model_data),

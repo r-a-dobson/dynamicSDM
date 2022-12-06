@@ -32,7 +32,7 @@
 #' GBIF.org (25 July 2022) GBIF Occurrence Download https://doi.org/10.15468/dl.k2kftv
 #'
 #' Wan, Z., Hook, S., Hulley, G. (2015). MOD11A1 MODIS/Terra Land Surface Temperature/Emissivity Daily L3 Global 1km SIN Grid V006 [Data set]. NASA EOSDIS Land Processes DAAC. Accessed 2022-11-24 from https://doi.org/10.5067/MODIS/MOD11A1.006
-data("sample_model_data")
+"sample_model_data"
 
 
 #' @name sample_occ_abs_data
@@ -56,7 +56,7 @@ data("sample_model_data")
 #' GBIF.org (12 July 2021) GBIF Occurrence Download https://doi.org/10.15468/dl.ppcu6q
 #'
 #' GBIF.org (25 July 2022) GBIF Occurrence Download https://doi.org/10.15468/dl.k2kftv
-data("sample_occ_abs_data")
+"sample_occ_abs_data"
 
 #' @name sample_occ_data
 #'
@@ -80,7 +80,7 @@ data("sample_occ_abs_data")
 #' GBIF.org (12 July 2021) GBIF Occurrence Download https://doi.org/10.15468/dl.ppcu6q
 #'
 #' GBIF.org (25 July 2022) GBIF Occurrence Download https://doi.org/10.15468/dl.k2kftv
-data("sample_occ_data")
+"sample_occ_data"
 
 #' @name biome_layer
 #' @title Categorical raster.
@@ -100,7 +100,7 @@ data("sample_occ_data")
 #'   \item{values}{Numerical categorical value.}
 #' }
 #' @docType data
-data("biome_layer")
+"biome_layer"
 
 
 #' @name sample_surveyeffort
@@ -123,7 +123,7 @@ data("biome_layer")
 #' Fink, D., T. Auer, A. Johnston, M. Strimas-Mackey, O. Robinson, S. Ligocki, W. Hochachka, L. Jaromczyk, C. Wood, I. Davies, M. Iliff, L. Seitz. 2021. eBird Status and Trends, Data Version: 2020; Released: 2021. Cornell Lab of Ornithology, Ithaca, New York. https://doi.org/10.2173/ebirdst.2020
 #'
 #'GBIF.org (12 July 2021) GBIF Occurrence Download  https://doi.org/10.15468/dl.ppcu6q
-data("sample_surveyeffort")
+"sample_surveyeffort"
 
 
 

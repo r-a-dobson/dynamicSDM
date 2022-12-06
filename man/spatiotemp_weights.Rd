@@ -7,8 +7,8 @@
 spatiotemp_weights(
   occ.data,
   sampling.events.df,
-  spatial.dist = NA,
-  temporal.dist = NA
+  spatial.dist = NULL,
+  temporal.dist = NULL
 )
 }
 \arguments{
@@ -34,7 +34,12 @@ In addition to total sampling events, the function also calculates relative samp
 Output could be used as model weights to correct spatial and temporal biases in occurrence record collections.
 }
 \examples{
-data("sample_occ_abs_data",package="dynamicSDM")
-data("sample_surveyeffort",package="dynamicSDM")
-spatiotemp_weights(occ.data = sample_occ_abs_data,sampling.events.df = sample_surveyeffort,spatial.dist = 200000,temporal.dist = 20)
+data("sample_occ_abs_data")
+data("sample_surveyeffort")
+spatiotemp_weights(
+ occ.data = sample_occ_abs_data,
+ sampling.events.df = sample_surveyeffort,
+ spatial.dist = 200000,
+ temporal.dist = 20
+)
 }

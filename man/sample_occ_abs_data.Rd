@@ -16,6 +16,9 @@ A data frame with 50 rows and 7 variables:
 \item{individualCount}{number of individuals of the species present at record location and date.}
 }
 }
+\usage{
+sample_occ_abs_data
+}
 \description{
 A dataset containing a sample of the bird species, the red-billed quelea (Quelea quelea), distribution and abundance records between 2002-2017 with generated spatiotemporal pseudo-absence records.
 The variables are as follows:
@@ -25,3 +28,4 @@ GBIF.org (12 July 2021) GBIF Occurrence Download https://doi.org/10.15468/dl.ppc
 
 GBIF.org (25 July 2022) GBIF Occurrence Download https://doi.org/10.15468/dl.k2kftv
 }
+\keyword{datasets}

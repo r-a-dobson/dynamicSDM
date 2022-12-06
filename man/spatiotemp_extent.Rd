@@ -4,7 +4,7 @@
 \alias{spatiotemp_extent}
 \title{Filter species occurrence records by a given spatial and temporal extent.}
 \usage{
-spatiotemp_extent(occ.data, temporal.ext = NA, spatial.ext = NA)
+spatiotemp_extent(occ.data, temporal.ext = NULL, spatial.ext = NULL)
 }
 \arguments{
 \item{occ.data}{a data frame, with columns for occurrence record co-ordinates and dates with column names as follows; record longitude as "x", latitude as "y", year as "year", month as "month", and day as "day".}

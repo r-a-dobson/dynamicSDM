@@ -17,7 +17,11 @@ A RasterLayer
 \item{values}{Numerical categorical value.}
 }
 }
+\usage{
+biome_layer
+}
 \description{
 Categorical RasterLayer cropped to southern Africa at 10 degree resolution.
 Represents a biome classification RasterLayer that could be used when spatially blocking species occurrence data.
 }
+\keyword{datasets}
