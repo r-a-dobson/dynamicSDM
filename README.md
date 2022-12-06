@@ -9,6 +9,7 @@
 [![Codecov test
 coverage](https://codecov.io/gh/r-a-dobson/dynamicSDM/branch/main/graph/badge.svg)](https://app.codecov.io/gh/r-a-dobson/dynamicSDM?branch=main)
 [![R-CMD-check](https://github.com/r-a-dobson/dynamicSDM/workflows/R-CMD-check/badge.svg)](https://github.com/r-a-dobson/dynamicSDM/actions)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7405906.svg)](https://doi.org/10.5281/zenodo.7405906)
 <!-- badges: end -->
 
 # Summary
@@ -32,7 +33,7 @@ and time. Our functions are:
 dynamicSDM functions are split into four key modelling stages: response
 data, explanatory variables, modelling relationships and dynamic
 projections. See the package manual
-[here](https://github.com/r-a-dobson/dynamicSDM/blob/main/man/figures/dynamicSDM_1.0.pdf)
+[here](https://github.com/r-a-dobson/dynamicSDM/tree/main/man/figures/dynamicSDM_1.0.pdf)
 for more details on each
 function.
 
