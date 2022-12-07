@@ -149,6 +149,9 @@ extract_dynamic_coords <-
 
     for (x in 1:nrow(occ.data)) {
 
+      # Every 20 extractions, refresh connection with GEE prevents sticking
+      if (x%%20 == 0) {invisible(rgee::ee_Initialize(quiet = T))}
+
       date1 <- as.Date(with(occ.data[x, ], paste(year, month, day, sep = "-")),
                        "%Y-%m-%d")
 
