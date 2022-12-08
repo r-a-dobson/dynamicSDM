@@ -193,10 +193,10 @@ spatiotemp_block <-
       })
 
       # Calculate mean and variance of block sample size
-      variance.mean <- mean(unlist(samplesize))
-      variance.range <- var(unlist(samplesize))
+      variance.sum <- var(unlist(samplesize))
 
-      variances <- rbind(variances, variance.mean, variance.range)
+
+      variances <- rbind(variances, variance.sum)
 
 
       for (y in 3:ncol(blockdata)) {
@@ -204,13 +204,13 @@ spatiotemp_block <-
 
         # Calculates the mean for each block
 
-        mean <-
+        mean.var <-
           lapply(groups, function(df_inlist) {
             base::mean((df_inlist[, y]))
           })
 
         # Variance in means across blocks (want to minimise this when blocking)
-        variance.mean <- var(unlist(mean))
+        variance.mean <- var(unlist(mean.var))
 
         range <- lapply(groups, function(df_inlist) {
           (max(df_inlist[, y]) - min(df_inlist[, y]))
@@ -218,13 +218,6 @@ spatiotemp_block <-
 
         variance.range <- var(unlist(range))
 
-        samplesize<-lapply(groups, function(df_inlist) {
-          base::sum((df_inlist[, "count"]))
-        })
-
-
-        # Variance in means across blocks (want to minimise this when blocking)
-        variance.mean <- var(unlist(mean))
 
         variances <- rbind(variances, variance.mean, variance.range)
       }
