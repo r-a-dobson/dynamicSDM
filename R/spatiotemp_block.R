@@ -193,8 +193,8 @@ spatiotemp_block <-
       })
 
       # Calculate mean and variance of block sample size
-      mean.samplesize <- mean(unlist(samplesize))
-      variance.samplesize <- var(unlist(samplesize))
+      variance.mean <- mean(unlist(samplesize))
+      variance.range <- var(unlist(samplesize))
 
       variances <- rbind(variances, variance.mean, variance.range)
 
