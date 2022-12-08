@@ -97,10 +97,12 @@ spatiotemp_block <-
       occ.data$split1 <- split1
 
 
-      # Assign occurrence points value from a RasterLayer at given spatial.split.degrees to spatially split large categories of previous categorical RasterLayer
+      # Assign occurrence points value from RasterLayer at
+      # given res to split large categories of categorical RasterLayer
 
       # Create another grid with same spatial extent and CRS as spatial.layer
-      split_grid <- raster::raster(raster::extent(spatial.layer), crs = raster::crs(spatial.layer))
+      split_grid <- raster::raster(raster::extent(spatial.layer),
+                                   crs = raster::crs(spatial.layer))
 
       # Set the grid's resolution as specified by the user
       raster::res(split_grid) <- spatial.split.degrees
@@ -134,6 +136,14 @@ spatiotemp_block <-
 
     # List all unique IDs of occurrence records
     blockdata <- as.data.frame(unique(occ.data$ID_BL))
+    occ.data$count <- rep(1, nrow(occ.data))  # Add column to sum records
+
+    # Aggregate to count records per unique ID.
+    blockdata <- cbind(blockdata,
+                       aggregate(count ~ ID_BL, data = occ.data, FUN = 'sum')[, 2])
+
+
+    vars.to.block.by<-c(vars.to.block.by)
 
     # For each variable specified, take the mean of each ID group
 
@@ -149,7 +159,7 @@ spatiotemp_block <-
                          aggregate(formula, data = occ.data, FUN = 'mean')[, 2])
     }
 
-    colnames(blockdata) <- c("ID_BL", vars.to.block.by)
+    colnames(blockdata) <- c("ID_BL","count", vars.to.block.by)
 
     # Check minimum unique IDs met for number of blocks (n.blocks) desired.
 
@@ -175,9 +185,22 @@ spatiotemp_block <-
       groupings[[x]] <- groups
 
       # Empty vector to bind variance of means between groups for each variable
-      variances <- NULL
+      variances = NULL
 
-      for (y in 2:ncol(blockdata)) { # First col is IDs
+      # Calculate total sample size per block
+      samplesize <- lapply(groups, function(df_inlist) {
+        base::sum((df_inlist[, "count"]))
+      })
+
+      # Calculate mean and variance of block sample size
+      mean.samplesize <- mean(unlist(samplesize))
+      variance.samplesize <- var(unlist(samplesize))
+
+      variances <- rbind(variances, variance.mean, variance.range)
+
+
+      for (y in 3:ncol(blockdata)) {
+        # First col is ID, second col count
 
         # Calculates the mean for each block
 
@@ -194,6 +217,14 @@ spatiotemp_block <-
         })
 
         variance.range <- var(unlist(range))
+
+        samplesize<-lapply(groups, function(df_inlist) {
+          base::sum((df_inlist[, "count"]))
+        })
+
+
+        # Variance in means across blocks (want to minimise this when blocking)
+        variance.mean <- var(unlist(mean))
 
         variances <- rbind(variances, variance.mean, variance.range)
       }
@@ -227,3 +258,4 @@ spatiotemp_block <-
 
     return(occ.data.save)
   }
+
