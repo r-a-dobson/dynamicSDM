@@ -47,4 +47,4 @@ get_moving_window<-function(radial.distance, spatial.res.degrees=NULL, spatial.r
 
    if((round(cells/2)==cells/2)==T){cells<-cells+1} ### If matrix is an even number, add one as matrix size must be odd for focal function in package raster, used in extract_buffered_coords and extract_buffered_raster functions in dynamicSDM
 
-   return(matrix((1/cells*cells),nrow=cells,ncol=cells))}
+   return(matrix(1,nrow=cells,ncol=cells))}

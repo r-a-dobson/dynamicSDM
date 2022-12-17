@@ -16,6 +16,7 @@
 #' @param temporal.res optional; a numeric value, the temporal resolution in days to extract data and calculate GEE.math.fun across from occurrence record date.
 #' @param temporal.direction optional; a character string, the temporal direction for extracting data across relative to the record date. One of '"prior"' or '"post"': can be abbreviated.
 #' @param categories optional; a character string, the categories to use in calculation if data are categorical. See details for more information.
+#' @param agg.factor optional; a numeric value, the factor to aggregate data by before spatial buffering.
 #' @details
 #'For each individual species occurrence record co-ordinate and date, this function extracts data for a given band within a Google Earth Engine dataset across a user-specified spatial buffer and temporal period and calculates a mathematical function on such data.
 #'
@@ -58,7 +59,9 @@ extract_buffered_coords <-
            temporal.level = NULL,
            temporal.direction = NULL,
            categories = NULL,
-           save.directory = NULL) {
+           save.directory = NULL,
+           agg.factor=NULL
+           ) {
 
 
     if (missing(extraction.drive.folder)) {
@@ -148,6 +151,7 @@ extract_buffered_coords <-
     rowscomplete = NULL
 
     for (x in 1:nrow(uniqueocc)) {
+
       if (temporal.level == "year") {
         year <- as.numeric(uniqueocc[x, "year"])
         month <-  1 # Set arbitrary values as need complete date for GEE and
@@ -350,6 +354,8 @@ extract_buffered_coords <-
                                   overwrite = T)
       raster <- raster::raster(pathforthisfile) # Read in raster from temp dir
 
+
+
       # Match GEE.math.fun argument to analogous R function
       R.FUNC <-
         list(
@@ -407,7 +413,7 @@ extract_buffered_coords <-
 
       if (!missing(categories)) {
 
-        # Convert the categorical raster into binary 1 (categories specified by user) and 0 (any other category)
+        # Convert the categorical raster into binary 1 (specified) & 0 (other)
         rast <- raster == categories[1]
 
         # If more than one category, iterate through each category and add binary rasters together
@@ -417,14 +423,18 @@ extract_buffered_coords <-
           }
         }
 
-        # If data are categorical then moving.window.matrix with weights = 1
+        if(!missing(agg.factor)) {
+          rast <- raster::aggregate(rast, agg.factor, fun = math.fun, na.rm=TRUE)
+        }
+
+        # If data are categorical then matrix weights must = 1
         moving.window.matrix[1:nrow(moving.window.matrix),
                              1:ncol(moving.window.matrix)] <- 1
 
         ## Calculate math.fun across moving.window.matrix for the raster
         focalraster <- raster::focal(rast,
                                      moving.window.matrix,
-                                     FUN = math.fun,
+                                     fun = math.fun,
                                      na.rm = T)
       }
 
@@ -432,9 +442,14 @@ extract_buffered_coords <-
       # Process continuous data raster
       # Calculate math.fun across moving.window.matrix for the raster
       if (missing(categories)) {
+
+        if(!missing(agg.factor)) {
+          raster <- raster::aggregate(raster, agg.factor, fun = math.fun, na.rm=TRUE)
+        }
+
         focalraster <- raster::focal(raster,
                                      moving.window.matrix,
-                                     FUN = math.fun)
+                                     fun = math.fun, na.rm=TRUE)
       }
 
       # Extract value at co-ordinates of each occurrence record
