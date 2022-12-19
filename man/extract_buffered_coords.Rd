@@ -19,7 +19,8 @@ extract_buffered_coords(
   temporal.level = NULL,
   temporal.direction = NULL,
   categories = NULL,
-  save.directory = NULL
+  save.directory = NULL,
+  agg.factor = NULL
 )
 }
 \arguments{
@@ -52,6 +53,8 @@ extract_buffered_coords(
 \item{categories}{optional; a character string, the categories to use in calculation if data are categorical. See details for more information.}
 
 \item{save.directory}{a character string, path to a local directory to save extracted variable data to.}
+
+\item{agg.factor}{optional; a numeric value, the factor to aggregate data by before spatial buffering.}
 }
 \value{
 Returns details of successful explanatory variable extractions.

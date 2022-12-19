@@ -18,6 +18,7 @@ extract_buffered_raster(
   temporal.direction = NULL,
   categories = NULL,
   save.directory = NULL,
+  agg.factor = NULL,
   save.drive.folder
 )
 }
@@ -47,6 +48,8 @@ extract_buffered_raster(
 \item{categories}{optional; a character string, the categories to use in the calculation if data are categorical. See details for more information.}
 
 \item{save.directory}{optional; a character string, path to local directory to save extracted rasters to.}
+
+\item{agg.factor}{optional; a numeric value, the factor to aggregate data by before spatial buffering.}
 
 \item{save.drive.folder}{a character string, Google Drive folder to save extracted rasters to.}
 }
