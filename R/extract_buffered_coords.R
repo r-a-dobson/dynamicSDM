@@ -419,12 +419,13 @@ extract_buffered_coords <-
         # If more than one category, iterate through each category and add binary rasters together
         if (length(categories) > 1) {
           for (cat in 2:length(categories)) {
-            rast <- rast + raster == categories[cat]
+            rast <- rast + (raster == categories[cat])
           }
         }
 
         if(!missing(agg.factor)) {
-          rast <- raster::aggregate(rast, agg.factor, fun = math.fun, na.rm=TRUE)
+          rast <-
+            raster::aggregate(rast, agg.factor, fun = math.fun, na.rm = TRUE)
         }
 
         # If data are categorical then matrix weights must = 1

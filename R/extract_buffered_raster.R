@@ -15,6 +15,7 @@
 #' @param categories optional; a character string, the categories to use in the calculation if data are categorical. See details for more information.
 #' @param save.directory optional; a character string, path to local directory to save extracted rasters to.
 #' @param save.drive.folder a character string, Google Drive folder to save extracted rasters to.
+#' @param agg.factor optional; a numeric value, the factor to aggregate data by before spatial buffering.
 #' @details
 #' For each projection date, this function downloads rasters at given spatial extent and resolution for spatially buffered and temporally dynamic explanatory variables. Rasters are saved directly to Google Drive, with option to export to local directory too. These can be combined to create projection covariate data frames for projection dynamic species distribution and abundance at high spatiotemporal resolution
 #'
@@ -52,6 +53,7 @@ extract_buffered_raster <-
            temporal.direction = NULL,
            categories = NULL,
            save.directory = NULL,
+           agg.factor = NULL,
            save.drive.folder) {
 
     # Check all arguments that are required have been given and are valid .
@@ -311,8 +313,13 @@ extract_buffered_raster <-
 
         if (length(categories) > 1) {
           for (cat in 2:length(categories)) {
-            rast <- rast + raster == categories[cat]
+            rast <- rast + (raster == categories[cat])
           }
+        }
+
+        if(!missing(agg.factor)) {
+          rast <-
+            raster::aggregate(rast, agg.factor, fun = math.fun, na.rm = TRUE)
         }
         # If data are categorical then moving.window.matrix with weights = 1
         moving.window.matrix[1:nrow(moving.window.matrix),
@@ -321,16 +328,21 @@ extract_buffered_raster <-
         # Calculate math.fun function across moving.window.matrix for the raster
         focalraster <- raster::focal(rast,
                                      moving.window.matrix,
-                                     FUN = math.fun,
+                                     fun = math.fun,
                                      na.rm = T)
       }
 
       # Process a continuous data raster
       if (missing(categories)) {
+        if (!missing(agg.factor)) {
+          raster <-
+            raster::aggregate(raster, agg.factor, fun = math.fun, na.rm = TRUE)
+        }
+
         # Calculate math.fun function across moving.window.matrix for the raster
         focalraster <- raster::focal(raster,
                                      moving.window.matrix,
-                                     FUN = math.fun)
+                                     fun = math.fun)
       }
 
       if (!missing(save.directory)) {pathforthisfile <- save.directory}
