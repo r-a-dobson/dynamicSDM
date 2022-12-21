@@ -462,7 +462,7 @@ extract_buffered_coords <-
 
       colnames(extracted_data) <- varname
 
-      extracted_data <- as.data.frame(cbind(occforperiod, varname))
+      extracted_data <- as.data.frame(cbind(occforperiod, extracted_data))
 
       # If split chosen, save individual .csv file with record and value
       if (save.method == "split") {
