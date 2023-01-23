@@ -102,7 +102,7 @@ spatiotemp_check <-
 
       if (duplicate.handle == "exclude") {
 
-        occ.data <- unique(occ.data[, c("year", "month", "day", "x", "y")])
+        occ.data <- occ.data[!duplicated(occ.data[, c("year", "month", "day", "x", "y")]),]
 
         message("omitting any duplicate records")
       }
