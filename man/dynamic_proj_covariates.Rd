@@ -2,49 +2,177 @@
 % Please edit documentation in R/dynamic_proj_covariates.R
 \name{dynamic_proj_covariates}
 \alias{dynamic_proj_covariates}
-\title{Combine explanatory variable rasters into a covariate data frame for each projection date.}
+\title{Combine explanatory variable rasters into covariates for each projection date.}
 \usage{
 dynamic_proj_covariates(
   dates,
   varnames,
-  drive.folder = NULL,
-  user.email = NULL,
-  local.directory = NULL,
-  spatial.ext = NULL,
-  spatial.res.degrees = NULL,
-  resample.method = NULL,
-  save.directory = NULL,
-  save.drive.folder = NULL
+  drive.folder,
+  user.email,
+  local.directory,
+  spatial.ext,
+  spatial.mask,
+  spatial.res.degrees,
+  resample.method,
+  cov.file.type,
+  prj = "+proj=longlat +datum=WGS84",
+  cov.prj,
+  save.directory,
+  save.drive.folder
 )
 }
 \arguments{
-\item{dates}{a character string, vector of dates in format YYYY-MM-DD.}
+\item{dates}{a character string, vector of dates in format "YYYY-MM-DD".}
 
 \item{varnames}{a character string, the unique names for each explanatory variable.}
 
-\item{drive.folder}{optional; a character string or vector, Google Drive folder or folders to read projection covariate rasters from.}
+\item{drive.folder}{optional; a character string or vector, Google Drive folder or folders to read
+projection covariate rasters from. Folder must be uniquely named within Google Drive. Do not
+provide path.}
 
-\item{user.email}{optional; a character string, user email for initialising Google Drive. Required if drive.folder or save.drive.folder used.}
+\item{user.email}{optional; a character string, user email for initialising Google Drive. Required
+if \code{drive.folder} or \code{save.drive.folder} used.}
 
-\item{local.directory}{optional; a character string or vector, path to local directory or directories to read projection covariate rasters from.}
+\item{local.directory}{optional; a character string or vector, path to local directory or
+directories to read projection covariate rasters from.}
 
-\item{spatial.ext}{optional; the spatial extent to crop explanatory variable rasters to. Object of class "Extent", "RasterLayer" or "polygon" or numeric vector listing xmin, xmax, ymin and ymax in order.}
+\item{spatial.ext}{optional; the spatial extent to crop explanatory variable rasters to. Object of
+class \code{Extent}, \code{RasterLayer}, \code{sf}, \code{polygon} or numeric vector listing xmin, xmax, ymin and
+ymax in order.}
 
-\item{spatial.res.degrees}{optional; a numeric value, the spatial resolution in degrees for projection rasters to be resampled to. Required if spatial.ext given.}
+\item{spatial.mask}{an object of class \code{Raster}, \code{sf} or \code{Spatial}, represeting a mask in which NA
+cells in the mask layer are removed from the projection covariates.}
 
-\item{resample.method}{a character string or vector length of varnames, specifying resampling method to use. One of "ngb" and "bilinear". See details for more information.}
+\item{spatial.res.degrees}{optional; a numeric value, the spatial resolution in degrees for
+projection rasters to be resampled to. Required if \code{spatial.ext} given.}
 
-\item{save.directory}{optional; a character string, path to local directory to save projection covariate data frames to.}
+\item{resample.method}{a character string or vector length of varnames, specifying resampling
+method to use. One of "ngb" and "bilinear". See details for more information.}
 
-\item{save.drive.folder}{optional; a character string, Google Drive folder to save projection covariate data frames to.}
+\item{cov.file.type}{a character string, the type of file to export projection covariates as. One
+of: \code{tif} (raster stack) or \code{csv}(data frame).}
+
+\item{prj}{a character string, the coordinate reference system desired for projection covariates.
+Default is "+proj=longlat +datum=WGS84".}
+
+\item{cov.prj}{a character string, the coordinate reference system desired for output projection
+covariates. Default is assumed to be the same as prj.}
+
+\item{save.directory}{optional; a character string, path to local directory to save projection
+covariates to.}
+
+\item{save.drive.folder}{optional; a character string, Google Drive folder to save projection
+covariates to. Folder must be uniquely named within Google Drive. Do not provide path.}
+}
+\value{
+Exports combined covariates in csv or tif file for each projection date to local
+directory or Google Drive folder.
 }
 \description{
-Explanatory variable rasters are imported for each projection date, resampled to given spatial resolution and extent and stacked, and then written to a covariate data frame for each projection date.
+Explanatory variable rasters are imported, resampled to given spatial resolution and extent,
+stacked and then exported as a covariate data frame or raster stack for each projection date.
 }
-\details{
-For each projection date, appropriate rasters for each explanatory variable are imported from a local directory or Google Drive folder. If required, rasters are cropped and resampled to the same spatial extent and resolution. Rasters are then stacked and transformed into a covariate data frame with column names matching the unique explanatory variable names. A data frame of these projection covariates are exported to a local directory or Google Drive folder as “.csv” files named as the relevant date in “YYYY-MM-DD” format.
-Note: if explanatory variable rasters are not of the same spatial resolution and extent, then the function will error.
-Resample methods (resample.method) include: "ngb", in which each cell acquires the value of its nearest neighbour cell in the original raster and is often used for categorical variables; and "bilinear", in which the distance-weighted average of the four nearest cells are used to estimate a new cell value and is often used for continuous variables. If only one resample.method is given, but these are more than one explanatory variables, the same resample.method is used for all.
+\section{Input variable rasters For each projection date, the rasters for each explanatory}{
+variable are imported from a local directory or Google Drive folder.
 
-If drive.folder or save.drive.folder arguments are used to download rasters for use or upload function output, then users must have installed R package "googledrive" and initialised Google Drive with valid log-in credentials. The credentials must be given under function argument user.email to initiate the correct Google Drive account. Please follow instructions on https://googledrive.tidyverse.org/.
+Such rasters should be uniquely named "tif" files within the given directory or drive folder,
+containing the variable name (as stated in \code{varnames}) and projection date in format "YYYY-MM-DD".
+If more than one “tif” file in the Google Drive folder or local directory matches the projection
+date and explanatory variable name, then the function will error.
+}
+
+\section{Processing rasters If required, rasters are cropped and resampled to the same spatial extent and}{
+resolution. If spatial.mask given, then NA in the mask layer are removed from the projection
+covariates. See \code{raster::mask()} in R package \code{raster} for details.
+
+Rasters are then stacked and reprojected if \code{cov.prj} is different to \code{prj}.
+
+Note: if explanatory variable rasters are not of the same spatial resolution and extent, then the
+function will error. Resample methods (\code{resample.method}) include:
+\itemize{
+\item \code{ngb}:  Each cell acquires the value of its nearest neighbour cell in the original raster. This
+is typically used for categorical variables.
+\item \code{bilinear}: the distance-weighted average of the
+four nearest cells are used to estimate a new cell value. This is typically used for continuous
+variables.
+}
+
+If only one \code{resample.method} is given, but these are more than one explanatory variables, the
+same \code{resample.method} is used for all.
+}
+
+\section{Output covariates}{
+The raster stacks are then converted into data frames or raster stacks depending on
+\code{cov.file.type}. Column names or raster layer names will be the unique explanatory variable names
+(\code{varnames}). These are exported to the local directory or Google Drive folder with file names
+containing the relevant projection date in "YYYY-MM-DD" format.
+}
+
+\section{Google Drive compatibility}{
+If \code{drive.folder} or \code{save.drive.folder} given, please ensure the folder name is unique within
+your Google Drive. Do not provide the path if the folder is nested within others.
+
+If one of \code{drive.folder} or \code{save.drive.folder} are used then user.email is required to access the
+appropriate Google Drive user account. This requires users to have installed R package
+\code{googledrive} and initialised Google Drive with valid log-in credentials. Please follow
+instructions on \url{https://googledrive.tidyverse.org/}.
+}
+
+\examples{
+\dontshow{if (googledrive::drive_has_token()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+
+data("sample_extent_data")
+
+# Set extraction variables
+projectiondates <- dynamic_proj_dates("2018-01-01", "2018-12-01", interval = 3,interval.level =
+"month")
+variablenames <- c("eight_sum_prec", "year_sum_prec")
+spatial.res.metres <- 500
+cov_resolution <- 0.05
+
+# Get Google Drive email
+user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
+\dontshow{
+projectiondates <- projectiondates[1]
+spatial.res.metres <-20000
+cov_resolution <- 5
+}
+extract_dynamic_raster(dates=projectiondates,
+                      datasetname = "UCSB-CHG/CHIRPS/DAILY",
+                      bandname="precipitation",
+                      user.email = user.email,
+                      save.drive.folder = "save.drive.folder",
+                      spatial.res.metres = spatial.res.metres,
+                      GEE.math.fun = "sum",
+                      temporal.direction = "prior",
+                      temporal.res = 56,
+                      spatial.ext = sample_extent_data,
+                      varname = variablenames[1],
+                      save.directory=projectionrasters)
+
+
+extract_dynamic_raster(dates=projectiondates,
+                     datasetname = "UCSB-CHG/CHIRPS/DAILY",
+                     bandname="precipitation",
+                     user.email = user.email,
+                     save.drive.folder = "save.drive.folder",
+                     spatial.res.metres = spatial.res.metres,
+                     GEE.math.fun = "sum",
+                     temporal.direction = "prior",
+                     temporal.res = 364,
+                     spatial.ext = sample_extent_data,
+                     varname = variablenames[2],
+                     save.directory=temp.dir())
+
+dynamic_proj_covariates(dates = projectiondates,
+                       varnames = variablenames,
+                       local.directory = temp.dir(),
+                       spatial.ext = sample_extent_data,
+                       spatial.mask = sample_extent_data,
+                       spatial.res.degrees = cov_resolution,
+                       resample.method = c("bilinear","bilinear"),
+                       cov.file.type = "csv",
+                       prj="+proj=longlat +datum=WGS84",
+                       save.directory = temp.dir())
+\dontshow{\}) # examplesIf}
 }

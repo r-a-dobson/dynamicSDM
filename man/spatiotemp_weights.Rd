@@ -6,40 +6,60 @@
 \usage{
 spatiotemp_weights(
   occ.data,
-  sampling.events.df,
-  spatial.dist = NULL,
-  temporal.dist = NULL
+  samp.events,
+  spatial.dist = 0,
+  temporal.dist = 0,
+  prj = "+proj=longlat +datum=WGS84"
 )
 }
 \arguments{
-\item{occ.data}{a data frame, with columns for occurrence record co-ordinates and dates with column names as follows; record longitude as "x", latitude as "y", year as "year", month as "month", and day as "day".}
+\item{occ.data}{a data frame, with columns for occurrence record co-ordinates and dates with
+column names as follows; record longitude as "x", latitude as "y", year as "year", month as
+"month", and day as "day".}
 
-\item{sampling.events.df}{a data.frame, sampling events with column names as follows; record longitude as "x", latitude as "y", year as "year", month as "month", and day as "day".}
+\item{samp.events}{a data.frame, sampling events with column names as follows; record longitude as
+"x", latitude as "y", year as "year", month as "month", and day as "day".}
 
-\item{spatial.dist}{a numeric value, the spatial distance in metres representing the radius from occurrence record co-ordinate to sum sampling events across.}
+\item{spatial.dist}{a numeric value, the spatial distance in metres representing the radius from
+occurrence record co-ordinate to sum sampling events across.}
 
-\item{temporal.dist}{a numeric value, the temporal distance in days, representing the period before and after the occurrence record date to sum sampling events across.}
+\item{temporal.dist}{a numeric value, the temporal distance in days, representing the period
+before and after the occurrence record date to sum sampling events across.}
+
+\item{prj}{a character string, the coordinate reference system of input \code{occ.data} co-ordinates
+Default is "+proj=longlat +datum=WGS84".}
 }
 \value{
-Returns input occurrence record data frame with additional columns for sampling effort "SAMP_EFFORT" and relative sampling effort "REL_SAMP_EFFORT".
+Returns input occurrence record data frame with additional columns for sampling effort
+"SAMP_EFFORT" and relative sampling effort "REL_SAMP_EFFORT".
 }
 \description{
-Calculates the total number of sampling events across a given spatial and temporal buffer from each occurrence record’s co-ordinate and date.
+Calculates the total number of sampling events across a given spatial and temporal buffer from
+each occurrence record’s co-ordinate and date.
 }
 \details{
-For each occurrence record, this function calculates the total number of sampling events within given radius (spatial.dist) from each record co-ordinate and days (temporal.dist) both prior and post record date.
+For each occurrence record, this function calculates the total number of sampling events
+within given radius (\code{spatial.dist}) from each record co-ordinate and days (\code{temporal.dist})
+both prior and post record date.
 
-In addition to total sampling events, the function also calculates relative sampling effort, scaling from 0 (least sampled) to 1 (most sampled).
+In addition to total sampling events, the function also calculates relative sampling effort,
+scaling from 0 (least sampled) to 1 (most sampled).
 
-Output could be used as model weights to correct spatial and temporal biases in occurrence record collections.
+Output could be used to calculate model weights to correct spatial and temporal biases in
+occurrence record collections.
 }
 \examples{
-data("sample_occ_abs_data")
-data("sample_surveyeffort")
+data("sample_explan_data")
+data("sample_events_data")
+\dontshow{
+sample_explan_data<-sample_explan_data[1:5,]
+}
+
 spatiotemp_weights(
- occ.data = sample_occ_abs_data,
- sampling.events.df = sample_surveyeffort,
+ occ.data = sample_explan_data,
+ samp.events = sample_events_data,
  spatial.dist = 200000,
  temporal.dist = 20
 )
+
 }

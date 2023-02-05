@@ -4,36 +4,53 @@
 \alias{spatiotemp_resolution}
 \title{Filter species occurrence records by given spatial and temporal resolution}
 \usage{
-spatiotemp_resolution(occ.data, spatial.res = NULL, temporal.res = NULL)
+spatiotemp_resolution(occ.data, spatial.res, temporal.res)
 }
 \arguments{
-\item{occ.data}{a data frame, with columns for occurrence record co-ordinates and dates with column names as follows; record longitude as "x", latitude as "y", year as "year", month as "month", and day as "day".}
+\item{occ.data}{a data frame, with columns for occurrence record co-ordinates and dates with
+column names as follows; record longitude as "x", latitude as "y", year as "year", month as
+"month", and day as "day".}
 
-\item{spatial.res}{optional; a numeric value, the minimum acceptable number of decimal places given for occurrence record co-ordinates.}
+\item{spatial.res}{optional; a numeric value, the minimum acceptable number of decimal places
+given for occurrence record co-ordinates.}
 
-\item{temporal.res}{optional; a character string, the minimum acceptable temporal resolution of occurrence record dates. One of '"day"', '"month"' or '"year"': can be abbreviated.}
+\item{temporal.res}{optional; a character string, the minimum acceptable temporal resolution of
+occurrence record dates. One of \code{day} , \code{month} or \code{year}: can be abbreviated.}
 }
 \value{
-Returns a data frame of species records filtered by the minimum acceptable spatial resolution of co-ordinates and temporal resolution of dates.
+Returns a data frame of species records filtered by the minimum acceptable spatial
+resolution of co-ordinates and temporal resolution of dates.
 }
 \description{
-Filters species occurrence record data frame to exclude records with co-ordinates and dates that do not meet specified spatial and temporal resolution.
+Filters species occurrence record data frame to exclude records with co-ordinates and dates that
+do not meet specified spatial and temporal resolution.
 }
 \details{
-Excludes species occurrence records that do not meet the minimum spatial and temporal resolution specified.
+Excludes species occurrence records that do not meet the minimum spatial and temporal
+resolution specified.
 
-If spatial.res given, the value of 1 represents acceptable co-ordinate resolution of one decimal place, roughly equal to 11.1km, and value of 3 represents three decimal places, roughly equal to 111m.
+If \code{spatial.res} given, the value of 1 represents an acceptable co-ordinate resolution of one
+decimal place, roughly equal to 11.1km, and value of 3 represents three decimal places, roughly
+equal to 111m.
 
-If temporal.res given, temporal.res = "day" would result in exclusion of records without values for year, month and day, and temporal.res = "year" would only exclude records without values for year.
+If \code{temporal.res} given, \code{temporal.res = day} would result in exclusion of records without
+values for year, month and day, and \code{temporal.res = year} would only exclude records without
+values for year.
 
-spatial.res and temporal.res can be informed based upon the highest spatial and temporal resolution of the datasets to be utilised when extracting dynamic variables. For instance, if explanatory variables datasets are annual, then temporal.res of "year" is adequate, whereas if datasets are daily, then temporal.res of "day" is more appropriate.
+\code{spatial.res} and \code{temporal.res} can be informed based upon the highest spatial and temporal
+resolution of the datasets to be utilised when extracting dynamic variables.
+
+For example, if explanatory variables datasets are annual, then a \code{temporal.res} of \code{year} is
+adequate, whereas if
+datasets are daily, then \code{temporal.res} of \code{day} may be more appropriate.
 }
 \examples{
-x<-c(27.1, 28.54125, 25.54125, 30.04125, 29.95792)
-y<-c(-26.79125, -26.37458, -26.70792, -29.37458, -28.45792)
-year<-c(2014, 2016, 2011, 2011, 2015)
-month<-c(1, 2, 3, 2, 4)
-day<-c(27, 25, 16, 25, 26)
-occ.data<-data.frame(cbind(x,y,year,month,day))
-spatiotemp_resolution(occ.data,spatial.res=5,temporal.res="day")
+data(sample_occ_data)
+sample_occ_data <- convert_gbif(sample_occ_data)
+
+spatial_res_high <- spatiotemp_resolution(sample_occ_data, spatial.res = 4)
+
+spatial_res_low <- spatiotemp_resolution(sample_occ_data, spatial.res = 1)
+
+temporal_res <- spatiotemp_resolution(sample_occ_data, temporal.res = "day")
 }

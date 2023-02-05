@@ -9,79 +9,126 @@ brt_fit(
   response.col,
   varnames,
   distribution,
-  block.col = NULL,
-  weights.col = NULL,
-  test.data = NULL,
-  interaction.depth = NULL,
+  block.col,
+  weights.col,
+  test.data,
+  interaction.depth,
   n.trees = 5000,
   shrinkage = 0.001
 )
 }
 \arguments{
-\item{occ.data}{a data frame, the data to fit boosted regression tree models to, containing columns for model response and explanatory variable data. If required, occ.data should contain block.col and weights.col columns too.}
+\item{occ.data}{a data frame, the data to fit boosted regression tree models to, containing
+columns for model response and explanatory variable data. If required, \code{occ.data} should contain
+\code{block.col} and \code{weights.col} columns too.}
 
-\item{response.col}{a character string, the name of the column in occ.data containing response variable column.}
+\item{response.col}{a character string, the name of the column in \code{occ.data} containing response
+variable column.}
 
-\item{varnames}{a character vector, the names of the columns containing model explanatory variables in occ.data.}
+\item{varnames}{a character vector, the names of the columns containing model explanatory
+variables in \code{occ.data.}}
 
-\item{distribution}{a character string, the model distribution family to use, such as "Gaussian", "Poisson" or "Bernoulli".}
+\item{distribution}{a character string, the model distribution family to use, such as \code{gaussian},
+\code{poisson} or \code{bernoulli}.}
 
-\item{block.col}{optional; a character string, the name of the column in occ.data containing spatiotemporal block numbers for occ.data splitting. See details for more information.}
+\item{block.col}{optional; a character string, the name of the column in \code{occ.data} containing
+spatiotemporal block numbers for \code{occ.data} splitting. See details for more information.}
 
-\item{weights.col}{a character string, the name of the column in occ.data containing spatiotemporal sampling effort weights to be used in fitting process.}
+\item{weights.col}{a character string, the name of the column in \code{occ.data} containing
+spatiotemporal sampling effort weights to be used in fitting process.}
 
-\item{test.data}{optional; a data frame, the testing dataset for optimising interaction.depth when blocking is not used.}
+\item{test.data}{optional; a data frame, the testing dataset for optimising \code{interaction.depth} when
+blocking is not used.}
 
-\item{interaction.depth}{optional; an integer specifying the maximum depth of each tree (i.e. highest level of variable interactions allowed). Default optimises depth between 1 and 4.}
+\item{interaction.depth}{optional; an integer specifying the maximum depth of each tree (i.e.
+highest level of variable interactions allowed). Default optimises depth between 1 and 4.}
 
-\item{n.trees}{optional; an integer, the number of trees in boosted regression tree models. Default is 5000.}
+\item{n.trees}{optional; an integer, the number of trees in boosted regression tree models.
+Default is 5000.}
 
-\item{shrinkage}{optional; an integer, the shrinkage parameter applied to each tree in the boosted regression tree expansion. Also known as learning rate. Default is 0.001.}
+\item{shrinkage}{optional; an integer, the shrinkage parameter applied to each tree in the boosted
+regression tree expansion. Also known as learning rate. Default is 0.001.}
 }
 \value{
-Returns a “gbm” model object or list of “gbm” model objects.
+Returns a \code{gbm} model object or list of \code{gbm} model objects.
 }
 \description{
-Fit gradient boosting boosted regression tree models to species distribution and abundance data and associated dynamic explanatory variables.
+Fit gradient boosting boosted regression tree models to species distribution and abundance data
+and associated dynamic explanatory variables.
 }
 \details{
-This function calculates a gradient boosting “gbm” object for the response and explanatory variable data provided, using the gbm R package (Greenwell et al., 2019). dynamicSDM adds extra functionality for optimising the gbm interation.depth parameter and splitting training and testing data by spatiotemporal blocks to account for spatial and temporal autocorrelation.
+This function calculates a gradient boosting \code{gbm} object for the response and
+explanatory variable data provided, using the \code{gbm} R package (Greenwell et al., 2019).
 
-If interaction.depth is not given, then brt_fit will vary the interaction.depth parameter between 1 (an additive model) and 4 (four-way interaction model). For each interaction.depth value, model performance is measured by calculating the root-mean-square error of model predictions compared to actual values in the testing data. The interaction.depth value that results in the lowest root-mean-square error is used for the returned fitted model.
+Key functionality for dynamic SDMs within \code{brt_fit()} includes:
+\itemize{
+\item Optimise interaction.depth
+}
 
-The model testing dataset can either be given using argument test.data or block.col given. In the latter situation, each unique block.col block is excluded in a jack-knife approach following Bagchi et al., (2013). This approach uses each block as the model testing dataset in numerical order, whilst all other block.col blocks are used as training data for the boosted regression tree model. Therefore, the function returns a list of fitted boosted regression tree models equal to the length of unique blocking categories in block.col. If block.col is not given, models are fit to all occ.data and a single gbm model is returned.
+If \code{interaction.depth} is not given, then \code{brt_fit()} will vary the interaction depth parameter
+between 1 (an additive model) and 4 (four-way interaction model). For each interaction.depth
+value, model performance is measured by calculating the root-mean-square error of model
+predictions compared to actual values in the testing data. The interaction.depth value that
+results in the lowest root-mean-square error is used when fitting the returned model.
 
-If weights.col given, records are weighted by their associated value in the weights.col when model fitting. For instance, the user may wish to down weigh the importance of records collected at oversampled sites and times when fitting models, and vice versa, to account for spatiotemporal biases in occurrence records.
+The model testing dataset can either be given using \code{test.data} or \code{block.col}
+(latter expanded on below).
+\itemize{
+\item Split by spatiotemporal blocks to account for spatial and temporal autocorrelation
+}
+
+If \code{block.col} is specified, then each unique block is excluded in a jack-knife approach
+following Bagchi et al., (2013). This approach uses each block as the model testing dataset in
+numerical order, whilst all other \code{block.col} blocks are used as training data for the boosted
+regression tree model.
+
+In this case, the function returns a list of fitted boosted regression tree models equal to the
+length of unique blocking categories in \code{block.col}.
+
+If \code{block.col} is not given, models are fit to all occ.data and a single \code{gbm} model is
+returned.
+\itemize{
+\item Weighted by spatiotemporal sampling effort
+}
+
+If \code{weights.col} is specified, records are weighted by their associated value in this column
+when model fitting. For instance, the user may wish to down weigh the importance of records
+collected at oversampled sites and times when fitting models, and vice versa, to account for
+spatiotemporal biases in occurrence records.
 }
 \examples{
 
-data("sample_model_data")
+data("sample_explan_data")
+
+sample_explan_data$weights<-1-sample_explan_data$REL_SAMP_EFFORT
+
+\dontshow{
+sample_filt_data<-sample_explan_data[1:100,]
+}
+
+
 split <- sample(c(TRUE, FALSE),
                replace=TRUE,
-               nrow(sample_model_data),
+               nrow(sample_explan_data),
                prob = c(0.75, 0.25))
-training <- sample_model_data[split, ]
-testing <- sample_model_data[!split, ]
+
+training <- sample_explan_data[split, ]
+testing <- sample_explan_data[!split, ]
 brt_fit(
  occ.data = training,
  test.data = testing,
  response.col = "presence.absence",
  distribution = "bernoulli",
- weights.col = "sampling_weights",
- varnames = colnames(training)[9:12]
+ weights.col = "weights",
+ varnames = colnames(training)[14:16],
+ interaction.depth = 2
 )
 
-training <- sample_model_data
-brt_fit(
- occ.data = training,
- response.col = "presence.absence",
- distribution = "bernoulli",
- block.col = "blockno",
- weights.col = "sampling_weights",
- varnames = colnames(training)[9:12]
-)
 }
 \references{
-Bagchi, R., Crosby, M., Huntley, B., Hole, D. G., Butchart, S. H. M., Collingham, Y., Kalra, M., Rajkumar, J., Rahmani, A. & Pandey, M. 2013. Evaluating the effectiveness of conservation site networks under climate change: accounting for uncertainty. Global Change Biology, 19, 1236-1248.
-Greenwell, B., Boehmke, B., Cunningham, J., & GBM Developers. 2019. Package ‘gbm’. R package version, 2.
+Bagchi, R., Crosby, M., Huntley, B., Hole, D. G., Butchart, S. H. M., Collingham, Y.,
+Kalra, M., Rajkumar, J., Rahmani, A. & Pandey, M. 2013. Evaluating the effectiveness of
+conservation site networks under climate change: accounting for uncertainty. Global Change
+Biology, 19, 1236-1248. Greenwell, B., Boehmke, B., Cunningham, J., & GBM Developers. 2019.
+Package ‘gbm’. R package version, 2.
 }

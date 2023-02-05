@@ -9,75 +9,186 @@ extract_buffered_raster(
   spatial.ext,
   datasetname,
   bandname,
+  temporal.level,
   spatial.res.metres,
   GEE.math.fun,
   moving.window.matrix,
   user.email,
-  varname = NULL,
-  temporal.res = NULL,
-  temporal.direction = NULL,
-  categories = NULL,
-  save.directory = NULL,
-  agg.factor = NULL,
+  varname,
+  temporal.res,
+  temporal.direction,
+  categories,
+  save.directory,
+  agg.factor,
   save.drive.folder
 )
 }
 \arguments{
-\item{dates}{a character string, vector of dates in format YYYY-MM-DD.}
+\item{dates}{a character string, vector of dates in format "YYYY-MM-DD".}
 
-\item{spatial.ext}{the spatial extent for the extracted raster. Object of class "Extent", "RasterLayer" or "polygon" or numeric vector listing xmin, xmax, ymin and ymax in order.}
+\item{spatial.ext}{the spatial extent for the extracted raster. Object from which extent can be
+extracted of class \code{Extent}, \code{RasterLayer}, \code{sf} or \code{polygon} or numeric vector listing xmin,
+xmax, ymin and ymax in order.}
 
 \item{datasetname}{a character string, the Google Earth Engine dataset to extract data from.}
 
 \item{bandname}{a character string, the Google Earth Engine dataset bandname to extract data for.}
 
-\item{spatial.res.metres}{a numeric value, specifying the spatial resolution in metres of the raster to be extracted.}
+\item{temporal.level}{a character string indicating the temporal resolution of the remote-sensing
+dataset (\code{datasetname}). One of \code{day}, \code{month} or \code{year}: can be abbreviated. Default; \code{day}.}
 
-\item{GEE.math.fun}{a character string, the mathematical function to compute across the specified period and spatial buffer from each projection date and cell.}
+\item{spatial.res.metres}{a numeric value, specifying the spatial resolution in metres of the
+raster to be extracted.}
 
-\item{moving.window.matrix}{“moving window” matrix of weights with an odd number of sides to specify spatial neighbourhood of cells to calculate GEE.math.fun across for each cell in spatial.ext. See details for more information.}
+\item{GEE.math.fun}{a character string, the mathematical function to compute across the specified
+period and spatial buffer from each projection date and cell.}
+
+\item{moving.window.matrix}{a matrix of weights with an odd number of sides to specify spatial
+neighbourhood of cells ("moving window") to calculate \code{GEE.math.fun} across for each cell in
+\code{spatial.ext}. See details for more information.}
 
 \item{user.email}{a character string, user email for initialising Google Drive.}
 
-\item{varname}{optional; a character string, the unique name for the explanatory variable. Default varname is “bandname_temporal.res_temporal.direction_ GEE.math.fun_buffered_raster".}
+\item{varname}{optional; a character string, the unique name for the explanatory variable. Default
+varname is “bandname_temporal.res_temporal.direction_ GEE.math.fun_buffered_raster".}
 
-\item{temporal.res}{optional; a numeric value, the temporal resolution in days prior or post each projection date to calculate GEE.math.fun across.}
+\item{temporal.res}{optional; a numeric value, the temporal resolution in days prior or post each
+projection date to calculate \code{GEE.math.fun} across.}
 
-\item{temporal.direction}{optional; a character string, the temporal direction for extracting dynamic variable data across relative to each projection date given. One of '"prior"' or '"post"': can be abbreviated.}
+\item{temporal.direction}{optional; a character string, the temporal direction for extracting
+dynamic variable data across relative to each projection date given. One of \code{prior} or \code{post}:
+can be abbreviated.}
 
-\item{categories}{optional; a character string, the categories to use in the calculation if data are categorical. See details for more information.}
+\item{categories}{optional; a character string, the categories to use in the calculation if data
+are categorical. See details for more information.}
 
-\item{save.directory}{optional; a character string, path to local directory to save extracted rasters to.}
+\item{save.directory}{optional; a character string, path to local directory to save extracted
+rasters to.}
 
-\item{agg.factor}{optional; a numeric value, the factor to aggregate data by before spatial buffering.}
+\item{agg.factor}{optional; a numeric value, the factor to aggregate data by before spatial
+buffering.}
 
-\item{save.drive.folder}{a character string, Google Drive folder to save extracted rasters to.}
+\item{save.drive.folder}{a character string, Google Drive folder to save extracted rasters to.
+Folder must be uniquely named within Google Drive. Do not provide path.}
 }
 \value{
-Returns details of successful explanatory variable extractions for each projection date.
+Returns details of successful explanatory variable raster extractions for each projection
+date.
 }
 \description{
-Extract rasters for spatially buffered and temporally dynamic explanatory variables at each projection date using Google Earth Engine.
+Extract rasters for spatially buffered and temporally dynamic explanatory variables at each
+projection date using Google Earth Engine.
 }
 \details{
-For each projection date, this function downloads rasters at given spatial extent and resolution for spatially buffered and temporally dynamic explanatory variables. Rasters are saved directly to Google Drive, with option to export to local directory too. These can be combined to create projection covariate data frames for projection dynamic species distribution and abundance at high spatiotemporal resolution
+For each projection date, this function downloads rasters at given spatial extent and
+resolution for spatially buffered and temporally dynamic explanatory variables. Rasters are
+saved directly to Google Drive, with option to export to local directory too. These can be
+combined to create projection covariate data frames for projection dynamic species distribution
+and abundance at high spatiotemporal resolution
+}
+\section{Temporal dimension}{
+If \code{temporal.res} and \code{temporal.direction} are not given, explanatory variable data for all
+cells within \code{spatial.ext} are extracted. If \code{temporal.res} and \code{temporal.direction} are given,
+explanatory variable data for all cells within \code{spatial.ext} are extracted, for which
+\code{GEE.math.fun} has been first calculated over the specified period in relation to the projection
+date (prior or post).
+}
 
-If temporal.res and temporal.direction are not given, the function extracts explanatory variable data (in RasterLayer format) for all of the cells in spatial extent (spatial.ext) given. If temporal.res and temporal.direction is given, the function extracts explanatory variable data (in RasterLayer format) for which GEE.math.fun has been first calculated over this period in relation to the projection date.
+\section{Categorical data and temporally dynamic variables}{
+Please be aware, at current this function does not support the extraction of temporally dynamic
+variables for categorical datasets. However, some accepted mathematical functions such as
+"first" or "last" may be appropriate for such datasets.
+}
 
-Using the focal function in raster R package (Hijmans et al., 2015), GEE.math.fun is calculated across the spatial buffer area from each cell across spatial extent given. The spatial buffer area used is specified by argument moving.window matrix, which dictates the neighbourhood of cells surrounding each cell in spatial.ext to include in the calculation.
+\section{Spatial dimension}{
+Using the \code{focal} function in \code{raster} R package (Hijmans et al., 2015), \code{GEE.math.fun} is
+calculated across the spatial buffer area from each cell in \code{spatial.ext}. The spatial buffer
+area used is defined by \verb{moving.window matrix}, which dictates the neighbourhood of cells
+surrounding each cell in \code{spatial.ext} to include in the calculation.
+See \link{get_moving_window}.
+}
 
-When explanatory variable data are categorical (e.g. land cover classes), argument categories can be used to specify the categories of importance to the calculation. The category or categories given will be converted in a binary representation, with “1” for those listed, and “0” for all others in the dataset. Ensure that the GEE.math.fun given is appropriate for such data. For example, this function could return the sum of suitable land cover classified cells in the “moving window” from each cell across spatial extent given.
+\section{Mathematical function}{
+\code{GEE.math.fun} specifies the mathematical function to be calculated over the spatial buffered
+area and temporal period. Options are limited to Google Earth Engine ImageCollection Reducer
+functions (\url{https://developers.google.com/earth-engine/apidocs/}) for which an analogous R
+function is available. This includes: "allNonZero","anyNonZero", "count",
+"first","firstNonNull", "last", "lastNonNull", "max","mean", "median","min", "mode","product",
+"sampleStdDev", "sampleVariance", "stdDev", "sum" and "variance".
+}
 
-extract_buffered_raster requires users to have installed R package "rgee" (Aybar et al., 2020) and initialised Google Earth Engine with valid log-in credentials. Please follow instructions on the following website . datasetname must be in the accepted Google Earth Engine Data catalogue layout (e.g. “MODIS/006/MCD12Q1” or “UCSB-CHG/CHIRPS/DAILY”) and bandname as specified in the dataset (e.g. “LC_Type5”, “precipitation”). For datasets and band names, see .
+\section{Categorical data}{
+If explanatory variable data are categorical (e.g. land cover classes), \code{categories} can be used
+to specify the categories of importance to the calculation. The category or categories given
+will be converted in a binary representation, with “1” for those listed, and “0” for all others
+in the dataset. Ensure that the \code{GEE.math.fun} given is appropriate for such data.
 
-extract_buffered_raster also requires users to have installed the R package "googledrive" (D'Agostino McGowan and Bryan, 2022) and initialised Google Drive with valid log-in credentials, which must be provided under argument user.email. Please follow instructions on https://googledrive.tidyverse.org/ for initialising the googledrive package.
+For example, this function could return the sum of suitable land cover classified cells in the
+“moving window” from each cell across spatial extent given.
+}
 
-GEE.math.fun specifies the mathematical function to be calculated over the spatial buffered area and temporal period. Options are limited to Google Earth Engine ImageCollection Reducer functions (https://developers.google.com/earth-engine/apidocs/) for which an analogous R function is available. This includes: "allNonZero","anyNonZero", "count", "first","firstNonNull", "last", "lastNonNull", "max","mean", "median","min", "mode","product", "sampleStdDev", "sampleVariance", "stdDev", "sum" and "variance".
+\section{Google Earth Engine}{
+\code{extract_buffered_raster()} requires users to have installed R package \code{rgee} (Aybar et al.,
+2020) and initialised Google Earth Engine with valid log-in credentials. Please follow
+instructions on the following website
+\url{https://cran.r-project.org/web/packages/rgee/vignettes/rgee01.html}.
+\itemize{
+\item \code{datasetname} must be in the accepted Google Earth Engine catalogue layout (e.g.
+“MODIS/006/MCD12Q1” or “UCSB-CHG/CHIRPS/DAILY”)
+\item \code{bandname} must be as specified under the dataset in the Google Earth Engine catalogue (e.g.
+“LC_Type5”, “precipitation”). For datasets and band names, see
+\url{https://developers.google.com/earth-engine/datasets}.
+}
+}
+
+\section{Google Drive}{
+\code{extract_buffered_raster()} also requires users to have installed the R package
+\code{googledrive}(D'Agostino McGowan and Bryan, 2022) and initialised Google Drive with valid log-in
+credentials, which must be stated using argument \code{user.email}. Please follow instructions on
+\url{https://googledrive.tidyverse.org/} for initialising the \code{googledrive} package.
+
+The \code{save.drive.folder} must be uniquely named within your Google Drive and do not provide the
+path.
+}
+
+\examples{
+\dontshow{if (googledrive::drive_has_token()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+
+dates <- dynamic_proj_dates("2018-01-01", "2018-12-01", interval = 3,interval.level = "month")
+\dontshow{
+dates <- dates[1]
+}
+
+data("sample_extent_data")
+user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
+
+matrix<-get_moving_window(radial.distance = 10000,
+                            spatial.res.degrees = 0.05,
+                            spatial.ext = sample_extent_data)
+
+extract_buffered_raster(dates = dates,
+                       datasetname = "MODIS/006/MCD12Q1",
+                       bandname="LC_Type5",
+                       spatial.res.metres = 500,
+                       GEE.math.fun = "sum",
+                       moving.window.matrix = matrix,
+                       save.drive.folder = "mydrivefolder",
+                       user.email = user.email,
+                       categories=c(6,7),
+                       agg.factor = 12,
+                       spatial.ext = sample_extent_data,
+                       varname = "total_grass_crop_lc",
+                       save.directory = temp.dir())
+\dontshow{\}) # examplesIf}
 }
 \references{
-Aybar, C., Wu, Q., Bautista, L., Yali, R. and Barja, A., 2020. rgee: An R package for interacting with Google Earth Engine. Journal of Open Source Software, 5(51), p.2272.
+Aybar, C., Wu, Q., Bautista, L., Yali, R. and Barja, A., 2020. rgee: An R package for
+interacting with Google Earth Engine. Journal of Open Source Software, 5(51), p.2272.
 
-D'Agostino McGowan L., and Bryan J., 2022. googledrive: An Interface to Google Drive. https://googledrive.tidyverse.org, https://github.com/tidyverse/googledrive.
+D'Agostino McGowan L., and Bryan J., 2022. googledrive: An Interface to Google Drive.
+\url{https://googledrive.tidyverse.org}, \url{https://github.com/tidyverse/googledrive}.
 
-Hijmans, R. J., Van Etten, J., Cheng, J., Mattiuzzi, M., Sumner, M., Greenberg, J. A., Lamigueiro, O. P., Bevan, A., Racine, E. B. & Shortridge, A. 2015. Package ‘raster’. R package, 734.
+Hijmans, R. J., Van Etten, J., Cheng, J., Mattiuzzi, M., Sumner, M., Greenberg, J. A.,
+Lamigueiro, O. P., Bevan, A., Racine, E. B. & Shortridge, A. 2015. Package ‘raster’. R package,
+734.
 }

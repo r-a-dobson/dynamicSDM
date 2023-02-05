@@ -7,65 +7,167 @@
 dynamic_proj(
   dates,
   projection.method,
-  local.directory = NULL,
-  drive.folder = NULL,
-  user.email = NULL,
-  sdm.mod = NULL,
+  local.directory,
+  drive.folder,
+  user.email,
+  sdm.mod,
   sdm.thresh = 0.5,
   sdm.weight = 1,
-  sam.mod = NULL,
+  sam.mod,
   sam.weight = 1,
-  save.directory = NULL,
-  save.drive.folder = NULL
+  save.directory,
+  save.drive.folder,
+  cov.file.type,
+  prj = "+proj=longlat +datum=WGS84",
+  proj.prj,
+  spatial.mask
 )
 }
 \arguments{
-\item{dates}{a character string, vector of dates in format YYYY-MM-DD.}
+\item{dates}{a character string, vector of dates in format "YYYY-MM-DD".}
 
-\item{projection.method}{a character string or vector, the method or methods to project distribution and abundance onto projection covariates. Options include "'proportional'", "'binary'", "'abundance'" and "'stacked'". See details for more information.}
+\item{projection.method}{a character string or vector, the method or methods to project
+distribution and abundance onto projection covariates. Options include \code{proportional}, \code{binary},
+\code{abundance} and \code{stacked}. See details for more information.}
 
-\item{local.directory}{optional; a character string, the path to a local directory to read projection covariate data frames from.}
+\item{local.directory}{optional; a character string, the path to a local directory to read
+projection covariate data frames from.}
 
-\item{drive.folder}{optional; a character string, the Google Drive folder to read projection covariate data frames from.}
+\item{drive.folder}{optional; a character string, the Google Drive folder to read projection
+covariate data frames from. Folder must be uniquely named within Google Drive. Do not provide
+path.}
 
-\item{user.email}{optional; a character string, user email for initialising Google Drive. Required if drive.folder or save.drive.folder used.}
+\item{user.email}{optional; a character string, user email for initialising Google Drive. Required
+if drive.folder or save.drive.folder used.}
 
-\item{sdm.mod}{optional; a model object or list of model objects fitted to species distribution data.}
+\item{sdm.mod}{optional; a model object or list of model objects fitted to species distribution
+data.}
 
-\item{sdm.thresh}{optional; a numeric value, the threshold to convert projected distribution suitability into binary presence-absence. Default 0.5. Required if projection.method is "'binary'" or "stacked".}
+\item{sdm.thresh}{optional; a numeric value, the threshold to convert projected distribution
+suitability into binary presence-absence. Default 0.5. Required if projection.method is
+"\code{binary}" or  "\code{stacked}".}
 
-\item{sdm.weight}{optional; a numeric string, weights given to each sdm.mod model projection, given in the same order as the sdm.mod list. Default is equal weighting to all models.}
+\item{sdm.weight}{optional; a numeric string, weights given to each \code{sdm.mod} model projection,
+given in the same order as the \code{sdm.mod} list. Default is equal weighting to all models.}
 
 \item{sam.mod}{optional; a model object or list of model objects fitted to species abundance data.}
 
-\item{sam.weight}{optional; a numeric string, weights given to each sdm.mod model projection, given in the same order as the sam.mod list. Default is equal weighting to all models.}
+\item{sam.weight}{optional; a numeric string, weights given to each \code{sdm.mod} model projection,
+given in the same order as the sam.mod list. Default is equal weighting to all models.}
 
-\item{save.directory}{optional; a character string, path to local directory to save projection rasters to.}
+\item{save.directory}{optional; a character string, path to local directory to save projection
+rasters to.}
 
-\item{save.drive.folder}{optional; a character string, Google Drive folder to save projection rasters to.}
+\item{save.drive.folder}{optional; a character string, Google Drive folder to save projection
+rasters to. Folder must be uniquely named within Google Drive. Do not provide path.}
+
+\item{cov.file.type}{a character string, the type of file that contains projection covariates. One
+of: "\code{tif}" (raster stack) or \code{csv}(data frame).}
+
+\item{prj}{a character string, the coordinate reference system of input projection covariates.
+Default is "+proj=longlat +datum=WGS84".}
+
+\item{proj.prj}{a character string, the coordinate reference system desired for output projection
+rasters. Default is assumed to be the same as prj.}
+
+\item{spatial.mask}{an object of class \code{Raster}, \code{sf} or \code{Spatial}, represeting a mask in which NA
+cells in the mask layer are removed from the projection covariates.}
 }
 \value{
-Exports model projection rasters for each projection date to user-specified Google Drive folder or local directory.
+Exports projection rasters for each projection date to user-specified Google Drive
+folder or local directory.
 }
 \description{
-Projects fitted species distribution and abundance models onto projection covariates for each date given.
+Projects fitted species distribution and abundance models onto projection covariates for each date
+given.
 }
 \details{
-Function projects a model object or list of model objects onto projection covariate data frames for each projection date given.
+Function projects a model object or list of model objects onto projection covariate data
+frames for each projection date given.
+}
+\section{Projection covariate input}{
+\itemize{
+\item Data frames: if \code{cov.file.type} = \code{csv}, then projection covariates must be saved ".csv" files
+in the drive.folder or local.directory given. Here, they must be unique in containing the
+relevant projection date in “YYYY-MM-DD” format. For instance, two or more “.csv” files saved
+within the Google Drive folder or local directory that contain the projection date will result
+in function error. Additionally, column names of projection covariate data frames must match the
+explanatory variable names that fitted models are trained on.
+\item Raster stacks: if \code{cov.file.type} = \code{tif}, then projection covariates must be saved ".tif"
+files, similarly named and formatted as above. Raster layer names must match the explanatory
+variable names that fitted models are trained on.
+}
 
-Projection covariate data frames must be saved “.csv” files in the drive.folder or save.drive.folder given, and must be unique in containing the relevant projection date in “YYYY-MM-DD” format. For instance, two or more “.csv” files saved with the given Google Drive folder or local directory that contain the projection date will result in function error.  Additionally, column names of projection covariate data frames must match the explanatory variable names that fitted models are trained on.
+Note: It is important to state the coordinate reference system projection of covariates using
+argument \code{prj}.
+}
 
-When multiple models are provided, the function projects each model onto the projection covariates and takes the average value across all model projections. However, if users have specified sdm.weight or sam.weight then the weighted average of model projections is returned. For example, this could be used to down weight projections of poorly performing models in an ensemble.
+\section{Model input}{
+When multiple models are provided in \code{sdm.mod} or \code{sam.mod}, the function projects each model
+onto the projection covariates and takes the average value across all model projections. If
+\code{sdm.weight} or \code{sam.weight} is specified, then the weighted average of model projections is
+returned. For example, this could be used to down weigh projections by poorly performing models
+in an ensemble.
+}
 
-The "'proportional'" projection.method projects sdm.mod model objects onto projection covariates for each date, exporting rasters for projected distribution suitability, a continuous measure between 0 (least suitable) and 1 (most suitable).
+\section{Projection output}{
+\itemize{
+\item proportional: Projects \code{sdm.mod} model objects onto projection covariates for each date,
+exporting rasters for projected distribution suitability, a continuous measure between 0 (least
+suitable) and 1 (most suitable).
+\item binary: Projects \code{sdm.mod} onto projection covariates for each date, exporting rasters for
+projected binary presence (1) or absence (0), derived from distribution suitability using
+user-specified threshold (\code{sdm.thresh}) or default threshold of 0.5.
+\item abundance: Projects \code{sam.mod} onto projections covariates for each date, exporting rasters for
+projected abundance in the units that \code{sam.mod} were fitted onto.
+\item stacked: Follows the binary projection method and then projects abundance onto only binary
+presence (1) cells using the abundance projection method.
+}
 
-The "'binary'" projection.method projects sdm.mod onto projection covariates for each date, exporting rasters for projected binary presence (1) or absence (0), derived from "'proportional'" projected distribution suitability using user-specified threshold (sdm.thresh) or default threshold of 0.5.
+Projections are output as rasters. These can be reprojected to a different coordinate reference
+system using argument \code{proj.prj}.
 
-The "'abundance'" projection.method projects sam.mod onto projections covariates for each date, exporting rasters for projected abundance in the abundance units that sam.mod were fitted onto.
+One or both of \code{save.drive.folder} and \code{save.directory} are required to specify where projection
+rasters are to be saved.
+}
 
-The "stacked" projection.method follows the "'binary'" projection.method and then projects abundance onto only binary presence (1) cells using "abundance" projection.method.
+\section{Google Drive compatibility}{
+If \code{drive.folder} or \code{save.drive.folder} given, please ensure the folder name is unique within your
+Google Drive. Do not provide the path if the folder is nested within others.
 
-One or both of save.drive.folder and save.directory are required to specify where projection rasters are to be saved.
+If one of \code{drive.folder} or \code{save.drive.folder} are used then user.email is required to access the
+appropriate Google Drive user account. This requires users to have installed R package
+\code{googledrive} and initialised Google Drive with valid log-in credentials. Please follow
+instructions on \url{https://googledrive.tidyverse.org/}.
+}
 
-If one of drive.folder or save.drive.folder are used then user.email is required to access the appropriate Google Drive user account. This requires users to have installed R package "googledrive" and initialised Google Drive with valid log-in credentials. Please follow instructions on https://googledrive.tidyverse.org/.
+\examples{
+
+data("sample_explan_data")
+variablenames<-c("eight_sum_prec","year_sum_prec","grass_crop_percentage")
+model <- brt_fit(sample_explan_data,
+                 response.col = "presence.absence",
+                 varnames = variablenames,
+                 interaction.depth=2,
+                 distribution = "bernoulli")
+
+data(sample_cov_data)
+data(sample_extent_data)
+write.csv(sample_cov_data,file=paste0(tempdir(),"/2018-04-01_covariates.csv"))
+
+dynamic_proj(dates = "2018-04-01",
+            projection.method = c("proportional","binary"),
+            local.directory = tempdir(),
+           cov.file.type = "csv",
+            sdm.mod = model,
+            spatial.mask = sample_extent_data,
+            save.directory = tempdir())
+
+sp::plot(raster::raster(paste0(tempdir(),"/2018-04-01_proportional.tif")))
+
+
+
+
+
+
 }

@@ -4,9 +4,9 @@
 \name{dynamicSDM-package}
 \alias{dynamicSDM}
 \alias{dynamicSDM-package}
-\title{dynamicSDM: Dynamic species distribution and abundance modelling}
+\title{dynamicSDM: Species distribution and abundance modelling at high spatiotemporal resolution}
 \description{
-This package enables the generation of species distribution and abundance models that are dynamic through space and time. dynamicSDM presents highly-flexible functions for incorporating both spatial and temporal aspects at key species distribution modelling stages, including when cleaning and filtering species occurrence data, assessing and correcting biases and autocorrelation, generating pseudo-absence records, extracting dynamic explanatory variables and projecting species distribution and abundance patterns at high spatiotemporal resolution. Functions take advantage of Google Earth Engine and Google Drive to minimise computing power and storage demands.
+Generate species distribution and abundance models that are dynamic through space and time. 'dynamicSDM' presents highly-flexible functions for incorporating both spatial and temporal aspects at key species distribution modelling stages, including when cleaning and filtering species occurrence data, assessing and correcting biases and autocorrelation, generating pseudo-absence records, extracting explanatory variables and projecting distribution. Functions take advantage of Google Earth Engine and Google Drive to minimise computing power and storage demands of high spatiotemporal resolution species distribution modelling.
 }
 \author{
 \strong{Maintainer}: Rachel Dobson \email{eerdord@gmail.com} (\href{https://orcid.org/0000-0003-3990-267X}{ORCID})

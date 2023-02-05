@@ -7,50 +7,125 @@
 spatiotemp_pseudoabs(
   spatial.method,
   temporal.method,
-  occ.data = NULL,
-  spatial.ext = NULL,
-  temporal.ext = NULL,
-  spatial.buffer = NULL,
-  temporal.buffer = NULL,
-  n.pseudoabs = 100
+  occ.data,
+  spatial.ext,
+  temporal.ext,
+  spatial.buffer,
+  temporal.buffer,
+  n.pseudoabs = 100,
+  prj = "+proj=longlat +datum=WGS84"
 )
 }
 \arguments{
-\item{spatial.method}{a character string, the spatial method for pseudo-absence generation. One of '"buffer"' or '"random"': can be abbreviated.}
+\item{spatial.method}{a character string, the spatial method for pseudo-absence generation. One of
+\code{buffer} or \code{random}: can be abbreviated.}
 
-\item{temporal.method}{a character string, the temporal method for pseudo-absence generation. One of '"buffer"' or '"random"': can be abbreviated.}
+\item{temporal.method}{a character string, the temporal method for pseudo-absence generation. One
+of \code{buffer} or \code{random}: can be abbreviated.}
 
-\item{occ.data}{optional; a data frame, with columns for occurrence record co-ordinates and dates with column names as follows; record longitude as "x", latitude as "y", year as "year", month as "month", and day as "day". Required if either temporal.method or spatial.method is "'buffer'".}
+\item{occ.data}{optional; a data frame, with columns for occurrence record co-ordinates and dates
+with column names as follows; record longitude as "x", latitude as "y", year as "year", month as
+"month", and day as "day". Required if either \code{temporal.method} or \code{spatial.method} is \code{buffer}.}
 
-\item{spatial.ext}{optional; object of class "Extent", "raster" or "polygon" or numeric vector listing xmin, xmax, ymin and ymax in order, the spatial extent to randomly generate pseudo-absences co-ordinates within.}
+\item{spatial.ext}{the spatial extent to randomly generate pseudo-absences within. Object from
+which extent can be extracted of class \code{Extent}, \code{RasterLayer}, \code{sf} or \code{polygon} or numeric
+vector listing xmin, xmax, ymin and ymax in order. Required if \code{spatial.method} is
+\code{random}, and optionally used if \code{buffer}. See details.}
 
-\item{temporal.ext}{optional; a character vector, two dates in format YYYY-MM-DD. First represents start of temporal extent and second represents end of temporal extent to randomly generate pseudo-absences dates within. Only required if temporal.method is "'random'".}
+\item{temporal.ext}{optional; a character vector, two dates in format "YYYY-MM-DD". First
+represents start of temporal extent and second represents end of temporal extent to randomly
+generate pseudo-absences dates within. Required if \code{temporal.method} is \code{random}, and optionally
+used if \code{buffer}. See details.}
 
-\item{spatial.buffer}{optional; a numeric vector, the distances in metres of radii to generate buffered pseudo-absence coordinates within. Only required if spatial.method is "'buffer'".}
+\item{spatial.buffer}{optional; a numeric value or vector, the radius/radii in metres to generate
+buffered pseudo-absence coordinates within. Only required if spatial.method is \code{buffer}. See
+details.}
 
-\item{temporal.buffer}{optional; a numeric vector, the two periods in days to generate buffered pseudo-absence dates within. Only required if temporal.method is "'buffer'".}
+\item{temporal.buffer}{optional; a numeric value or vector, the period(s) in days to generate
+buffered pseudo-absence dates within. Only required if temporal.method is \code{buffer} . See
+details.}
 
-\item{n.pseudoabs}{optional; a numeric value, the number of pseudo-absence records to generate. Default; 100.}
+\item{n.pseudoabs}{optional; a numeric value, the number of pseudo-absence records to generate.
+Default; 100.}
+
+\item{prj}{a character string, the coordinate reference system of input \code{occ.data} co-ordinates
+Default is "+proj=longlat +datum=WGS84".}
 }
 \value{
 Returns data frame of pseudo-absence coordinates and dates.
 }
 \description{
-Function generates specified number of pseudo-absence record co-ordinates and dates either randomly or buffered in space and time.
+Function generates specified number of pseudo-absence record co-ordinates and dates either
+randomly or buffered in space and time.
 }
-\details{
-If spatial.method is "'buffer'", then occurrence record co-ordinates are randomly generated between the given closest radius and furthest away radius specified in spatial.buffer. For example, if “spatial. buffer = c(3000,10000)”, then pseudo-absence co-ordinates are randomly generated at least 3000m radius away from occurrence record co-ordinate but within 10000m radius.
-
-If spatial.method is "'random'", then occurrence record co-ordinates are randomly generated across spatial.ext object given.
-
-If temporal.method is "'buffer'", then occurrence record dates are randomly generated between the closest and further away number of days specified in temporal.buffer. For example, if “temporal buffer = c(14,30)”, then pseudo-absence dates randomly generated at least 14 days from occurrence record dates but within 30 days.
-
-If temporal.method is "'random'", then occurrence record co-ordinates are randomly generated within the two temporal.ext dates given.
+\section{Spatial buffer}{
+If \code{spatial.method} is \code{buffer}, then the pseudo-absence record co-ordinates are randomly
+generated in a buffered area defined either by
+\itemize{
+\item single numeric value for \code{spatial.buffer} - anywhere between the occurrence record and the
+circular distance surrounding this point (as specified in metres).
+\item two numeric values for \code{spatial.buffer} - anywhere between the closest radius from the
+occurrence record and the furthest away radius (as specified in metres).
 }
+
+For example, if \code{spatial.buffer = c(3000,10000)}, then pseudo-absence co-ordinates are randomly
+generated at least 3000m radius away from occurrence record co-ordinate but within 10000m radius.
+Whereas, if \code{spatial.buffer = 10000}, then pseudo-absence co-ordinates are randomly generated
+anywhere between 0m and 10000m radius from the occurrence record.
+
+If \code{spatial.ext} is given too, then the generated pseudo-absences are not only constrained to the
+buffered area but also to this extent. For instance, if occurrence records are coastal, you may
+want to clip buffers to only terrestrial regions using a country polygon given in \code{spatial.ext}.
+}
+
+\section{Spatial random}{
+If \code{spatial.method} is \code{random}, then the pseudo-absence record co-ordinates are randomly
+generated across \code{spatial.ext} object given.
+
+If \code{spatial.ext} is an \code{sf} polygon or multipolygon object, \code{RasterLayer} (mask if possible before
+input) or \code{SpatialPolygonsDataFrame}, then these shapes are used, instead of a simple rectangular
+extent. Therefore, inputting one of these objects will allow for more specific pseudo-absence
+generation.
+
+For example, inputting a "SpatialPolygonsDataFrame" of specific countries will ensure co-ordinates
+are terrestrial, whereas an extent that encompasses these countries may result in the generation
+of pseudo-absence records in inappropriate areas, such as oceans or non-study-area countries.
+}
+
+\section{Temporal buffer}{
+If \code{temporal.method} is \code{buffer}, then pseudo-absence record dates are randomly generated between
+in a period defined by:
+\itemize{
+\item single numeric value for temporal.buffer - any date between the occurrence record date and the
+total number of days specified prior or post.
+\item two numeric values for temporal.buffer - any date between the closest and furthers away number
+of days specified.
+}
+
+For example, if \code{temporal.buffer = c(14,30)}, then pseudo-absence dates randomly generated at
+least 14 days from occurrence record dates but within 30 days. Whereas if \code{temporal.buffer = 30},
+pseudo-absence dates are randomly generated anywhere between 0 and 30 days prior or post the
+occurrence record date.
+
+If \code{temporal.ext} is given too, then the generated pseudo-absence dates are not only constrained
+to the buffer period but also to this temporal extent. For instance, an occurrence record recorded
+at the start of \code{temporal.ext} with 7 day buffer, may result in generated pseudo-absences outside
+of the temporal extent of the study.
+}
+
+\section{Temporal random}{
+If \code{temporal.method} is \code{random}, then pseudo-absence record dates are randomly
+generated within the two \code{temporal.ext} dates given.
+}
+
 \examples{
-data("sample_occ_data")
+data("sample_filt_data")
+\dontshow{
+sample_filt_data<-sample_filt_data[1:10,]
+}
+
 spatiotemp_pseudoabs(
- sample_occ_data,
+ sample_filt_data,
  spatial.method = "random",
  temporal.method = "random",
  spatial.ext = c(20, 36, -35, -12),

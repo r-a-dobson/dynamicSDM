@@ -1,48 +1,94 @@
-#' Split occurrence records into spatial and temporal blocks for model fitting.
+#'Split occurrence records into spatial and temporal blocks for model fitting.
 #'
-#' Splits occurrence records into spatial and temporal sampling units and groups sampling units into multiple blocks that have similar mean and range of environmental explanatory variables.
+#'Splits occurrence records into spatial and temporal sampling units and groups sampling units into
+#'multiple blocks that have similar mean and range of environmental explanatory variables.
 #'
-#' @param occ.data a data frame, with columns for occurrence record co-ordinates and dates with column names as follows; record longitude as "x", latitude as "y", year as "year", month as "month", and day as "day", and associated explanatory variable data.
-#' @param vars.to.block.by a character string or vector, the explanatory variable column names to group sampling units based upon.
-#' @param spatial.layer optional; a RasterLayer object, a categorical spatial layer for sampling unit splitting.
-#' @param spatial.split.degrees optional; a numeric value, the grid cell resolution in degrees to split spatial.layer by.
-#' @param temporal.block optional; a character string or vector, the time step for sampling unit splitting. Any combination of '"day"', '"month"' or '"year"' or "quarter".
-#' @param n.blocks optional; a numeric value, the number of blocks to group occurrence records into. Default; 10.
-#' @param iterations optional; a numeric value, the number of random block groupings to trial before selecting the optimal grouping. Default; 5000.
-#' @details
-#' Blocking is an established method to account for spatial autocorrelation in SDMs. Following Bagchi et al., (2013), the blocking method involves splitting occurrence data into sampling units based upon non-contiguous ecoregions, which are then grouped into spatially disaggregated blocks of approximately equal sample size, within which the mean and range of explanatory variable data are similar. When species distribution model fitting, blocks are left out in-turn in a jack-knife approach for model training and testing.
+#'@param occ.data a data frame, with columns for occurrence record co-ordinates and dates with
+#'  column names as follows; record longitude as "x", latitude as "y", year as "year", month as
+#'  "month", and day as "day", and associated explanatory variable data.
+#'@param vars.to.block.by a character string or vector, the explanatory variable column names to
+#'  group sampling units based upon.
+#'@param spatial.layer optional; a `RasterLayer` object, a categorical spatial layer for sampling
+#'  unit splitting.
+#'@param spatial.split.degrees a numeric value, the grid cell resolution in degrees to split
+#'  `spatial.layer` by. Required if `spatial.layer` given.
+#'@param temporal.block optional; a character string or vector, the time step for sampling unit
+#'  splitting. Any combination of `day`, `month`, `year` or `quarter.` See details.
+#'@param n.blocks optional; a numeric value, the number of blocks to group occurrence records into.
+#'  Default; 10.
+#'@param iterations optional; a numeric value, the number of random block groupings to trial before
+#'  selecting the optimal grouping. Default; 5000.
+#'@details
 #'
-#' We adapt this approach to account for temporal autocorrelation by enabling users to split records into sampling units based upon spatial and temporal characteristic before blocking occurs.
+#'# Blocking for autocorrelation
 #'
-#' Spatial splitting: If the spatial.layer raster has categories that take up large contiguous areas, spatial.split.degrees will split categories into smaller units using grid cells at given resolution.
-#' Temporal splitting: If temporal.block is given, then occurrence records with unique values for given level are considered unique sampling unit. For instance, if temporal.block = “year”, then records from the same year are considered a sampling unit to be grouped into blocks. However, if spatial splitting is also used, then spatial characteristics may split these further into separate sampling units.
-#' Once split into sampling units based upon temporal and spatial characteristics, these units are then assigned into given number of blocks (n.blocks), so that the mean and range of explanatory variables (vars.to.block.by) are similar across each.
-#' @references
-#' Bagchi, R., Crosby, M., Huntley, B., Hole, D. G., Butchart, S. H. M., Collingham, Y., Kalra, M., Rajkumar, J., Rahmani, A. & Pandey, M. 2013. Evaluating the effectiveness of conservation site networks under climate change: accounting for uncertainty. Global Change Biology, 19, 1236-1248.
+#'Blocking is an established method to account for spatial
+#'autocorrelation in SDMs. Following Bagchi et al., (2013), the blocking method involves splitting
+#'occurrence data into sampling units based upon non-contiguous ecoregions, which are then grouped
+#'into spatially disaggregated blocks of approximately equal sample size, within which the mean and
+#'range of explanatory variable data are similar. When species distribution model fitting, blocks
+#'are left out in-turn in a jack-knife approach for model training and testing.
 #'
-#' @return Returns occurrence data frame with column "BLOCK.CATS", assigning each record to a spatiotemporal block.
+#'We adapt this approach to account for temporal autocorrelation by enabling users to split records
+#'into sampling units based upon spatial and temporal characteristic before blocking occurs.
+#'
+#'# Spatial splitting
+#'
+#'If the `spatial.layer` has categories that take up large contiguous areas,
+#'`spatiotemp_block()` will split categories into smaller units using grid cells at specified
+#'resolution (`spatial.split.degrees`).
+#'
+#'# Temporal splitting
+#'
+#'If temporal.block is given, then occurrence records with unique values for given level are
+#'considered unique sampling unit. For instance, if `temporal.block` = `year`, then records from the
+#'same year are considered a sampling unit to be grouped into blocks.
+#'
+#'Note: If spatial splitting is also used, then spatial characteristics may split these further into
+#'separate sampling units.
+#'
+#'The `temporal.block` option `quarter` splits occurrence records into sampling units based on which
+#'quarter of the year the record month belongs to: (1) January-March, (2) April-June, (3)
+#'July-September and (4) October-December. This could be employed if seasonal biases in occurrence
+#'record collection are driving autocorrelation.
+#'
+#'# Block generation
+#'
+#'Once split into sampling units based upon temporal and spatial characteristics,
+#'these units are then assigned into given number of blocks (`n.blocks`), so that the mean and range
+#'of explanatory variables (`vars.to.block.by`) and total size are similar across each. The number
+#'of `iterations` specifies how many random shuffles are used to optimise block equalisation.
+#'
+#'
+#'@references Bagchi, R., Crosby, M., Huntley, B., Hole, D. G., Butchart, S. H. M., Collingham, Y.,
+#'  Kalra, M., Rajkumar, J., Rahmani, A. & Pandey, M. 2013. Evaluating the effectiveness of
+#'  conservation site networks under climate change: accounting for uncertainty. Global Change
+#'  Biology, 19, 1236-1248.
+#'
+#'@return Returns occurrence data frame with column "BLOCK.CATS", assigning each record to a
+#'  spatiotemporal block.
 #' @examples
-#' data("sample_model_data")
-#' data("biome_layer")
-#'spatiotemp_block(
-#'  occ.data = sample_model_data,
-#'  spatial.layer = biome_layer,
+#' data("sample_explan_data")
+#' data("sample_biome_data")
+#'
+#' spatiotemp_block(
+#'  occ.data = sample_explan_data,
+#'  spatial.layer = sample_biome_data,
 #'  spatial.split.degrees = 3,
 #'  temporal.block = c("month"),
-#'  vars.to.block.by = colnames(sample_model_data)[9:12],
-#'  n.blocks = 10
+#'  vars.to.block.by = colnames(sample_explan_data)[14:16],
+#'  n.blocks = 3,
+#'  iterations = 50
 #')
 #'@export
 
-spatiotemp_block <-
-  function(occ.data,
-           vars.to.block.by,
-           spatial.layer = NULL,
-           spatial.split.degrees = NULL,
-           temporal.block = NULL,
-           n.blocks = 10,
-           iterations = 5000) {
-
+spatiotemp_block <- function(occ.data,
+                             vars.to.block.by,
+                             spatial.layer,
+                             spatial.split.degrees,
+                             temporal.block,
+                             n.blocks = 10,
+                             iterations = 5000) {
 
     # Save occ.data to return with added block column at end
     occ.data.save <- occ.data
@@ -56,23 +102,15 @@ spatiotemp_block <-
     }
 
     if (!missing(temporal.block)) {
-      temporal.block.2 <- match.arg(
-        temporal.block,
-        choices = c("day",
-                    "month",
-                    "year",
-                    "quarter"),
-        several.ok = T
-      )
+      temporal.block.2 <- match.arg(temporal.block,
+                                    choices = c("day", "month", "year", "quarter"),
+                                    several.ok = T)
 
       # Split data into quarters fo the year by month
       if (any(temporal.block.2 == "quarter")) {
-        occ.data$quarter <-
-          cut(
-            occ.data$month,
-            breaks = c(0, 3, 6, 9, 12),
-            labels = c("first", "second", "third", "fourth")
-          )
+        occ.data$quarter <- cut(occ.data$month,
+                                breaks = c(0, 3, 6, 9, 12),
+                                labels = c("first", "second", "third", "fourth"))
       }
     }
 
@@ -81,16 +119,16 @@ spatiotemp_block <-
       if (!class(spatial.layer) == "RasterLayer") {
         stop("spatial.layer must be of class RasterLayer")
       }
+      if (missing(spatial.split.degrees)) {
+        stop("spatial.layer given but not spatial.split.degrees")
+      }
       if (!class(spatial.split.degrees) == "numeric") {
         stop("spatial.split.degrees must be of class numeric")
       }
 
-      occ.data.points <-
-        sp::SpatialPointsDataFrame(
-          data = occ.data,
-          coords = cbind(occ.data$x, occ.data$y),
-          proj4string = raster::crs(spatial.layer)
-        )
+      occ.data.points <- sp::SpatialPointsDataFrame(data = occ.data,
+                                                    coords = cbind(occ.data$x, occ.data$y),
+                                                    proj4string = raster::crs(spatial.layer))
 
       # Assign occ points value from the categorical RasterLayer
       split1 <- raster::extract(spatial.layer, occ.data.points)
@@ -123,11 +161,7 @@ spatiotemp_block <-
     ## Create unique ID based on the spatial.layer, split cell and temporal
 
     if (length(cols) > 1) {
-      occ.data$ID_BL <-
-        as.numeric(as.factor(apply(occ.data[, cols] ,
-                                   1 ,
-                                   paste ,
-                                   collapse = "-")))
+      occ.data$ID_BL <- as.numeric(as.factor(apply(occ.data[, cols], 1, paste, collapse = "-")))
     }
 
     if (length(cols) == 1) {
@@ -139,8 +173,7 @@ spatiotemp_block <-
     occ.data$count <- rep(1, nrow(occ.data))  # Add column to sum records
 
     # Aggregate to count records per unique ID.
-    blockdata <- cbind(blockdata,
-                       aggregate(count ~ ID_BL, data = occ.data, FUN = 'sum')[, 2])
+    blockdata <- cbind(blockdata, aggregate(count ~ ID_BL, data = occ.data, FUN = 'sum')[, 2])
 
 
     vars.to.block.by<-c(vars.to.block.by)
@@ -149,14 +182,10 @@ spatiotemp_block <-
 
     for (n in 1:length(vars.to.block.by)) {
 
-      formula <- as.formula(paste(paste(c(
-        vars.to.block.by[n], "ID_BL"
-      ),
-      collapse = "~"),
-      sep = ""))
+    formula <- as.formula(paste(paste(c(vars.to.block.by[n], "ID_BL"), collapse = "~"), sep = ""))
 
-      blockdata <- cbind(blockdata,
-                         aggregate(formula, data = occ.data, FUN = 'mean')[, 2])
+    blockdata <- cbind(blockdata, aggregate(formula, data = occ.data, FUN = 'mean')[, 2])
+
     }
 
     colnames(blockdata) <- c("ID_BL","count", vars.to.block.by)
@@ -188,9 +217,7 @@ spatiotemp_block <-
       variances = NULL
 
       # Calculate total sample size per block
-      samplesize <- lapply(groups, function(df_inlist) {
-        base::sum((df_inlist[, "count"]))
-      })
+      samplesize <- lapply(groups, function(df_inlist) {base::sum((df_inlist[, "count"]))})
 
       # Calculate mean and variance of block sample size
       variance.sum <- var(unlist(samplesize))
@@ -204,20 +231,14 @@ spatiotemp_block <-
 
         # Calculates the mean for each block
 
-        mean.var <-
-          lapply(groups, function(df_inlist) {
-            base::mean((df_inlist[, y]))
-          })
+        mean.var <- lapply(groups, function(df_inlist) {base::mean((df_inlist[, y]))})
 
         # Variance in means across blocks (want to minimise this when blocking)
         variance.mean <- var(unlist(mean.var))
 
-        range <- lapply(groups, function(df_inlist) {
-          (max(df_inlist[, y]) - min(df_inlist[, y]))
-        })
+        range <- lapply(groups, function(df_inlist) {(max(df_inlist[, y]) - min(df_inlist[, y]))})
 
         variance.range <- var(unlist(range))
-
 
         variances <- rbind(variances, variance.mean, variance.range)
       }
@@ -230,16 +251,12 @@ spatiotemp_block <-
     # Scale variance of mean and range for each variable
     # So no variable has more weighting than another when minimising mean/var
 
-    results <- as.data.frame(sapply(results, function(x) {
-      (x - min(x)) / (max(x) - min(x))
-    }))
+    results <- as.data.frame(sapply(results, function(x) {(x - min(x)) / (max(x) - min(x))}))
     # Select grouping with minimum variance in mean and range across variables.
     optimal.blocking <- groupings[[which.min(rowSums(results))]]
 
     # Extract sample units within each block of optimal grouping
-    blocks <- lapply(optimal.blocking, function(x) {
-      x[, "ID_BL"]
-    })
+    blocks <- lapply(optimal.blocking, function(x) {x[, "ID_BL"]})
 
     # Add block number to each occurrence record in data.frame
     for (b in 1:n.blocks) {

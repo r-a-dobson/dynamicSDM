@@ -2,6 +2,7 @@
 
 export("%>%")
 export(brt_fit)
+export(convert_gbif)
 export(dynamic_proj)
 export(dynamic_proj_GIF)
 export(dynamic_proj_covariates)

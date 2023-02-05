@@ -4,29 +4,48 @@
 \alias{spatiotemp_autocorr}
 \title{Test for spatial and temporal autocorrelation in species distribution model explanatory data.}
 \usage{
-spatiotemp_autocorr(occ.data, varname, temporal.level)
+spatiotemp_autocorr(occ.data, varname, temporal.level, plot = F)
 }
 \arguments{
-\item{occ.data}{a data frame, with columns for occurrence record co-ordinates and dates with column names as follows; record longitude as "x", latitude as "y", year as "year", month as "month", and day as "day" and associated explanatory data.}
+\item{occ.data}{a data frame, with columns for occurrence record co-ordinates and dates with
+column names as follows; record longitude as "x", latitude as "y", year as "year", month as
+"month", and day as "day" and associated explanatory data.}
 
-\item{varname}{a character string or vector, the name(s) of the columns within occ.data containing data to test for autocorrelation.}
+\item{varname}{a character string or vector, the name(s) of the columns within \code{occ.data}
+containing data to test for autocorrelation.}
 
-\item{temporal.level}{a character string, the time step to test for temporal autocorrelation at. One of '"day"' or '"month"', '"year"'. Can be abbreviated.}
+\item{temporal.level}{a character string or vector, the time step(s) to test for temporal
+autocorrelation at. One or multiple of \code{day} or \code{month}, \code{year}. Can be abbreviated.}
+
+\item{plot}{a logical indicating whether to generate plot of temporal autocorrelation. See details
+for plot description. Default = F.}
 }
 \value{
 Returns a list of temporal and spatial autocorrelation test results for each variable.
 }
 \description{
-Function performs statistical tests to assess spatial and temporal autocorrelation in given explanatory variable data.
+Function performs statistical tests to assess spatial and temporal autocorrelation in given
+explanatory variable data.
 }
 \details{
-To test for temporal autocorrelation, the function first calculates the average value across records for each time step (temporal.level). The correlation between the average value at one time point (t) and the value at the previous time point (t-1) is calculated and plotted. A significant relationship between values at consecutive data points indicates temporal autocorrelation is present.
+To test for temporal autocorrelation, the function first calculates the average value
+across records for each time step (\code{temporal.level}). The correlation between the average value
+at one time point (t) and the value at the previous time point (t-1) is calculated and plotted
+(if \code{plot} = T) A significant relationship between values at consecutive data points indicates
+temporal autocorrelation is present.
 
-To test for spatial autocorrelation, the function calculates a distance matrix between all record co-ordinates. Moran’s I statistical test is calculated to test whether points closer in space have more similar values than those more distant from each other.
+To test for spatial autocorrelation, the function calculates a distance matrix between all
+record co-ordinates. Moran’s I statistical test is calculated to test whether points closer in
+space have more similar values than those more distant from each other. Please note that NA
+values are removed before Moran's I calculation.
 
-As the spatial autocorrelation calculation involves computation of a distance matrix between all occurrence records. To reduce computation time, it is recommended that a sample of large occurrence datasets are input.
+As the spatial autocorrelation calculation involves computation of a distance matrix between all
+occurrence records. To reduce computation time, it is recommended that a sample of large
+occurrence datasets are input.
 }
 \examples{
-data("sample_model_data")
-spatiotemp_autocorr(sample_model_data,varname="Temperaturemean",temporal.level="year")
+data("sample_explan_data")
+spatiotemp_autocorr(sample_explan_data,
+                   varname = c("year_sum_prec","eight_sum_prec"),
+                   temporal.level = c("year","month","day"))
 }

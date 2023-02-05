@@ -1,29 +1,50 @@
-#' Filter species occurrence records by a given spatial and temporal extent.
+#'Filter species occurrence records by a given spatial and temporal extent.
 #'
-#' Function excludes species occurrence records with co-ordinates outside given spatial extent and dates outside given temporal extent.
+#'Function excludes species occurrence records with co-ordinates outside a given spatial extent and
+#'record dates outside a given temporal extent.
 #'
-#' @param occ.data a data frame, with columns for occurrence record co-ordinates and dates with column names as follows; record longitude as "x", latitude as "y", year as "year", month as "month", and day as "day".
-#' @param temporal.ext optional; a character vector, two dates in format YYYY-MM-DD. First date represents start of temporal extent and second date represents end of temporal extent for inclusion.
-#' @param spatial.ext optional; object of class "Extent", "raster" or "polygon" or numeric vector listing xmin, xmax, ymin and ymax in order, the spatial extent to filter by.
-#' @details If spatial.ext is provided, the function checks whether species occurrence record co-ordinates are within the given spatial extent of the study (spatial.ext) and excludes any outside of this extent.
+#'@param occ.data a data frame, with columns for occurrence record co-ordinates and dates with
+#'  column names as follows; record longitude as "x", latitude as "y", year as "year", month as
+#'  "month", and day as "day".
+#'@param temporal.ext optional; a character vector, two dates in format "YYYY-MM-DD". First date
+#'  represents start of temporal extent and second date represents end of temporal extent for
+#'  inclusion.
+#'@param spatial.ext the spatial extent to filter by. Object from which extent can be extracted of
+#'  class `Extent`, `RasterLayer`, `sf` or `polygon` or numeric vector listing xmin, xmax, ymin and
+#'  ymax in order.
+#'@param prj a character string, the coordinate reference system of input `occ.data` co-ordinates
+#'  Default is "+proj=longlat +datum=WGS84".
+#'@details # Spatial extent
 #'
-#' If temporal.ext is provided, the function checks whether species occurrence record dates are within the given temporal extent of the study (temporal.ext) and excludes any outside of this extent.
-#' @return Returns data frame of occurrence records filtered to the spatial and temporal extent given.
+#'If `spatial.ext` is provided, `spatiotemp_extent()` checks whether species occurrence record
+#'co-ordinates are within the given spatial extent of the study (`spatial.ext`) and excludes any
+#'outside of this extent.
+#'
+#'If `spatial.ext` object can be used as a mask by `raster::mask()` then the mask is used to filter
+#'records in a more targetted way. If not, then the rectangular extent of the `spatial.ext` object
+#'is used. If an `sf` polygon object is provided, this is first transformed into a `Spatial` object
+#'for use by `raster::mask()`.
+#'
+#'# Temporal extent If `temporal.ext` is provided, `spatiotemp_extent()` checks whether species
+#'occurrence record dates are within the given temporal extent of the study and excludes any outside
+#'of this extent.
+#'@return Returns data frame of occurrence records filtered to the spatial and temporal extent
+#'  given.
 #' @examples
-#' x<-c(27.79125, 28.54125, 25.54125, 30.04125, 29.95792)
-#' y<-c(-26.79125, -26.37458, -26.70792, -29.37458, -28.45792)
-#' month<-c(1, 2, 3, 2, 4)
-#' day<-c(27, 25, 16, 25, 26)
-#' year<-c(2014, 2016, 2011, 2011, 2015)
-#' occ.data<-data.frame(cbind(x,y,year,month,day))
-#'spatiotemp_extent(occ.data,
-#'                  temporal.ext=c("2012-01-01","2017-01-01"),
-#'                 spatial.ext =c(28,31,-30,-26))
+#'data(sample_filt_data)
+#'data(sample_extent_data)
+#'\dontshow{
+#'sample_filt_data<-sample_filt_data[1:10,]
+#'}
+#'results <- spatiotemp_extent(occ.data = sample_filt_data,
+#'                             spatial.ext = sample_extent_data,
+#'                             temporal.ext = c("2012-01-01", "2017-01-01"))
 #'@export
-#'
+
 spatiotemp_extent <- function(occ.data,
-                              temporal.ext = NULL,
-                              spatial.ext = NULL) {
+                              temporal.ext,
+                              spatial.ext,
+                              prj="+proj=longlat +datum=WGS84") {
 
 
   # Check formatting of temporal.ext
@@ -39,10 +60,9 @@ spatiotemp_extent <- function(occ.data,
 
     # Check validity of temporal.ext dates
     tryCatch({
-      dates <- as.Date(temporal.ext)
-    }, error = function(e) {
-      stop("Invalid dates provided in temporal.ext. Ensure format YYYY-MM-DD")
-    })
+      dates <- as.Date(temporal.ext)}, error = function(e) {
+        stop("Invalid dates provided in temporal.ext. Ensure format YYYY-MM-DD")
+      })
 
     if (any(is.na(dates))) {
       stop("Invalid date given in temporal.ext. Ensure format YYYY-MM-DD")
@@ -55,46 +75,66 @@ spatiotemp_extent <- function(occ.data,
       stop("First date in temporal.ext must be earlier than second date given")
     }
 
+    # To speed up crop by years first
 
+    occ.data <- occ.data[occ.data$year >= lubridate::year(firstdate) &
+                           occ.data$year <= lubridate::year(seconddate), ]
+
+    # Now finer temporal extent cropping
     # Create date object from occurrence data frame year, month and day columns
+    occdates <- as.Date(with(occ.data, paste(year, month, day, sep = "-")), "%Y-%m-%d")
 
-    occdates <-
-      as.Date(with(occ.data, paste(year, month, day, sep = "-")), "%Y-%m-%d")
-
-    if (any(is.na(as.character(as.Date(occdates))))) {
+    if (any(is.na(as.character(lubridate::as_date(occdates))))) {
       warning("occ.data contains invalid date. NAs may be present in output.")
     }
 
     # Subset occurrence record dataframe to records within specified temporal extent
-    occ.data <- occ.data[occdates >= firstdate &
-                 occdates <= seconddate, ]
+    occ.data <- occ.data[occdates >= firstdate & occdates <= seconddate, ]
   }
 
 
   if (!missing(spatial.ext)) {
-    if (!any(class(spatial.ext) == c("numeric",
-                                     "Extent",
-                                     "RasterLayer",
-                                     "Polygon"))) {
-      stop("spatial.ext must be class numeric, Extent, RasterLayer or Polygon")
+
+    if (any(class(spatial.ext) == "numeric") && length(spatial.ext) == 4) {
+      spatial.ext <- raster::extent(spatial.ext)
     }
 
+    # Create spatial points dataframe from occurrence records
+    points<-sp::SpatialPointsDataFrame(coords = occ.data[,c("x","y")],
+                                       data = occ.data,
+                                       proj4string = sp::CRS(prj))
+    r<-spatial.ext
 
-    # Numeric extent to co-ords
+    # Convert sf object to Spatial object that can be tranformed into raster
+    if("sf" %in% class(spatial.ext)){
+      spatial.ext<-as(spatial.ext,"Spatial")}
 
-    if (class(spatial.ext) == "numeric" && !length(spatial.ext) == 4) {
-      stop("spatial.ext vector should be length 4: xmin, xmax, ymin and ymax")
-    }
 
-    ### Subset dataframe by spatial extent given
-    occ.data <-
-      occ.data[which(occ.data[, "x"] >= (extract_xy_min_max(spatial.ext)[1])),]
-    occ.data <-
-      occ.data[which(occ.data[, "x"] <= (extract_xy_min_max(spatial.ext)[2])),]
-    occ.data <-
-      occ.data[which(occ.data[, "y"] >= (extract_xy_min_max(spatial.ext)[3])),]
-    occ.data <-
-      occ.data[which(occ.data[, "y"] <= (extract_xy_min_max(spatial.ext)[4])),]
+    # Convert polygon object to Extent object that can be transformed into raster
+    if ("Polygon" %in% class(spatial.ext)) {
+      xmin <- sp::bbox(spatial.ext)[1, 1]
+      xmax <- sp::bbox(spatial.ext)[1, 2]
+      ymin <- sp::bbox(spatial.ext)[2, 1]
+      ymax <- sp::bbox(spatial.ext)[2, 2]
+      r<-raster::extent(xmin,xmax,ymin,ymax)}
+
+
+    # Convert spatial.ext to raster in same projection
+    r <- raster::raster(r)
+    raster::crs(r) <- prj
+    raster::res(r)<-0.01 # High resolution for precise clipping
+    r <- raster::setValues(r, values = 1:raster::ncell(r)) # Set fake raster values - not important
+
+
+    # Mask to original spatial.ext, if fails keep original. Depending on spatial.ext type.
+    tryCatch({
+      r <- raster::mask(r, spatial.ext)
+    }, error = function(error_message) {
+      r <- r })
+
+    # Remove points that return NA as these do not overlap the spatial extent
+    occ.data<-occ.data[!is.na(raster::extract(r,points)),]
+
   }
 
   return(occ.data)

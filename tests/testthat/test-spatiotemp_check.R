@@ -1,24 +1,20 @@
 
 data(sample_occ_data)
+sample_occ_data<-convert_gbif(sample_occ_data)
 
 test_that("stops if no occcurence data provided", {
   expect_error(spatiotemp_check(na.handle="exclude",duplicate.handle="exclude"))})
 
-
 test_that("stops if no occcurence data not a data frame", {
   expect_error(spatiotemp_check(occ.data="dataframe",na.handle="exclude",duplicate.handle="exclude"))})
 
-
 test_that("duplicates removed", {
-  test.data<-rbind(sample_occ_data,sample_occ_data)
-  checked<-spatiotemp_check(occ.data=test.data,duplicate.handle="exclude")
-  expect_equal(nrow(checked), 50)})
+  checked<-spatiotemp_check(occ.data=sample_occ_data,duplicate.handle="exclude")
+  expect_equal(nrow(checked), 315)})
 
 test_that("NAs removed", {
-  test.data<-sample_occ_data
-  test.data[1,"x"]<-NA
-  checked<-spatiotemp_check(occ.data=test.data,na.handle="exclude")
-  expect_equal(nrow(checked), 49)})
+  checked<-spatiotemp_check(occ.data=sample_occ_data,na.handle="exclude")
+  expect_equal(nrow(checked), 594)})
 
 test_that("identifies missing year col", {expect_error(spatiotemp_check(occ.data=subset(sample_occ_data, select = -c(year))))})
 test_that("identifies missing month col", {expect_error(spatiotemp_check(occ.data=subset(sample_occ_data, select = -c(month))))})
@@ -51,38 +47,51 @@ test_that("identifies wrong y class", {
   wrong.class$x<-as.character(wrong.class$x)
   expect_error(spatiotemp_check(occ.data=wrong.class))})
 
-
-
-
 test_that("excludes invalid date", {
-  wrong.class<-sample_occ_data
-  wrong.class[1,"day"]<-90
-  expect_equal(nrow(spatiotemp_check(occ.data=wrong.class,date.handle="exclude")),49)})
+  expect_equal(nrow(spatiotemp_check(occ.data=sample_occ_data,date.handle="exclude")),597)})
 
 test_that("ignores invalid date", {
-  wrong.class<-sample_occ_data
-  wrong.class[1,"day"]<-90
-  expect_equal(nrow(spatiotemp_check(occ.data=wrong.class,date.handle="ignore")),50)})
-
-
+  expect_equal(nrow(spatiotemp_check(occ.data=sample_occ_data,date.handle="ignore")),600)})
 
 test_that("excludes invalid x", {
-  wrong.class<-sample_occ_data
-  wrong.class[1,"x"]<-90000
-  expect_equal(nrow(spatiotemp_check(occ.data=wrong.class,coord.handle="exclude")),49)})
+  expect_equal(nrow(spatiotemp_check(occ.data=sample_occ_data,coord.handle="exclude")),594)})
 
 test_that("ignores invalid x", {
-  wrong.class<-sample_occ_data
-  wrong.class[1,"x"]<-90000
-  expect_equal(nrow(spatiotemp_check(occ.data=wrong.class,coord.handle="ignore")),50)})
-
+  expect_equal(nrow(spatiotemp_check(occ.data=sample_occ_data,coord.handle="ignore")),600)})
 
 test_that("excludes invalid y", {
-  wrong.class<-sample_occ_data
-  wrong.class[1,"y"]<-90000
-  expect_equal(nrow(spatiotemp_check(occ.data=wrong.class,coord.handle="exclude")),49)})
+  expect_equal(nrow(spatiotemp_check(occ.data=sample_occ_data,coord.handle="exclude")),594)})
 
 test_that("ignores invalid y", {
-  wrong.class<-sample_occ_data
-  wrong.class[1,"y"]<-90000
-  expect_equal(nrow(spatiotemp_check(occ.data=wrong.class,coord.handle="ignore")),50)})
+  expect_equal(nrow(spatiotemp_check(occ.data=sample_occ_data,coord.handle="ignore")),600)})
+
+test_that("All work together", {
+  expect_equal(nrow(spatiotemp_check(occ.data=sample_occ_data,coord.handle="exclude",date.handle = "exclude",
+                     duplicate.handle = "exclude",na.handle = "exclude")),311)})
+
+test_that("Returns all columns", {
+  expect_equal(ncol(spatiotemp_check(occ.data=sample_occ_data,coord.handle="exclude",date.handle = "exclude",
+                                     duplicate.handle = "exclude",na.handle = "exclude")),9)})
+
+testthat::test_that("CoordinateCleaner works (correct ncol)", {
+  testthat::skip_if_offline()
+  expect_equal(ncol(spatiotemp_check(occ.data=sample_occ_data,coord.handle="exclude",date.handle = "exclude",
+                                     duplicate.handle = "exclude",na.handle = "exclude",
+                                     coordclean = T,coordclean.species = "quelea",coordclean.handle = "exclude")),9)})
+
+test_that("CoordinateCleaner works (correct nrow)", {
+  testthat::skip_if_offline()
+    expect_equal(nrow(spatiotemp_check(occ.data=sample_occ_data,coord.handle="exclude",date.handle = "exclude",
+                                       duplicate.handle = "exclude",na.handle = "exclude",
+                                       coordclean = T,coordclean.species = "quelea",coordclean.handle = "exclude")),301)})
+
+
+  test_that("CoordinateCleaner works return report", {
+    testthat::skip_if_offline()
+    expect_equal(length(spatiotemp_check(occ.data=sample_occ_data,coord.handle="exclude",date.handle = "exclude",
+                                       duplicate.handle = "exclude",na.handle = "exclude",
+                                       coordclean = T,coordclean.species = "quelea",coordclean.handle = "report")),311)}
+)
+
+
+

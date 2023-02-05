@@ -1,5 +1,5 @@
 Package: dynamicSDM
-Title: Dynamic species distribution and abundance modelling
+Title: Species distribution and abundance modelling at high spatiotemporal resolution
 Version: 1.0
 Authors@R: c(
     person("Rachel", "Dobson", , "eerdord@gmail.com", role = c("aut", "cre"),
@@ -14,11 +14,12 @@ Authors@R: c(
            comment = c(ORCID = "0000-0002-8656-5808")),
     person("Martin", "Dallimer", , "M.Dallimer@leeds.ac.uk", role = "aut",
            comment = c(ORCID = "0000-0001-8120-3309"))) 
-Description: This package enables the generation of species distribution and abundance models that are dynamic through space and time. dynamicSDM presents highly-flexible functions for incorporating both spatial and temporal aspects at key species distribution modelling stages, including when cleaning and filtering species occurrence data, assessing and correcting biases and autocorrelation, generating pseudo-absence records, extracting dynamic explanatory variables and projecting species distribution and abundance patterns at high spatiotemporal resolution. Functions take advantage of Google Earth Engine and Google Drive to minimise computing power and storage demands.
-License: GPL (>= 3)
+Description: Generate species distribution and abundance models that are dynamic through space and time. 'dynamicSDM' presents highly-flexible functions for incorporating both spatial and temporal aspects at key species distribution modelling stages, including when cleaning and filtering species occurrence data, assessing and correcting biases and autocorrelation, generating pseudo-absence records, extracting explanatory variables and projecting distribution. Functions take advantage of Google Earth Engine and Google Drive to minimise computing power and storage demands of high spatiotemporal resolution species distribution modelling. 
+License: GPL (>= 3) + file LICENSE
 Encoding: UTF-8
+LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.3
 Imports: 
     ape,
     dplyr,
@@ -45,11 +46,17 @@ Imports:
     grDevices,
     graphics,
     methods,
-    utils
+    utils,
+    CoordinateCleaner,
+    sf,
+    stars,
+    viridis
 Depends: 
     R (>= 3.5.0)
-LazyData: true
 Suggests: 
     covr,
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+VignetteBuilder: knitr

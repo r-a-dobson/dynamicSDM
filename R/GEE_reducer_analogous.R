@@ -26,6 +26,9 @@ anyNonZero <- function(x, na.omit = T) {
 }
 
 #' count computes the number of non-null inputs.
+#' @param x a numeric vector
+#' @param na.omit a logical
+#' @noRd
 count <- function(x, na.omit = T) {
   if (na.omit == T) {
     x <- na.omit(x)
@@ -94,7 +97,9 @@ variance <- function(x, na.omit = T) {
 
 
 #'skip_if_no_GEE_credentials Skips test_that test if no Google Earth Engine credentials set-up
+#' @noRd
 skip_if_no_GEE_credentials <- function() {
+
   tryCatch(
     reticulate::import("ee"),
     error = function(e)

@@ -7,31 +7,37 @@
 dynamic_proj_GIF(
   dates,
   projection.type,
-  drive.folder = NULL,
-  user.email = NULL,
-  local.directory = NULL,
-  save.drive.folder = NULL,
-  save.directory = NULL,
+  drive.folder,
+  user.email,
+  local.directory,
+  save.drive.folder,
+  save.directory,
   width = 480,
   height = 480,
-  legend.max = NULL,
-  legend.min = NULL,
-  legend.name = NULL,
-  file.name = NULL
+  legend.max,
+  legend.min,
+  legend.name,
+  file.name,
+  colour.palette = "inferno"
 )
 }
 \arguments{
-\item{dates}{a character vector , projection dates in format YYYY-MM-DD.}
+\item{dates}{a character vector , projection dates in format "YYYY-MM-DD".}
 
-\item{projection.type}{a character string, the type of distribution or abundance projection to plot. One of "'proportional'", "'binary'", "'abundance'" and "'stacked'".}
+\item{projection.type}{a character string, the type of distribution or abundance projection to
+plot. One of \code{proportional}, \code{binary}, \code{abundance} and \code{stacked}.}
 
-\item{drive.folder}{optional; a character string, the Google Drive folder to read projection rasters from.}
+\item{drive.folder}{optional; a character string, the Google Drive folder to read projection
+rasters from. Folder must be uniquely named within Google Drive. Do not provide path.}
 
-\item{user.email}{optional; a character string, user email for initialising Google Drive. Required if drive.folder or save.drive.folder used.}
+\item{user.email}{optional; a character string, user email for initialising Google Drive. Required
+if \code{drive.folder} or \code{save.drive.folder} used.}
 
-\item{local.directory}{optional; a character string, the path to local directory to read projection rasters from.}
+\item{local.directory}{optional; a character string, the path to local directory to read
+projection rasters from.}
 
-\item{save.drive.folder}{optional; a character string, Google Drive folder to save GIF to.}
+\item{save.drive.folder}{optional; a character string, Google Drive folder to save GIF to. Folder
+must be uniquely named within Google Drive. Do not provide path.}
 
 \item{save.directory}{optional; a character string, path to local directory to save GIF to.}
 
@@ -39,27 +45,77 @@ dynamic_proj_GIF(
 
 \item{height}{optional; a numeric value, the GIF height in pixels. Default = 480.}
 
-\item{legend.max}{optional; a numeric value, the maximum limit of legend values to standardise across projections.}
+\item{legend.max}{optional; a numeric value, the maximum limit of legend values to standardise
+across projections.}
 
-\item{legend.min}{optional; a numeric value, the minimum limit of legend values to standardise across projections.}
+\item{legend.min}{optional; a numeric value, the minimum limit of legend values to standardise
+across projections.}
 
-\item{legend.name}{optional; a character string, the name for the legend title. Default = projection.type.}
+\item{legend.name}{optional; a character string, the name for the legend title. Default =
+projection.type.}
 
-\item{file.name}{optional, a character string, the name for the saved GIF file. Default = projection.type.}
+\item{file.name}{optional, a character string, the name for the saved GIF file. Default =
+\code{projection.type}.}
+
+\item{colour.palette}{optional; a character string, the colormap option to use from \code{viridis}. See
+details for colour palette options.}
 }
 \value{
 Exports GIF to Google Drive folder or local directory.
 }
 \description{
-Plots dynamic species distribution and abundance projections through time and combines images into a GIF.
+Plots dynamic species distribution and abundance projections through time and combines images into
+a GIF.
 }
 \details{
-Function reads in projection rasters for each date and projection.type. These are plotted using ggplot2 and combined into Graphics Interchange Format (GIF).
+Function reads in projection rasters for each date. These are plotted using \code{ggplot2} and
+combined into a Graphics Interchange Format (GIF).
+}
+\section{Import projection rasters}{
+Projection rasters for each date must be “tif” files that are uniquely named with the date in
+format YYYY-MM-DD and projection.type. If more than one file name matches the date and
+\code{projection.type}, the function will error.
+}
 
-For dynamic_proj_GIF to find the projection rasters for each date, then “.tif” files must be uniquely named with the date in format YYYY-MM-DD and projection.type. If more than one file name matches the date and projection.type, the function will error.
+\section{Google Drive compatibility}{
+If \code{drive.folder} or \code{save.drive.folder} given, please ensure the folder name is unique within
+your Google Drive. Do not provide the path if the folder is nested within others.
 
-If one of drive.folder or save.drive.folder is used then user.email for the Google Drive account must be provided. This requires users to have installed R package "googledrive" and initialised Google Drive with valid log-in credentials. Please follow instructions on https://googledrive.tidyverse.org/.
+If one of \code{drive.folder} or \code{save.drive.folder} are used then user.email is required to access
+the appropriate Google Drive user account. This requires users to have installed R package
+\code{googledrive} and initialised Google Drive with valid log-in credentials. Please follow
+instructions on \url{https://googledrive.tidyverse.org/}.
+
+Options for colour palettes using \code{viridis} are illustrated at:
+\url{https://ggplot2.tidyverse.org/reference/scale_viridis.html}. Available options include: "magma"
+(or "A"), "inferno" (or "B"), "plasma" (or "C"), "viridis" (or "D", the default option) and
+"cividis" (or "E").
+}
+
+\examples{
+projectiondates <- dynamic_proj_dates(startdate = "2018-01-01",
+                                     enddate = "2018-12-01",
+                                     interval = 3,
+                                     interval.level = "month")
+data(sample_proj_rast)
+
+# Save sample projection rasters to replicate output from `dynamic_proj()`
+raster::writeRaster(
+ sample_proj_rast,
+ filename = paste0(tempdir(), "/", paste0(projectiondates, "_proportional.tif")),
+ bylayer = TRUE,
+ format = "GTiff",
+ overwrite = TRUE
+)
+dynamic_proj_GIF(
+dates = projectiondates,
+projection.type = "proportional",
+local.directory = tempdir(),
+save.directory = tempdir()
+)
+
 }
 \references{
-Wickham, H., and Chang, W, 2016. Package ‘ggplot2’. Create elegant data visualisations using the grammar of graphics. Version, 2(1), pp.1-189.
+Wickham, H., and Chang, W, 2016. Package ‘ggplot2’. Create elegant data visualisations
+using the grammar of graphics. Version, 2(1), pp.1-189.
 }

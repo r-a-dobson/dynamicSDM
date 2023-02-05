@@ -4,27 +4,94 @@
 \alias{spatiotemp_bias}
 \title{Test for spatial and temporal bias in species occurrence records}
 \usage{
-spatiotemp_bias(occ.data, temporal.level)
+spatiotemp_bias(
+  occ.data,
+  temporal.level,
+  plot = F,
+  spatial.method = "simple",
+  centroid,
+  radius,
+  prj = "+proj=longlat +datum=WGS84"
+)
 }
 \arguments{
-\item{occ.data}{a data frame, with columns for occurrence record co-ordinates and dates with column names as follows; record longitude as "x", latitude as "y", year as "year", month as "month", and day as "day".}
+\item{occ.data}{a data frame, with columns for occurrence record co-ordinates and dates with
+column names as follows; record longitude as "x", latitude as "y", year as "year", month as
+"month", and day as "day".}
 
-\item{temporal.level}{a character string, the time step to test for temporal bias at. One of '"day"' or '"month"', '"year"'. Can be abbreviated.}
+\item{temporal.level}{a character string or vector, the time step(s) to test for temporal bias at.
+One or multiple of \code{day} or \code{month}, \code{year.} Can be abbreviated.}
+
+\item{plot}{a logical indicating whether to generate plots of spatial and temporal bias. See
+details for plot descriptions.}
+
+\item{spatial.method}{a character string, the method calculate the spatial bias statistic. One of;
+\code{simple}, \code{convex_hull} or \code{core}. See details.}
+
+\item{centroid}{a numeric vector of length two, specifying the centroid co-ordinate in the order
+of longitude then latitude. Only required if \code{spatial.method} = \code{core.} Default is mean of all
+occurrence record co-ordinates.}
+
+\item{radius}{a numeric value, the radial distance from the given centroid co-ordinate to measure
+spatial bias within. Only required if \code{spatial.method} = \code{core.} See details for more
+information. Default is mean distance of all co-ordinates from \code{centroid}.}
+
+\item{prj}{a character string, the coordinate reference system of occ.data co-ordinates. Default
+is "+proj=longlat +datum=WGS84".}
 }
 \value{
-Returns list containing chi-squared and t-test results.
+Returns list containing chi-squared and t-test results, and plots if specified.
 }
 \description{
-Generates plots for visual assessment of spatial and temporal biases in occurrence records. Tests whether the spatiotemporal distribution of records is significantly different from the distribution from random sampling.
+Generates plots for visual assessment of spatial and temporal biases in occurrence records. Tests
+whether the spatiotemporal distribution of records is significantly different from the
+distribution from random sampling.
 }
-\details{
-To assess temporal sampling bias, the function returns a histogram plot of the frequency distribution of records across the given time step specified by temporal.level. The observed frequency of sampling across the categorical time steps are compared to the distribution expected from random sampling, using a chi-squared test.
-
-To assess spatial sampling bias, the function returns a scatterplot of the spatial distribution of occurrence records to illustrate any spatial clustering. The average nearest neighbour distance of record co-ordinates is then compared to that of records randomly generated at same density using a t-test.
-
-As the spatial bias calculation involves calculation of a distance matrix. To reduce computation time, it is recommended that a sample of large occurrence datasets are input.
+\section{Temporal bias To assess temporal sampling bias, the function returns a histogram plot}{
+of the frequency distribution of records across the given time step specified by \code{temporal.level}
+(if \code{plot} = T). The observed frequency of sampling across the categorical time steps are compared
+to the distribution expected from random sampling, using a chi-squared test.
 }
+
+\section{Spatial bias To assess spatial sampling bias, the function returns a scatterplot of the spatial}{
+distribution of occurrence records to illustrate any spatial clustering (if \code{plot} = T). The
+average nearest neighbour distance of record co-ordinates is then compared to that of records
+randomly generated at same density using a t-test.
+}
+
+\section{Spatial bias: methods * \code{simple} - generates the random points within a rectangle created using}{
+the minimum and maximum longitude and latitude of occurrence co-ordinates.
+\itemize{
+\item \code{convex_hull} - generates the random points within the convex hull of occurrence record
+co-ordinates (i.e. the smallest convex set that contains all records).
+\item \code{core} - generates the random points within specified circular area generated from a centroid
+point and radius. If these arguments ( \code{centroid} and \code{radius}) are not provided then \code{centroid}
+is calculated by averaging co-ordinates of all occurrence records, and \code{radius} is the mean
+distance away of all records from the centroid.
+}
+
+The \code{core} approach enables users to explore sampling bias in set areas of a species range. This
+may be valuable if species periphery-core relationships could lead to inaccurate inferences of
+sampling bias.
+}
+
+\section{Computation time}{
+As the spatial bias test involves the calculation of a distance matrix. To reduce computation
+time, it is recommended that only a representative sample of large occurrence datasets are input.
+}
+
 \examples{
-data("sample_occ_data",package="dynamicSDM")
-spatiotemp_bias(occ.data = sample_occ_data,temporal.level = "month")
+data(sample_explan_data)
+bias_simple <- spatiotemp_bias(
+occ.data = sample_explan_data,
+temporal.level = c("day", "month", "year"),
+spatial.method = "simple",
+plot = FALSE
+)
+bias_core <-spatiotemp_bias(
+occ.data = sample_explan_data,
+temporal.level = c("day", "month", "year"),
+spatial.method = "core",
+plot = FALSE
+)
 }

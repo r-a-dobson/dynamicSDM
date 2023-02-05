@@ -36,6 +36,12 @@ test_that("works with spatial.ext as polygon", {
   results<-get_moving_window(radial.distance=100000,spatial.res.degrees=0.5,spatial.ext=polygon)
   expect_equal(class(results)[1],"matrix")})
 
+data(sample_extent_data)
+
+test_that("works with spatial.ext as sf", {
+  results<-get_moving_window(radial.distance=100000,spatial.res.degrees=0.5,spatial.ext=sample_extent_data)
+  expect_equal(class(results)[1],"matrix")})
+
 test_that("stops if spatial.res.degrees and spatial.ext class invalid", {
   expect_error(get_moving_window(radial.distance=100000,spatial.res.degrees=0.5,spatial.ext="southernafrica"))})
 

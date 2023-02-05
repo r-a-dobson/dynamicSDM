@@ -1,11 +1,12 @@
 
-data("sample_model_data")
+load(paste0(testthat::test_path("test-files"),"/sample_model_data.rda"))
+
 sample_model_data_test<-dplyr::sample_n(sample_model_data,10)
 sample_model_data_train<-dplyr::sample_n(sample_model_data,10)
 
 results1<-readRDS(paste0(testthat::test_path("test-files"),"/testsdm.rds"))
-
-results1_eval<-list(c(0.6,0.7,0.6,0.4,0.5,0.6))
+results1<-results1[c(1:2)]
+results1_eval<-list(c(0.6,0.7))
 
 sample_model_data_train_abund<-sample_model_data[sample_model_data$individualCount>0 ,]
 sample_model_data_train_abund<-sample_model_data_train_abund[!is.na(sample_model_data_train_abund$individualCount),]
@@ -14,8 +15,8 @@ sample_model_data_train_abund_test.data<-dplyr::sample_n(sample_model_data_train
 sample_model_data_train_abund<-dplyr::sample_n(sample_model_data_train_abund,415)
 
 results3<-readRDS(paste0(testthat::test_path("test-files"),"/testsam.rds"))
-
-results3_eval<-list(c(0.70,0.56,0.60,0.7,0.7,0.90))
+results3<-results3[c(1:2)]
+results3_eval<-list(c(0.70,0.56))
 
 
 test_that("Stops if no models provided", {
@@ -60,24 +61,86 @@ test_that("Stops if SAM weights not equal to 1 or length SAM.MODELS", {
 
 test_that("Success if projection.method = all", {
   save.directory=tempdir()
-  dates=c("2010-01-01","2010-04-01")
+  dates=c("2010-01-01")
   filenames<-paste0(dates,"_stacked.tif")
-  dynamic_proj(dates=c("2010-01-01","2010-04-01"),local.directory = testthat::test_path("test-files"),
-                     projection.method=c("binary","proportional","abundance","stacked"),sdm.mod =results1,sdm.thresh = 0.5,sdm.weight = as.numeric(unlist(results1_eval)),
+  dynamic_proj(dates=c("2010-01-01"),local.directory = testthat::test_path("test-files"),
+                     projection.method=c("binary","proportional","abundance","stacked"),sdm.mod =results1,sdm.thresh = 0.5,
+               sdm.weight = as.numeric(unlist(results1_eval)),cov.file.type="csv",
                      sam.mod = results3,sam.weight =as.numeric(unlist(results3_eval)), save.directory=tempdir())
-  expect_equal(file.exists(paste0(save.directory,"/",filenames[2])),TRUE)})
+  expect_equal(file.exists(paste0(save.directory,"/",filenames[1])),TRUE)})
 
+
+
+test_that("Success if projection.method = all one mod", {
+  save.directory=tempdir()
+  dates=c("2010-04-01")
+  filenames<-paste0(dates,"_stacked.tif")
+  dynamic_proj(dates=c("2010-04-01"),local.directory = testthat::test_path("test-files"),
+               projection.method=c("binary","proportional","abundance","stacked"),sdm.mod =results1[[1]],sdm.thresh = 0.5,
+               sdm.weight = 1,cov.file.type="csv",
+               sam.mod = results3[[1]],sam.weight =1, save.directory=tempdir())
+  expect_equal(file.exists(paste0(save.directory,"/",filenames[1])),TRUE)})
+
+
+test_that("Success if projection.method = tif", {
+  save.directory=tempdir()
+  dates=c("2011-01-01")
+  filenames<-paste0(dates,"_stacked.tif")
+  dynamic_proj(dates=c("2011-01-01"),local.directory = testthat::test_path("test-files"),
+               projection.method=c("binary","proportional","abundance","stacked"),sdm.mod =results1,sdm.thresh = 0.5,
+               sdm.weight = as.numeric(unlist(results1_eval)),cov.file.type="tif",
+               sam.mod = results3,sam.weight =as.numeric(unlist(results3_eval)), save.directory=tempdir())
+  expect_equal(file.exists(paste0(save.directory,"/",filenames[1])),TRUE)})
+
+
+test_that("Success if projection.method = tif and just sdm", {
+  save.directory=tempdir()
+  dates=c("2010-01-01")
+  filenames<-paste0(dates,"_stacked.tif")
+  dynamic_proj(dates=c("2010-01-01"),local.directory = testthat::test_path("test-files"),
+               projection.method=c("binary"),sdm.mod =results1[[1]],sdm.thresh = 0.5,
+               sdm.weight = 1,cov.file.type="tif"
+            , save.directory=tempdir())
+  expect_equal(file.exists(paste0(save.directory,"/",filenames[1])),TRUE)})
 
 
 
 test_that("Success if projection.method = all + Google Drive used", {
   skip_if_no_GEE_credentials()
   user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
-  dates=c("2010-01-01","2010-04-01")
+  dates=c("2010-01-01")
   save.directory=tempdir()
   filenames<-paste0(dates,"_stacked.tif")
-  dynamic_proj(dates=c("2010-01-01","2010-04-01"),drive.folder = "testfiles",user.email = user.email,
-               projection.method=c("binary","proportional","abundance","stacked"),sdm.mod =results1,sdm.thresh = 0.5,sdm.weight = as.numeric(unlist(results1_eval)),
-               sam.mod = results3,sam.weight =as.numeric(unlist(results3_eval)), save.drive.folder = "temporarysavedrivefolder", save.directory=tempdir())
-  expect_equal(file.exists(paste0(save.directory,"/",filenames[2])),TRUE)})
+  dynamic_proj(dates=c("2010-01-01"),drive.folder = "testfiles",user.email = user.email,
+               projection.method=c("binary","proportional","abundance","stacked"),sdm.mod =results1[[1]],sdm.thresh = 0.5,sdm.weight = 1,cov.file.type="csv",
+               sam.mod = results3[[1]],sam.weight =1, save.drive.folder = "temporarysavedrivefolder", save.directory=tempdir())
+  expect_equal(file.exists(paste0(save.directory,"/",filenames[1])),TRUE)})
+
+
+data("sample_extent_data")
+
+test_that("Success if spatial mask used", {
+  save.directory=tempdir()
+  dates=c("2010-04-01")
+  filenames<-paste0(dates,"_stacked.tif")
+
+  dynamic_proj(dates=c("2010-04-01"),local.directory = testthat::test_path("test-files"),
+               projection.method=c("binary","proportional","abundance","stacked"),sdm.mod =results1[[1]],sdm.thresh = 0.5,
+               sdm.weight = 1,cov.file.type="csv",spatial.mask=sample_extent_data,
+               sam.mod = results3[[1]],sam.weight =1, save.directory=tempdir())
+  expect_equal(file.exists(paste0(save.directory,"/",filenames[1])),TRUE)})
+
+
+test_that("Success if projection.method = tif and spatial mask used", {
+  save.directory=tempdir()
+  dates=c("2011-01-01")
+  filenames<-paste0(dates,"_stacked.tif")
+  dynamic_proj(dates=c("2011-01-01"),local.directory = testthat::test_path("test-files"),
+               projection.method=c("binary","proportional","abundance","stacked"),sdm.mod =results1,sdm.thresh = 0.5,
+               sdm.weight = as.numeric(unlist(results1_eval)),cov.file.type="tif",spatial.mask=sample_extent_data,
+               sam.mod = results3,sam.weight =as.numeric(unlist(results3_eval)), save.directory=tempdir())
+  expect_equal(file.exists(paste0(save.directory,"/",filenames[1])),TRUE)})
+
+
+
 

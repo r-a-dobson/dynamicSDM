@@ -5,27 +5,28 @@
 \alias{sample_occ_data}
 \title{Sample species occurrence records}
 \format{
-A data frame with 10000 rows and 14 variables:
+A data frame with 600 rows and 7 variables:
 \describe{
-\item{x}{species occurrence record longitude.}
-\item{y}{species occurrence record latitude.}
 \item{year}{species occurrence record year.}
 \item{month}{species occurrence record month.}
 \item{day}{species occurrence record day.}
-\item{presence.absence}{binary species presence or absence at record location and date.}
-\item{individualCount}{number of individuals of the species present at record location and date.}
+\item{decimalLatitude}{species occurrence record latitude.}
+\item{decimalLongitude}{species occurrence record longitude.}
+\item{occurrenceStatus}{species presence or absence character.}
+\item{source}{source of occurrence or pseudo-absence data point.}
 }
 }
 \usage{
 sample_occ_data
 }
 \description{
-A dataset containing a sample of the bird species, the red-billed quelea (Quelea quelea), distribution and abundance records between 2002-2017.
+A dataset containing a sample of the bird species, the red-billed quelea (Quelea quelea),
+distribution records between 1976-2021 (GBIF 2021 & GBIF 2022).
 The variables are as follows:
 }
 \references{
-GBIF.org (12 July 2021) GBIF Occurrence Download https://doi.org/10.15468/dl.ppcu6q
+GBIF.org (12 July 2021) GBIF Occurrence Download \url{https://doi.org/10.15468/dl.ppcu6q}
 
-GBIF.org (25 July 2022) GBIF Occurrence Download https://doi.org/10.15468/dl.k2kftv
+GBIF.org (25 July 2022) GBIF Occurrence Download \url{https://doi.org/10.15468/dl.k2kftv}
 }
 \keyword{datasets}

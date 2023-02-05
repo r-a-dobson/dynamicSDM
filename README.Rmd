@@ -41,13 +41,14 @@ dynamicSDM functions are split into four key modelling stages: response data, ex
 ### 1) Response data functions
 Functions for preparing species distribution or abundance model input data for modelling with spatiotemporally dynamic explanatory variables. 
 
+* `convert_gbif()` Transform Global Biodiversity Information Facility occurrence records to `dynamicSDM` compatible.
 * `spatiotemp_check()` Check species occurrence record formatting, completeness and validity.
 * `spatiotemp_extent()` Filter species occurrence records by a given spatial and temporal extent.
 * `spatiotemp_resolution()` Filter species occurrence records by given spatial and temporal resolution.
 * `spatiotemp_bias()` Test for spatial and temporal bias in species occurrence records. 
 * `spatiotemp_thin()` Thin species occurrence records by spatial and temporal proximity.
 * `spatiotemp_pseudoabs()` Generate pseudo-absence record coordinates and dates.
-* `spatiotemp_weights()` Calculate sampling effort across spatial and temporal buffer from species occurrence records.
+* `spatiotemp_weights()` Calculate sampling effort across spatial and temporal buffer from occurrence records.
 
 ### 2) Explanatory variable functions
 Functions for extracting spatiotemporally dynamic explanatory variable data for species occurrence record co-ordinates and dates using Google Earth Engine.  

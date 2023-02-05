@@ -9,18 +9,63 @@ extract_coords_combine(varnames, local.directory)
 \arguments{
 \item{varnames}{a character string, the unique names for each explanatory variable.}
 
-\item{local.directory}{a character string or vector, the path to local directory or directories to read extracted explanatory data frames from.}
+\item{local.directory}{a character string or vector, the path to local directory or directories to
+read extracted explanatory data frames from.}
 }
 \value{
-Returns a data frame containing all occurrence records with associated explanatory variable data.
+Returns a data frame containing all occurrence records with associated explanatory
+variable data.
 }
 \description{
-Combines the split output files from functions extract_dynamic_coords and extract_buffered_coords into single data frame containing all occurrence records and explanatory variables.
+Combines the split output files from functions \code{extract_dynamic_coords()} and
+\code{extract_buffered_coords()} into single data frame containing all occurrence records and
+explanatory variables.
 }
 \details{
-When extract_dynamic_coords and extract_buffered_coords have been used to extract dynamic explanatory variables for occurrence records, output for individual records and each variable will be split into separate “.csv” files.
+When functions \code{extract_dynamic_coords()} and \code{extract_buffered_coords()} have been used
+to extract dynamic explanatory variables for occurrence records, the output for individual
+records and each variable will be split into separate “csv” files.
 
-This function reads in these files and combined data into a single data frame containing each occurrence records and associated explanatory data from each variable.
+This function reads in these files and combines data into a single data frame containing each
+occurrence records and associated explanatory data from each variable.
 
-To prevent error, the “.csv” files must be uniquely named within the folder and include an exact character match for the varnames provided. All “.csv” files matching the varnames should have the same number and names of columns, which the default output of extract_dynamic_coords and extract_buffered_coords will if given the same occ.data data frame.
+To prevent error, the “csv” files must be uniquely named within the folder(s) and include an
+exact character match for the varnames provided. All “csv” files matching the varnames should
+have the same number and names of columns. This is the default output
+of\code{extract_dynamic_coords()} and \code{extract_buffered_coords()}.
+}
+\examples{
+\dontshow{if (googledrive::drive_has_token()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+data(sample_filt_data)
+\dontshow{
+sample_filt_data<-sample_filt_data[1:2,]
+}
+
+dynamicSDM::extract_dynamic_coords(
+ occ.data = sample_filt_data,
+ datasetname = "UCSB-CHG/CHIRPS/DAILY",
+ bandname = "precipitation",
+ spatial.res.metres = 10000,
+ GEE.math.fun = "sum",
+ temporal.direction = "prior",
+ temporal.res = 56,
+ save.method = "split",
+ varname = "eightweekprec",
+ save.directory = tempdir()
+)
+dynamicSDM::extract_dynamic_coords(
+ occ.data = sample_filt_data,
+ datasetname = "UCSB-CHG/CHIRPS/DAILY",
+ bandname = "precipitation",
+ spatial.res.metres = 10000,
+ GEE.math.fun = "sum",
+ temporal.direction = "prior",
+ temporal.res = 364,
+ save.method = "combined",
+ varname = "annualweekprec",
+ save.directory = tempdir()
+)
+
+extract_coords_combine(varnames = c("eightweekprec", "annualweekprec"), local.directory = tempdir())
+\dontshow{\}) # examplesIf}
 }

@@ -6,34 +6,84 @@
 \usage{
 get_moving_window(
   radial.distance,
-  spatial.res.degrees = NULL,
-  spatial.res.metres = NULL,
-  spatial.ext = NULL
+  spatial.res.degrees,
+  spatial.res.metres,
+  spatial.ext
 )
 }
 \arguments{
 \item{radial.distance}{a numeric value, the radius of interest in metres.}
 
-\item{spatial.res.degrees}{a numeric value, the spatial resolution in degrees of explanatory variable data.}
+\item{spatial.res.degrees}{a numeric value, the spatial resolution in degrees of explanatory
+variable data.}
 
-\item{spatial.res.metres}{a numeric value, the spatial resolution in metres of explanatory variable data.}
+\item{spatial.res.metres}{a numeric value, the spatial resolution in metres of explanatory
+variable data.}
 
-\item{spatial.ext}{an object of class "Extent", "raster" or "polygon" or numeric vector listing xmin, xmax, ymin and ymax in order, the spatial extent of study.}
+\item{spatial.ext}{the spatial extent of the study. Object from which extent can be extracted of
+class \code{Extent}, \code{RasterLayer}, \code{sf} or \code{polygon} or numeric vector listing xmin, xmax, ymin and
+ymax in order.}
 }
 \value{
-Returns "moving window" matrix of equal weights.
+Returns "moving window" matrix with an odd number of sides and equal weights.
 }
 \description{
-Calculates an optimal “moving window” matrix size for use when extracting spatially buffered explanatory variables, by using the radius of interest and spatial resolution of environmental data.
+Calculates an optimal “moving window” matrix size for use when extracting spatially buffered
+explanatory variables, by using the radius of interest and spatial resolution of environmental
+data.
 }
-\details{
-To extract spatially buffered explanatory variable data using dynamicSDM functions extract_buffered_coords or extract_buffered_raster, a “moving window” matrix specifying the neighbourhood of cells to include in the calculation is required. For example, by using a three by three “moving window” matrix of equal weights, the explanatory variable would be calculated across the nine grid cells neighbouring the cell of interest and the cell of interest.
-The benefit of using a “moving window” over calculating explanatory variable values across a set radius from each record co-ordinate, is that when generating projection rasters at high spatial and temporal resolution, these can be generated much faster as the “moving windows” standardise the calculation.
-To calculate the “moving window” matrix size, the get_moving_window function first calculates the circular area of interest, using the user-specified radius of interest and equation for area of a circle. This radius should be chosen to represent the radial distance from species occurrence record co-ordinates that the explanatory variable data might be relevant and impact species presence.
-Then, the average grid cell area of the explanatory variable data (derived from user-provided spatial resolution and extent) is calculated. If spatial.res.degrees is given then spatial.ext is required to calculate average cell area size. If spatial.res.metres is given then average cell area is calculated by squaring this value to get cell area in square metres.
+\section{Importance for other functions in \code{dynamicSDM} To extract spatially buffered explanatory}{
+variable data using dynamicSDM functions \code{extract_buffered_coords()} or
+\code{extract_buffered_raster()}, a “moving window” matrix specifying the neighbourhood of cells to
+include in the calculation is required.
 
-The function then calculates the optimal “moving window” matrix that best matches circular area of interest with the “moving window” matrix area.
+For example, by using a three by three “moving window” matrix of equal weights, the explanatory
+variable would be calculated across the nine grid cells neighbouring the cell of interest and the
+cell of interest.
 }
+
+\section{Why use a moving window matrix instead of circular buffer? The benefit of using a “moving}{
+window” over calculating explanatory variable values across a set radius from each record
+co-ordinate, is that when generating projection rasters at high spatial and temporal resolution,
+these can be generated much faster as the “moving windows” standardise the calculation.
+}
+
+\section{Function calculation}{
+\itemize{
+\item 
+\enumerate{
+\item To calculate the “moving window” matrix size, the \code{get_moving_window()} function first
+calculates the circular area of interest, using the user-specified radius of interest and the
+equation for area of a circle.
+}
+}
+
+This radius should be chosen to represent the radial distance from species occurrence record
+co-ordinates that the explanatory variable data might be relevant and impact species presence.
+\itemize{
+\item 
+\enumerate{
+\item Then, the average grid cell area of the explanatory variable data (derived from user-provided
+spatial resolution and extent) is calculated. If \code{spatial.res.degrees} is given then \code{spatial.ext}
+is required to calculate average cell area size. If \code{spatial.res.metres} is given then average
+cell area is calculated by squaring this value to get cell area in square metres.
+}
+\item 
+\enumerate{
+\item Finally, the function then calculates the optimal “moving window” matrix that best matches
+circular area of interest with the “moving window” matrix area. The matrix of weights will have an
+odd number of sides.
+}
+}
+}
+
 \examples{
-get_moving_window(radial.distance=100000,spatial.res.metres=111320)
+get_moving_window(radial.distance = 100000, spatial.res.metres = 111320)
+
+data(sample_extent_data)
+get_moving_window(
+radial.distance = 100000,
+ spatial.res.degrees = 0.5,
+ spatial.ext = sample_extent_data
+)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/extract_dynamic_raster.R
 \name{extract_dynamic_raster}
 \alias{extract_dynamic_raster}
-\title{Extract temporally dynamic rasters of explanatory variable data.}
+\title{Extract temporally dynamic rasters of explanatory variables.}
 \usage{
 extract_dynamic_raster(
   dates,
@@ -12,55 +12,130 @@ extract_dynamic_raster(
   spatial.res.metres,
   GEE.math.fun,
   user.email,
-  varname = NULL,
+  varname,
   temporal.res,
   temporal.direction,
-  save.directory = NULL,
+  save.directory,
   save.drive.folder
 )
 }
 \arguments{
-\item{dates}{a character string, vector of dates in format YYYY-MM-DD.}
+\item{dates}{a character string, vector of dates in format "YYYY-MM-DD".}
 
-\item{spatial.ext}{the spatial extent for the extracted raster. Object of class "Extent", "RasterLayer" or "polygon" or numeric vector listing xmin, xmax, ymin and ymax in order.}
+\item{spatial.ext}{the spatial extent for the extracted raster. Object from which extent can be
+extracted of class \code{Extent}, \code{RasterLayer}, \code{sf} or \code{polygon} or numeric vector listing xmin,
+xmax, ymin and ymax in order.}
 
 \item{datasetname}{a character string, the Google Earth Engine dataset to extract data from.}
 
 \item{bandname}{a character string, the Google Earth Engine dataset bandname to extract data for.}
 
-\item{spatial.res.metres}{a numeric value, specifying the spatial resolution in metres of the raster to be extracted.}
+\item{spatial.res.metres}{a numeric value, specifying the spatial resolution in metres of the
+raster to be extracted.}
 
-\item{GEE.math.fun}{a character string, the mathematical function to compute across the specified time frame from each projection date and for each cell.}
+\item{GEE.math.fun}{a character string, the mathematical function to compute across the specified
+time frame from each projection date and for each cell.}
 
 \item{user.email}{a character string, user email for initialising Google Drive.}
 
-\item{varname}{optional; a character string, the unique name for the explanatory variable. Default varname is “bandname_temporal.res_temporal.direction_ GEE.math.fun_raster".}
+\item{varname}{optional; a character string, the unique name for the explanatory variable. Default
+varname is “bandname_temporal.res_temporal.direction_ GEE.math.fun_raster".}
 
 \item{temporal.res}{a numeric value, the temporal resolution in days to extract data across.}
 
-\item{temporal.direction}{a character string, the temporal direction for extracting dynamic variable data across relative to each projection date given. One of '"prior"' or '"post"': can be abbreviated.}
+\item{temporal.direction}{a character string, the temporal direction for extracting dynamic
+variable data across relative to each projection date given. One of \code{prior} or \code{post}: can
+be abbreviated.}
 
-\item{save.directory}{optional; a character string, path to local directory to save extracted rasters to.}
+\item{save.directory}{optional; a character string, path to local directory to save extracted
+rasters to.}
 
-\item{save.drive.folder}{a character string, Google Drive folder to save extracted rasters to.}
+\item{save.drive.folder}{a character string, Google Drive folder name to save extracted rasters
+to. Folder must be uniquely named within your Google Drive. Do not provide path.}
 }
 \value{
 Returns details of successful explanatory variable extractions for each projection date.
 }
 \description{
-Extract rasters for temporally dynamic explanatory variables at each projection date using Google Earth Engine.
+Extract rasters for temporally dynamic explanatory variables at each projection date using Google
+Earth Engine.
 }
 \details{
-For each projection date, this function downloads rasters at given spatial extent and resolution for temporally dynamic explanatory variables. For each cell in spatial extent, the GEE.math.fun is calculated for data extracted across specified number of days prior or post the projection date. Rasters of such data are saved directly to Google Drive, with option to export to local directory too. These can be combined to create projection covariate data frames for projection dynamic species distribution and abundance at high spatiotemporal resolution
+For each projection date, this function downloads rasters at given spatial extent and
+resolution for specified temporally dynamic explanatory variables. For each cell in spatial extent, the
+GEE.math.fun is calculated for data extracted across the specified number of days prior or post the
+projection date. Rasters of such data are saved directly to Google Drive, with option to export to
+local directory too. These can be combined to create projection covariate data frames for
+projection dynamic species distribution and abundance at high spatiotemporal resolution
+}
+\section{Google Earth Engine}{
+\code{extract_dynamic_raster()} requires users to have installed R package \code{rgee} (Aybar et al.,
+2020) and initialised Google Earth Engine with valid log-in credentials. Please follow
+instructions on the following website
+\url{https://cran.r-project.org/web/packages/rgee/vignettes/rgee01.html}.
+\itemize{
+\item \code{datasetname} must be in the accepted Google Earth Engine catalogue layout (e.g.
+“MODIS/006/MCD12Q1” or “UCSB-CHG/CHIRPS/DAILY”)
+\item \code{bandname} must be as specified under the dataset in the Google Earth Engine catalogue (e.g.
+“LC_Type5”, “precipitation”). For datasets and band names, see
+\url{https://developers.google.com/earth-engine/datasets}.
+}
+}
 
-extract_dynamic_raster requires users to have installed R package "rgee" (Aybar et al., 2020) and initialised Google Earth Engine with valid log-in credentials. Please follow instructions on the following website . datasetname must be in the accepted Google Earth Engine Data catalogue layout (e.g. “MODIS/006/MCD12Q1” or “UCSB-CHG/CHIRPS/DAILY”) and bandname as specified in the dataset (e.g. “LC_Type5”, “precipitation”). For datasets and band names, see .
+\section{Google Drive}{
+\code{extract_dynamic_raster()} also requires users to have installed the R package
+\code{googledrive}(D'Agostino McGowan and Bryan, 2022) and initialised Google Drive with valid log-in
+credentials, which must be stated using argument \code{user.email}. Please follow instructions on
+\url{https://googledrive.tidyverse.org/} for initialising the \code{googledrive} package.
 
-extract_dynamic_raster also requires users to have installed the R package "googledrive" (D'Agostino McGowan and Bryan, 2022) and initialised Google Drive with valid log-in credentials, which must be provided under argument user.email. Please follow instructions on https://googledrive.tidyverse.org/ for initialising the googledrive package.
+The \code{save.drive.folder} must be uniquely named within your Google Drive and do not provide the
+path.
 
-GEE.math.fun specifies the mathematical function to be calculated over the temporal period from each projection date. Options are limited to Google Earth Engine ImageCollection Reducer functions (https://developers.google.com/earth-engine/apidocs/) for which an analogous R function is available. This includes: "allNonZero","anyNonZero", "count", "first","firstNonNull", "last", "lastNonNull", "max","mean", "median","min", "mode","product", "sampleStdDev", "sampleVariance", "stdDev", "sum" and "variance".
+Note: When running this function a folder labelled "dynamicSDM_download_bucket" will be created in
+your Google Drive. This will be emptied once the function has finished running and output rasters
+will be found in the save.drive.folder or save.directory specified.
+}
+
+\section{Mathematical function}{
+\code{GEE.math.fun} specifies the mathematical function to be calculated over the temporal period
+from each projection date. Options are limited to Google Earth Engine ImageCollection Reducer
+functions (\url{https://developers.google.com/earth-engine/apidocs/}) for which an analogous R
+function is available. This includes: "allNonZero","anyNonZero", "count",
+"first","firstNonNull", "last", "lastNonNull", "max","mean", "median","min", "mode","product",
+"sampleStdDev", "sampleVariance", "stdDev", "sum" and "variance".
+}
+
+\examples{
+\dontshow{if (googledrive::drive_has_token()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+dates <- dynamic_proj_dates("2018-01-01", "2018-12-01", interval = 3,interval.level = "month")
+\dontshow{
+dates <- dates[1]
+}
+
+data("sample_extent_data")
+user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
+
+extract_dynamic_raster(dates = dates,
+                      datasetname = "UCSB-CHG/CHIRPS/DAILY",
+                      bandname="precipitation",
+                      user.email = user.email,
+                      save.drive.folder = "mydrivefolder",
+                      spatial.res.metres = 5566,
+                      GEE.math.fun = "sum",
+                      temporal.direction = "prior",
+                      temporal.res = 56,
+                      spatial.ext = sample_extent_data,
+                      varname = "total_annual_precipitation_prior",
+                      save.directory = temp.dir())
+
+
+
+\dontshow{\}) # examplesIf}
 }
 \references{
-Aybar, C., Wu, Q., Bautista, L., Yali, R. and Barja, A., 2020. rgee: An R package for interacting with Google Earth Engine. Journal of Open Source Software, 5(51), p.2272.
+Aybar, C., Wu, Q., Bautista, L., Yali, R. and Barja, A., 2020. rgee: An R package for
+interacting with Google Earth Engine. Journal of Open Source Software, 5(51), p.2272.
 
-D'Agostino McGowan L., and Bryan J., 2022. googledrive: An Interface to Google Drive. https://googledrive.tidyverse.org, https://github.com/tidyverse/googledrive.
+D'Agostino McGowan L., and Bryan J., 2022. googledrive: An Interface to Google Drive.
+https://googledrive.tidyverse.org, https://github.com/tidyverse/googledrive.
 }

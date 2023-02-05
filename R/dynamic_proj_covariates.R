@@ -1,45 +1,164 @@
-#' Combine explanatory variable rasters into a covariate data frame for each projection date.
+#'Combine explanatory variable rasters into covariates for each projection date.
 #'
-#' Explanatory variable rasters are imported for each projection date, resampled to given spatial resolution and extent and stacked, and then written to a covariate data frame for each projection date.
+#'Explanatory variable rasters are imported, resampled to given spatial resolution and extent,
+#'stacked and then exported as a covariate data frame or raster stack for each projection date.
 #'
-#' @param dates a character string, vector of dates in format YYYY-MM-DD.
-#' @param spatial.ext optional; the spatial extent to crop explanatory variable rasters to. Object of class "Extent", "RasterLayer" or "polygon" or numeric vector listing xmin, xmax, ymin and ymax in order.
-#' @param varnames a character string, the unique names for each explanatory variable.
-#' @param spatial.res.degrees optional; a numeric value, the spatial resolution in degrees for projection rasters to be resampled to. Required if spatial.ext given.
-#' @param resample.method a character string or vector length of varnames, specifying resampling method to use. One of "ngb" and "bilinear". See details for more information.
-#' @param drive.folder optional; a character string or vector, Google Drive folder or folders to read projection covariate rasters from.
-#' @param user.email optional; a character string, user email for initialising Google Drive. Required if drive.folder or save.drive.folder used.
-#' @param local.directory optional; a character string or vector, path to local directory or directories to read projection covariate rasters from.
-#' @param save.directory optional; a character string, path to local directory to save projection covariate data frames to.
-#' @param save.drive.folder optional; a character string, Google Drive folder to save projection covariate data frames to.
-#' @details
-#' For each projection date, appropriate rasters for each explanatory variable are imported from a local directory or Google Drive folder. If required, rasters are cropped and resampled to the same spatial extent and resolution. Rasters are then stacked and transformed into a covariate data frame with column names matching the unique explanatory variable names. A data frame of these projection covariates are exported to a local directory or Google Drive folder as “.csv” files named as the relevant date in “YYYY-MM-DD” format.
-#' Note: if explanatory variable rasters are not of the same spatial resolution and extent, then the function will error.
-#'Resample methods (resample.method) include: "ngb", in which each cell acquires the value of its nearest neighbour cell in the original raster and is often used for categorical variables; and "bilinear", in which the distance-weighted average of the four nearest cells are used to estimate a new cell value and is often used for continuous variables. If only one resample.method is given, but these are more than one explanatory variables, the same resample.method is used for all.
+#'@param dates a character string, vector of dates in format "YYYY-MM-DD".
+#'@param spatial.ext optional; the spatial extent to crop explanatory variable rasters to. Object of
+#'  class `Extent`, `RasterLayer`, `sf`, `polygon` or numeric vector listing xmin, xmax, ymin and
+#'  ymax in order.
+#'@param varnames a character string, the unique names for each explanatory variable.
+#'@param spatial.res.degrees optional; a numeric value, the spatial resolution in degrees for
+#'  projection rasters to be resampled to. Required if `spatial.ext` given.
+#'@param resample.method a character string or vector length of varnames, specifying resampling
+#'  method to use. One of "ngb" and "bilinear". See details for more information.
+#'@param drive.folder optional; a character string or vector, Google Drive folder or folders to read
+#'  projection covariate rasters from. Folder must be uniquely named within Google Drive. Do not
+#'  provide path.
+#'@param user.email optional; a character string, user email for initialising Google Drive. Required
+#'  if `drive.folder` or `save.drive.folder` used.
+#'@param local.directory optional; a character string or vector, path to local directory or
+#'  directories to read projection covariate rasters from.
+#'@param save.directory optional; a character string, path to local directory to save projection
+#'  covariates to.
+#'@param save.drive.folder optional; a character string, Google Drive folder to save projection
+#'  covariates to. Folder must be uniquely named within Google Drive. Do not provide path.
+#'@param cov.file.type a character string, the type of file to export projection covariates as. One
+#'  of: `tif` (raster stack) or `csv`(data frame).
+#'@param prj a character string, the coordinate reference system desired for projection covariates.
+#'  Default is "+proj=longlat +datum=WGS84".
+#'@param cov.prj a character string, the coordinate reference system desired for output projection
+#'  covariates. Default is assumed to be the same as prj.
+#'@param spatial.mask an object of class `Raster`, `sf` or `Spatial`, represeting a mask in which NA
+#'  cells in the mask layer are removed from the projection covariates.
+#'@details # Input variable rasters For each projection date, the rasters for each explanatory
+#'variable are imported from a local directory or Google Drive folder.
 #'
-#’ dynamic_proj_covariates requires explanatory variable rasters in local.directory or drive.folder to be uniquely named “.tif” files containing the variable name and relevant projection date in format YYYY-MM-DD. If more than one “.tif” file in the Google Drive folder or local directory matches the projection date and explanatory variable name, then the function will error.
+#'Such rasters should be uniquely named "tif" files within the given directory or drive folder,
+#'containing the variable name (as stated in `varnames`) and projection date in format "YYYY-MM-DD".
+#'If more than one “tif” file in the Google Drive folder or local directory matches the projection
+#'date and explanatory variable name, then the function will error.
 #'
-#'If drive.folder or save.drive.folder arguments are used to download rasters for use or upload function output, then users must have installed R package "googledrive" and initialised Google Drive with valid log-in credentials. The credentials must be given under function argument user.email to initiate the correct Google Drive account. Please follow instructions on https://googledrive.tidyverse.org/.
+#'# Processing rasters If required, rasters are cropped and resampled to the same spatial extent and
+#'resolution. If spatial.mask given, then NA in the mask layer are removed from the projection
+#'covariates. See `raster::mask()` in R package `raster` for details.
+#'
+#'Rasters are then stacked and reprojected if `cov.prj` is different to `prj`.
+#'
+#'Note: if explanatory variable rasters are not of the same spatial resolution and extent, then the
+#'function will error. Resample methods (`resample.method`) include:
+#'
+#'* `ngb`:  Each cell acquires the value of its nearest neighbour cell in the original raster. This
+#'is typically used for categorical variables.
+#'
+#'* `bilinear`: the distance-weighted average of the
+#'four nearest cells are used to estimate a new cell value. This is typically used for continuous
+#'variables.
+#'
+#'If only one `resample.method` is given, but these are more than one explanatory variables, the
+#'same `resample.method` is used for all.
+#'
+#'# Output covariates
+#'
+#'The raster stacks are then converted into data frames or raster stacks depending on
+#'`cov.file.type`. Column names or raster layer names will be the unique explanatory variable names
+#'(`varnames`). These are exported to the local directory or Google Drive folder with file names
+#'containing the relevant projection date in "YYYY-MM-DD" format.
+#'
+#'# Google Drive compatibility
+#'
+#'If `drive.folder` or `save.drive.folder` given, please ensure the folder name is unique within
+#'your Google Drive. Do not provide the path if the folder is nested within others.
+#'
+#'If one of `drive.folder` or `save.drive.folder` are used then user.email is required to access the
+#'appropriate Google Drive user account. This requires users to have installed R package
+#'`googledrive` and initialised Google Drive with valid log-in credentials. Please follow
+#'instructions on <https://googledrive.tidyverse.org/>.
+#'@returns Exports combined covariates in csv or tif file for each projection date to local
+#'  directory or Google Drive folder.
 #'@export
+#'@examplesIf googledrive::drive_has_token()
+#'
+#'data("sample_extent_data")
+#'
+#'# Set extraction variables
+#'projectiondates <- dynamic_proj_dates("2018-01-01", "2018-12-01", interval = 3,interval.level =
+#'"month")
+#'variablenames <- c("eight_sum_prec", "year_sum_prec")
+#'spatial.res.metres <- 500
+#'cov_resolution <- 0.05
+#'
+#'# Get Google Drive email
+#'user.email<-as.character(gargle::gargle_oauth_sitrep()$email)
+#'\dontshow{
+#'projectiondates <- projectiondates[1]
+#'spatial.res.metres <-20000
+#'cov_resolution <- 5
+#'}
+#'extract_dynamic_raster(dates=projectiondates,
+#'                       datasetname = "UCSB-CHG/CHIRPS/DAILY",
+#'                       bandname="precipitation",
+#'                       user.email = user.email,
+#'                       save.drive.folder = "save.drive.folder",
+#'                       spatial.res.metres = spatial.res.metres,
+#'                       GEE.math.fun = "sum",
+#'                       temporal.direction = "prior",
+#'                       temporal.res = 56,
+#'                       spatial.ext = sample_extent_data,
+#'                       varname = variablenames[1],
+#'                       save.directory=projectionrasters)
+#'
+#'
+#'extract_dynamic_raster(dates=projectiondates,
+#'                      datasetname = "UCSB-CHG/CHIRPS/DAILY",
+#'                      bandname="precipitation",
+#'                      user.email = user.email,
+#'                      save.drive.folder = "save.drive.folder",
+#'                      spatial.res.metres = spatial.res.metres,
+#'                      GEE.math.fun = "sum",
+#'                      temporal.direction = "prior",
+#'                      temporal.res = 364,
+#'                      spatial.ext = sample_extent_data,
+#'                      varname = variablenames[2],
+#'                      save.directory=temp.dir())
+#'
+#'dynamic_proj_covariates(dates = projectiondates,
+#'                        varnames = variablenames,
+#'                        local.directory = temp.dir(),
+#'                        spatial.ext = sample_extent_data,
+#'                        spatial.mask = sample_extent_data,
+#'                        spatial.res.degrees = cov_resolution,
+#'                        resample.method = c("bilinear","bilinear"),
+#'                        cov.file.type = "csv",
+#'                        prj="+proj=longlat +datum=WGS84",
+#'                        save.directory = temp.dir())
+#'
 
 
-dynamic_proj_covariates <-
-  function(dates,
-           varnames,
-           drive.folder = NULL,
-           user.email = NULL,
-           local.directory = NULL,
-           spatial.ext = NULL,
-           spatial.res.degrees = NULL,
-           resample.method = NULL,
-           save.directory = NULL,
-           save.drive.folder = NULL) {
+dynamic_proj_covariates <- function(dates,
+                                    varnames,
+                                    drive.folder,
+                                    user.email,
+                                    local.directory,
+                                    spatial.ext,
+                                    spatial.mask,
+                                    spatial.res.degrees,
+                                    resample.method,
+                                    cov.file.type,
+                                    prj="+proj=longlat +datum=WGS84",
+                                    cov.prj,
+                                    save.directory,
+                                    save.drive.folder) {
 
     # Check arguments to prevent error downstream
 
     if (missing(spatial.ext)) {
       message("spatial.ext missing. Rasters must have same extent.")
     }
+
+  if (missing(cov.prj)) {
+    cov.prj <- prj
+  }
 
     if (missing(spatial.res.degrees)) {
       message("spatial.res.degrees missing. Rasters must have same resolution.")
@@ -63,17 +182,23 @@ dynamic_proj_covariates <-
       stop("Provide save.directory or save.drive.folder to export data.frame.")
     }
 
+  # If mask if sf polygon, convert to spatial polygons dataframe for raster:: mask
+  if (!missing(spatial.mask)) {
+    if (any(class(spatial.mask) == "sf")) {
+      spatial.mask<-sf::as_Spatial(spatial.mask)
+    }
+  }
 
     # Process spatial extent given for cropping rasters before stacking into covariate data frame
 
     # Check spatial.ext appropriate object class.
-    if (!missing(spatial.ext)) {
-      if (!any(class(spatial.ext) == c("numeric",
-                                       "Extent",
-                                       "RasterLayer",
-                                       "Polygon"))) {
-        stop("spatial.ext must be numeric, Extent, RasterLayer or Polygon")
-      }
+
+  if (!missing(spatial.ext)) {
+    if (!any(class(spatial.ext) %in% c("numeric", "sf", "Extent", "RasterLayer", "Polygon"))) {
+      stop("spatial.ext must be numeric, Extent, sf, RasterLayer or Polygon")
+    }
+
+
 
       # Numeric extent to co-ords
       if (is.numeric(spatial.ext) && length(spatial.ext) != 4) {
@@ -98,18 +223,24 @@ dynamic_proj_covariates <-
       googledrive::drive_auth(email = user.email)
       googledrive::drive_user()
 
-      # Check folder exists in user's Google Drive
-      folderpath <- googledrive::drive_find(pattern = drive.folder,
-                                            type = 'folder')
-      if (nrow(folderpath) == 0) {stop("drive.folder does not exist.")
-      }
 
       # List all files in Google Drive folders
       drivefiles = NULL
+
       for (folder in 1:length(drive.folder)) {
-        drivefiles <-
-          c(drivefiles,
-            googledrive::drive_ls(path = paste0(drive.folder[folder]))$name)
+
+        # Check folder exists in user's Google Drive
+        folderpath <- googledrive::drive_find(pattern = drive.folder[folder], type = 'folder')
+
+        if(nrow(folderpath)>1) {
+          folderpath <- folderpath[grep(paste0("^", drive.folder[folder], "$"),
+                                        folderpath$name), ]
+        }
+
+        if (nrow(folderpath) == 0) {stop("drive.folder does not exist.")}
+
+        drivefiles <- c(drivefiles, googledrive::drive_ls(path = googledrive::as_id(folderpath$id))$name)
+
       }
     }
 
@@ -141,6 +272,7 @@ dynamic_proj_covariates <-
                                       path = pathforthisfile,
                                       overwrite = T) # Download from Drive
           raster <- raster::raster(pathforthisfile)# Read raster from temp dir
+          raster::crs(raster) <- prj # Check that projection is set
         }
 
         # Alternatively, read in raster for this variable and date from local directory
@@ -148,6 +280,7 @@ dynamic_proj_covariates <-
           fileimport <- directoryfiles[grep(name, directoryfiles)]
           fileimport <- fileimport[grep(date, fileimport)] # Select files
           raster <- raster::raster(fileimport) # Read raster from local dir
+          raster::crs(raster) <- prj # Check that projection is set
         }
 
         # Crop to spatial.ext provided so that all rasters are same extent for stacking
@@ -157,6 +290,10 @@ dynamic_proj_covariates <-
           r <- raster::raster(raster::extent(xmin, xmax, ymin, ymax))
           raster::res(r) <- spatial.res.degrees
           r <- raster::setValues(r, 1:raster::ncell(r))
+
+          if(!missing(spatial.mask)) {
+            r <- raster::mask(r, mask = spatial.mask)
+          }
 
           # Resample raster using single method given
           if (length(resample.method) == 1) {
@@ -169,12 +306,18 @@ dynamic_proj_covariates <-
           }
         }
 
+        raster::crs(raster) <- prj
+
         stack <- raster::stack(stack , raster) # Add raster to stack
       }
 
       names(stack) <- varnames # Label each layer in stack as variable
 
-      stack <- as.data.frame(raster::rasterToPoints(stack)) # Create data frame
+      if (!prj == cov.prj) {
+        stack <- raster::projectRaster(stack, crs = cov.prj)
+      }
+
+      cov.file.type <- match.arg(cov.file.type, choices = c("tif", "csv"))
 
       # Save covariate data frame to Google Drive folder
       if (!missing(save.drive.folder)) {
@@ -188,19 +331,50 @@ dynamic_proj_covariates <-
         googledrive::drive_user()
 
         # Check folder exists in  Google Drive
-        save.folderpath <- googledrive::drive_find(pattern = save.drive.folder,
-                                  type = 'folder')
+        save.folderpath <- googledrive::drive_find(pattern = save.drive.folder, type = 'folder')
 
-        if (nrow(save.folderpath) == 0) {stop("save.drive.folder doesn't exist")}
+        # If more than one folder partially matches, use grep to get exact match
+        if(nrow(save.folderpath)>1) {
+          save.folderpath <- save.folderpath[grep(paste0("^", save.drive.folder, "$"),
+                                                  save.folderpath$name), ]
+        }
+        # If exact match to more than one folder then not uniquely named. Cannot write file.
+        if (nrow(save.folderpath) > 1) {
+          stop("save.drive.folder is not uniquely named in your Google Drive ")
+        }
+
+        if (nrow(save.folderpath) == 0) {
+          stop("save.drive.folder doesn't exist")
+        }
+
+        if (cov.file.type == "csv") {
+
+        stack <- as.data.frame(raster::rasterToPoints(stack)) # Create data frame
 
         csvfile <- paste0(tempfile(), ".csv")
         write.csv(stack, file = csvfile) # Save to temporary location
+
         googledrive::drive_upload( # Upload to Google Drive
           media = csvfile,
           path = googledrive::as_id(save.folderpath$id),
           name = paste0(date, "_projection_dataframe.csv"),
-          overwrite = T
-        )
+          overwrite = T)}
+
+        if (cov.file.type == "tif") {
+
+          # Save to temporary location before Google Drive upload
+          rasterfile <- paste0(tempfile(), ".tif")
+
+          stack <- stars::st_as_stars(stack)
+
+          # By writing with the stars package we keep band layer names for projections
+          stars::write_stars(stack, rasterfile)
+
+          # Upload to Google Drive
+          googledrive::drive_upload(media = rasterfile,
+                                    path = googledrive::as_id(save.folderpath$id),
+                                    name = paste0(date, "_projection_rasterstack.tif"),
+                                    overwrite = T)}
       }
 
       # Alternatively save covariate data.frame to local directory
@@ -209,12 +383,24 @@ dynamic_proj_covariates <-
         if (!dir.exists(save.directory)) {
           stop("save.directory does not exist")
         }
-        write.csv(stack,
-                  file = paste0(save.directory,
-                                "/",
-                                date,
-                                "_projection_dataframe.csv"))
+
+
+        if (cov.file.type == "csv") {
+
+        stack <- as.data.frame(raster::rasterToPoints(stack)) # Create data frame
+
+        write.csv(stack, file = paste0(save.directory, "/", date, "_projection_dataframe.csv"))
+
         }
+
+        if (cov.file.type == "tif") {
+
+        stack <- stars::st_as_stars(stack)
+
+        stars::write_stars(stack, paste0(save.directory, "/", date, "_projection_rasterstack.tif"))
+
+
+        }}
 
       listofdone <- rbind(listofdone, date) # Record that this date has been completed
     }

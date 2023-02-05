@@ -6,33 +6,113 @@
 \usage{
 spatiotemp_check(
   occ.data,
-  na.handle = "exclude",
-  duplicate.handle = "exclude",
-  coord.handle = "exclude",
-  date.handle = "exclude"
+  na.handle,
+  duplicate.handle,
+  coord.handle,
+  date.handle,
+  date.res = "day",
+  coordclean = F,
+  coordclean.species,
+  coordclean.handle = "exclude",
+  ...
 )
 }
 \arguments{
-\item{occ.data}{a data frame, with columns for occurrence record co-ordinates and dates with column names as follows; record longitude as "x", latitude as "y", year as "year", month as "month", and day as "day".}
+\item{occ.data}{a data frame, with columns for occurrence record co-ordinates and dates with
+column names as follows; record longitude as "x", latitude as "y", year as "year", month as
+"month", and day as "day".}
 
-\item{na.handle}{a character string, method for handling missing data (NA values) in record co-ordinates and dates. One of '"exclude"' or '"ignore"': can be abbreviated. Default; exclude.}
+\item{na.handle}{a character string, method for handling missing data (NA values) in record
+co-ordinates and dates. One of \code{exclude} or \code{ignore}: can be abbreviated. Default; \code{exclude}.}
 
-\item{duplicate.handle}{a character string, method for handling duplicate record co-ordinates or dates. One of '"exclude"' or '"ignore"': can be abbreviated. Default; exclude.}
+\item{duplicate.handle}{a character string, method for handling duplicate record co-ordinates or
+dates. One of \code{exclude} or \code{ignore}: can be abbreviated. Default; \code{exclude}.}
 
-\item{coord.handle}{a character string, method for handling invalid co-ordinates in record data. One of '"exclude"' or '"ignore"': can be abbreviated. Default; exclude.}
+\item{coord.handle}{a character string, method for handling invalid co-ordinates in record data.
+One of \code{exclude} or \code{ignore}: can be abbreviated. Default; \code{exclude}.}
 
-\item{date.handle}{a character string, method for handling invalid dates in record data. One of '"exclude"' or '"ignore"': can be abbreviated. Default; exclude.}
+\item{date.handle}{a character string, method for handling invalid dates in record data. One of
+\code{exclude} or \code{ignore}: can be abbreviated. Default; \code{exclude}.}
+
+\item{date.res}{a character string, stating the temporal resolution to exclude dates by. One of
+\code{year}, \code{month} or \code{day}.}
+
+\item{coordclean}{a logical indicating whether to run function
+\code{clean_coordinates} from package \code{CoordinateCleaner} on \code{occ.data}. Default = FALSE.}
+
+\item{coordclean.species}{a character string or vector, specifying the name of the species that
+all of \code{occ.data} records belong to, or a character vector the length of \code{nrow(occ.data)}
+specifying which species each record belongs to. Required if \code{coordclean} = TRUE.}
+
+\item{coordclean.handle}{a character string, method for handling records flagged by
+\code{CoordinateCleaner}. One of \code{exclude} or \code{report}. Default: exclude.}
+
+\item{...}{Other arguments passed onto \code{CoordinateCleaner}.}
 }
 \value{
-By default, returns occurrence record data frame, filtered to exclude records containing missing, duplicate or invalid data in record co-ordinates and dates.
+By default, returns occurrence record data frame, filtered to exclude records containing
+missing, duplicate or invalid data in record co-ordinates and dates.
 }
 \description{
-Checks the occurrence record data frame contains the column names and classes required for dynamicSDM functions. Option to exclude records containing missing, duplicate or invalid co-ordinates or dates.
+Checks the occurrence record data frame contains the column names and classes required for
+dynamicSDM functions. Option to exclude records containing missing, duplicate or invalid
+co-ordinates or dates.
 }
 \details{
-Record dates and co-ordinates are checked for validity using the following rules. Dates must be real dates that could exist. For example, 50th February 2000 is not a valid date. Co-ordinates must have longitude (x) values between -180 and 180, and latitude (y) values between -90 and 90 to be considered valid.
+Record dates and co-ordinates are checked for validity using the following rules:
+\itemize{
+\item Dates must be real dates that could exist. For example, 50th February 2000 is not a valid date.
+\item Co-ordinates must have longitude (x) values between -180 and 180, and latitude (y) values
+between -90 and 90 to be considered valid.
 }
+}
+\section{\code{CoordinateCleaner} compatibility}{
+\code{spatiotemp_check()} acts as a helper function for compatibility with the R package
+\code{CoordinateCleaner} (Zizka et al., 2019), which offers a diversity of functions for checking the
+co-ordinates of occurrence records.
+
+If \code{coordclean} = T, then \code{coordclean.species} must be provided to identify which species each
+record belonds to. If \code{coordclean.handle} = \code{exclude} then all \code{occ.data} records flagged by
+\code{CoordinateCleaner::clean_coordinates()} as potentially erroneous are removed in the returned
+data. If  \code{coordclean.handle} = \code{report}, then the in-built report output by
+\code{CoordinateCleaner::clean_coordinates()}is returned. This contains logicals specifying the
+potentially erroneous records.
+}
+
 \examples{
-data("sample_occ_data")
-spatiotemp_check(sample_occ_data)
+data(sample_occ_data)
+sample_occ_data<-convert_gbif(sample_occ_data)
+
+nrow(sample_occ_data)
+
+filtered<-spatiotemp_check(
+ occ.data = sample_occ_data,
+ coord.handle = "exclude",
+ date.handle = "exclude",
+ duplicate.handle = "exclude",
+ na.handle = "exclude"
+)
+nrow(filtered)
+
+\dontrun{
+filtered_CC<-spatiotemp_check(
+ occ.data = sample_occ_data,
+ coord.handle = "exclude",
+ date.handle = "exclude",
+ duplicate.handle = "exclude",
+ na.handle = "exclude",
+ coordclean = T,
+ coordclean.species = "quelea",
+ coordclean.handle = "exclude"
+)
+nrow(filtered_CC)
+}
+
+}
+\references{
+Zizka A, Silvestro D, Andermann T, Azevedo J, Duarte Ritter C, Edler D, Farooq H,
+Herdean A, Ariza M, Scharn R, Svanteson S, Wengstrom N, Zizka V, Antonelli A (2019).
+“CoordinateCleaner: standardized cleaning of occurrence records from biological collection
+databases.” Methods in Ecology and Evolution, -7. \url{doi:10.1111/2041-210X.13152}, R package version
+2.0-20, \url{https://github.com/ropensci/CoordinateCleaner}.
 }

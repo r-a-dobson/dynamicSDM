@@ -1,0 +1,248 @@
+---
+title: "dynamicSDM: dynamic distribution projections"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{dynamicSDM: dynamic distribution projections}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+user.email="eerdord@gmail.com"
+save.drive.folder<-"rasters_proj"
+
+  
+```
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+```{r setup}
+library(dynamicSDM)
+```
+
+## Stage 4: Dynamic projections of species distribution
+
+In this tutorial, we will learn about functions within the *dynamicSDM* package for projecting intra- and inter- annual geographical distributions and abundances at high spatiotemporal resolution. This will involve extracting rasters for each explanatory variable across southern Africa at various intervals. Then we can project our dynamic SDMs onto these data to visualise species distribution patterns through space and time. 
+
+The *dynamicSDM* functions for extracting dynamic rasters require Google Earth Engine and Google Drive to be initialised. Fill in the code below with your Google account email, and run the code to check that *rgee* and *googledrive* have been correctly installed and authorised.
+
+```{r check Google, eval=FALSE}
+library(rgee)
+rgee::ee_check()
+
+library(googledrive)
+googledrive::drive_user()
+
+
+#user.email<-"your_google_email_here"
+#save.drive.folder<-"your_google_folder_here"
+```
+
+
+Note: You will need internet connection for this tutorial. Raster extraction may take some time depending on your internet connection strength. 
+
+## Directory organisation
+
+We will be extracting rasters, generating projection covariate data frames, exporting projection rasters and saving GIFs. Let’s first make separate folders in our project directory to save this various outputs too. 
+This is especially important as this suite of *dynamicSDM* functions rely on unique naming of files in the local directory or drive folder.
+
+```{r create directories}
+variablenames <- c("eight_sum_prec", "year_sum_prec", "grass_crop_percentage")
+
+project_directory <- file.path(file.path(tempdir(), "dynamicSDM_vignette"))
+# project_directory<-"your_path_here"
+
+projection_directories <- file.path(file.path(project_directory, "projection"))
+dir.create(projection_directories,recursive = TRUE)
+
+projectionrasters <- file.path(file.path(projection_directories, "projectionrasters"))
+dir.create(projectionrasters,recursive = TRUE)
+
+projection_covariates <- file.path(file.path(projection_directories, "projectioncovariates"))
+dir.create(projection_covariates,recursive = TRUE)
+
+projection_GIF <- file.path(file.path(projection_directories,"projection_GIF"))
+dir.create(projection_GIF,recursive = TRUE)
+
+
+```
+
+
+### a)	Generate projection dates
+
+dynamic_proj_dates() generates all dates in a given period at the interval type and size specified. This can be used to create a vector of dates that you want to project a species distribution at. 
+
+```{r example-dynamic_proj_dates}
+# 5 day intervals
+dynamic_proj_dates(startdate = "2018-01-01",
+                   enddate = "2018-12-01",
+                   interval = 5, 
+                   interval.level = "day")
+
+# 2 week intervals
+dynamic_proj_dates(startdate = "2018-01-01",
+                   enddate = "2018-12-01",
+                   interval = 2, 
+                   interval.level = "week")
+
+
+
+```
+
+
+For this tutorial, we will use the following projection dates to explore the intra-annual distribution patterns of red-billed quelea in southern Africa. 
+
+```{r case study dynamic_proj_dates}
+projectiondates <- dynamic_proj_dates(startdate = "2018-01-01",
+                                      enddate = "2018-12-01",
+                                      interval = 3,
+                                      interval.level = "month")
+```
+
+
+### b)	Extract projection rasters
+
+Extract_dynamic_raster and extract_buffered_raster are sister functions to those used in stage 2 to extract explanatory variables. They require largely the same arguments input, but with arguments to specify the temporal (projection dates) and spatial extents for the rasters.  
+
+Run the following code to extract rasters for each explanatory variable and projection date.
+
+```{r example-extract_dynamic_raster , eval=F}
+data("sample_extent_data")
+
+extract_dynamic_raster(dates=projectiondates,
+                       datasetname = "UCSB-CHG/CHIRPS/DAILY",
+                       bandname="precipitation",
+                       user.email = user.email,
+                       save.drive.folder = save.drive.folder,
+                       spatial.res.metres = 5566,
+                       GEE.math.fun = "sum",
+                       temporal.direction = "prior",
+                       temporal.res = 56,
+                       spatial.ext = sample_extent_data,
+                       varname = variablenames[1],
+                       save.directory=projectionrasters)
+
+
+extract_dynamic_raster(dates=projectiondates,
+                       datasetname = "UCSB-CHG/CHIRPS/DAILY",
+                       bandname="precipitation",
+                       user.email = user.email,
+                       save.drive.folder = save.drive.folder,
+                       spatial.res.metres = 5566,
+                       GEE.math.fun = "sum",
+                       temporal.direction = "prior",
+                       temporal.res = 364,
+                       spatial.ext = sample_extent_data,
+                       varname = variablenames[2],
+                       save.directory=projectionrasters)
+
+
+matrix<-dynamicSDM::get_moving_window(radial.distance = 10000,spatial.res.degrees = 0.05,spatial.ext = sample_extent_data)
+
+extract_buffered_raster(dates=projectiondates,
+                        datasetname = "MODIS/006/MCD12Q1",
+                        bandname="LC_Type5",
+                        spatial.res.metres = 500,
+                        GEE.math.fun = "sum",
+                        moving.window.matrix=matrix,
+                        save.drive.folder = save.drive.folder,
+                        user.email=user.email,
+                        categories=c(6,7),
+                        agg.factor = 12,
+                        spatial.ext = sample_extent_data,
+                        varname = variablenames[3],
+                        save.directory=projectionrasters)
+
+
+
+```
+
+### c)	Combine dynamic projection covariates
+
+Now we need to combine the rasters for each variable into single projection covariate data frames for each projection date. 
+
+```{r example-dynamic_proj_covariates, eval=F}
+dynamic_proj_covariates(dates=projectiondates,
+           varnames=variablenames,
+           local.directory=projectionrasters,
+           spatial.ext=sample_extent_data,
+           spatial.mask=sample_extent_data,
+           spatial.res.degrees = 0.05,
+           resample.method = c("bilinear","bilinear","ngb"),
+           cov.file.type = "csv",
+           prj="+proj=longlat +datum=WGS84",
+           save.directory = projection_covariates)
+
+```
+
+
+### d)	Project models onto covariates
+
+To project distribution onto these covariates, our fitted boosted regression tree models from stage 3 need to be imported and input into dynamic_proj(). You can read these in from your local directory, or simply rerun the code here. 
+
+We choose to project distribution suitability (projection.method = “proportional”) but this function can also generate binary projections if given threshold (sdm.thresh) or abundance if given fitted species abundance models (sam.mod). 
+
+```{r example-dynamic_proj, eval=F}
+#sample_brt_models<- readRDS(paste0(project_directory, "/fitted_quelea_SDMs.rds"))
+data("sample_explan_data")
+
+sample_explan_data$weights <- (1 - sample_explan_data$REL_SAMP_EFFORT)
+
+sample_brt_models <- brt_fit(sample_explan_data,
+                  response.col = "presence.absence",
+                  varnames = variablenames,
+                  block.col = "BLOCK.CATS",
+                  weights.col = "weights",
+                  distribution = "bernoulli")
+
+
+dynamic_proj(dates = projectiondates,
+             projection.method = c("proportional"),
+             local.directory = projection_covariates,
+             cov.file.type = "csv",
+             sdm.mod = sample_brt_models,
+             spatial.mask = sample_extent_data,
+             save.directory = projection_directories)
+```
+
+
+Let’s read in and plot our projections!
+
+```{r plot projections, eval=F}
+sp::plot(raster::raster(list.files(projection_directories)[1]))
+sp::plot(raster::raster(list.files(projection_directories)[2]))
+sp::plot(raster::raster(list.files(projection_directories)[3]))
+sp::plot(raster::raster(list.files(projection_directories)[4]))
+
+```
+
+
+### e)	Visualise projections with a GIF
+
+To better visualise our dynamic distribution projections through time, dynamic_proj_GIF() can generate animated GIFs from the projection rasters
+
+```{r example-dynamic_proj_GIF, eval=F}
+dynamic_proj_GIF(dates = projectiondates,
+                 projection.type = "proportional",
+                 local.directory = projection_directories,
+                 save.directory = projection_GIF,
+                 legend.max = 1,
+                 legend.min = 0,
+                 width = 650,
+                 legend.name = "Distribution\n suitability")
+
+```
+
+## Summary
+
++ This concludes the *dynamicSDM* tutorial. We hope that you have been able to utilise the package to model the dynamic distributions of our case study species, the red-billed quelea, and can now apply these functions to your own study species! 
+
++ We have demonstrated a variety of options across our functions, but even more are available with the diverse and flexible arguments. Please see our package manual for full details of each *dynamicSDM* function [manual]( https://github.com/r-a-dobson/dynamicSDM/blob/main/man/figures/dynamicSDM_1.0.pdf).
+
++ Also, please visit the GitHub discussion page for *dynamicSDM* if you have any questions or are facing errors with any of our functions [github](https://github.com/r-a-dobson/dynamicSDM/discussions). We also have a quick guide to common bugs that are thrown up when installing and running *dynamicSDM*. 

@@ -1,38 +1,75 @@
-#' Thin species occurrence records by spatial and temporal proximity.
+#'Thin species occurrence records by spatial and temporal proximity.
 #'
-#' Thins species occurrence records that are within minimum spatial and temporal distance apart.
+#'Thins species occurrence records that are within minimum spatial and temporal distance apart.
 #'
-#' @param occ.data a data frame, with columns for occurrence record co-ordinates and dates with column names as follows; record longitude as "x", latitude as "y", year as "year", month as "month", and day as "day".
-#' @param temporal.method a character string, the method to calculate temporal distance between records. One of "'DOY'" or "'day'". See details for more information.
-#' @param spatial.dist a numeric value, the spatial buffer distances in metres to thin records by.
-#' @param temporal.dist a numeric value, the temporal buffer in days to thin records by.
-#' @param spatial.split.degrees a numeric value, the grid cell resolution in degrees to split occurrence records by before temporal thinning.
-#' @param iterations a numeric value, the number of iterations to randomly thin occurrence records by. Default; 100.
-#' @details
-#’ spatiotemp_thin calculates the temporal distance between occurrence records in given area and excludes records below minimum temporal distance apart. Then calculates spatial distance between all occurrence records and filters records below minimum spatial distance apart. Thus, spatiotemp_thin offers spatial and temporal thinning, improving functionality for dynamic species distribution modelling compared to existing spThin package functions (Aiello-Lammens et al., 2015).
-#' For temporal thinning, the function first splits occurrence records into grid cells of given size in degrees (set by spatial.split.degrees). This is to prevent spatially distant but temporally close records from being excluded. For each grid cell, all records within the cell are temporally thinned. This process works by removing records that are within given temporal distance (temporal.dist) from each other by randomly selecting one of the two. This iterates through until no records are within the given temporal distance of each other in each grid cell, following a similar algorithm to spThin (Aiello-Lammens et al., 2015).
+#'@param occ.data a data frame, with columns for occurrence record co-ordinates and dates with
+#'  column names as follows; record longitude as "x", latitude as "y", year as "year", month as
+#'  "month", and day as "day".
+#'@param temporal.method a character string, the method to calculate temporal distance between
+#'  records. One of `DOY` or `day.` See details for more information.
+#'@param spatial.dist a numeric value, the spatial buffer distances in metres to thin records by.
+#'@param temporal.dist a numeric value, the temporal buffer in days to thin records by.
+#'@param spatial.split.degrees a numeric value, the grid cell resolution in degrees to split
+#'  occurrence records by before temporal thinning.
+#'@param iterations a numeric value, the number of iterations to randomly thin occurrence records
+#'  by. Default; 100.
+#'@details
+#'# Overview
+#'`spatiotemp_thin()` calculates the temporal distance between occurrence records in given area
+#'and excludes records below minimum temporal distance apart. Then calculates spatial distance
+#'between all occurrence records and filters records below minimum spatial distance apart. Thus,
+#'`spatiotemp_thin()` offers spatial and temporal thinning, improving functionality for dynamic species
+#'distribution modelling compared to existing `spThin` package functions (Aiello-Lammens et al.,
+#'2015).
 #'
-#' Two methods exist for measuring the temporal distance between occurrence records. temporal.method = “DOY” calculates the minimum days apart within the annual cycle and “day” uses the absolute number of days. For instance, two dates “2010-01-05” and “2012-12-05” can be calculated as either 1065 absolute days apart, or within the annual cycle these dates represent day 5 and day 339 of the year, and are 31 days apart. Therefore, thinning by 40 days using “DOY” method would remove one of these records, but using the “day” method would not. Chosen temporal.method will depend upon whether bias towards a point within the annual cycle is more likely to bias models than bias towards a given point in linear time.
 #'
-#' Following temporal thinning, spatial thinning occurs across entire dataset. The spatial distance between each record is calculated, and records within the given spatial distance (spatial.dist) from each other are excluded by randomly selecting one of these. This iterates through until no records are with the given spatial distances of each other across entire dataset, again following a similar algorithm to spThin (Aiello-Lammens et al., 2015).
+#'# Temporal thinning methods
 #'
-#' As random selection could alter the total number of occurrence records remaining in the occurrence record dataset, this process is iterated through a specified number of times and the thinned data frame with the highest number of records remaining is returned.
-#' @references
-#' Aiello-Lammens, M. E., Boria, R. A., Radosavljevic, A., Vilela, B. & Anderson, R. P. 2015. spThin: an R package for spatial thinning of species occurrence records for use in ecological niche models. Ecography, 38, 541-545.
-
-#' @return Returns data frame of occurrence records thinned by specified temporal and spatial distance.
+#'For temporal thinning, the function first splits occurrence records into grid cells of
+#'given size in degrees (set by spatial.split.degrees). This is to prevent spatially distant but
+#'temporally close records from being excluded. For each grid cell, all records within the cell are
+#'temporally thinned. This process works by removing records that are within given temporal distance
+#'(temporal.dist) from each other by randomly selecting one of the two. This iterates through until
+#'no records are within the given temporal distance of each other in each grid cell, following a
+#'similar algorithm to `spThin` (Aiello-Lammens et al., 2015).
+#'
+#'
+#'Two methods exist for measuring the temporal distance between occurrence records.
+#'* 1) `doy` - calculates the minimum days apart within the annual cycle
+#'* 2) `day` uses the absolute number of days.
+#'
+#'For instance, two dates “2010-01-05” and “2012-12-05” can be calculated as either
+#'1065 absolute days apart, or within the annual cycle these dates represent day 5 and day 339 of
+#'the year, and are 31 days apart. Therefore, thinning by 40 days using the DOY method would remove
+#'one of these records, but using the day method would not. The chosen `temporal.method` will depend
+#'upon whether bias towards a point within the annual cycle is more likely to bias models than bias
+#'towards a given point in linear time.
+#'
+#'# Spatial thinning
+#'
+#'Following temporal thinning, spatial thinning occurs across entire dataset. The spatial distance
+#'between each record is calculated, and records within the given spatial distance (`spatial.dist`)
+#'from each other are excluded by randomly selecting one of these. This iterates through until no
+#'records are with the given spatial distances of each other across entire dataset, again following
+#'a similar algorithm to `spThin` (Aiello-Lammens et al., 2015).
+#'
+#'As random selection could alter the total number of occurrence records remaining in the occurrence
+#'record dataset, this process is iterated through a specified number of times and the thinned data
+#'frame with the highest number of records remaining is returned.
+#'
+#'@references Aiello-Lammens, M. E., Boria, R. A., Radosavljevic, A., Vilela, B. & Anderson, R. P.
+#'2015. spThin: an R package for spatial thinning of species occurrence records for use in
+#'ecological niche models. Ecography, 38, 541-545.
+#'@return Returns data frame of occurrence records thinned by specified temporal and spatial
+#'  distance.
 #' @examples
-#' x<-c(27.79125, 28.54125, 25.54125, 30.04125, 29.95792)
-#' y<-c(-26.79125, -26.37458, -26.70792, -29.37458, -28.45792)
-#' year<-c(2014, 2016, 2011, 2011, 2015)
-#' month<-c(1, 2, 3, 2, 4)
-#' day<-c(27, 25, 16, 25, 26)
-#' occ.data<-data.frame(cbind(x,y,year,month,day))
+#'
+#' data("sample_filt_data")
 #'
 #'spatiotemp_thin(
-#'  occ.data = occ.data,
+#'  occ.data = sample_filt_data,
 #'  temporal.method = "day",
-#'  temporal.dist = 14,
+#'  temporal.dist = 100,
 #'  spatial.split.degrees = 3,
 #'  spatial.dist = 100000,
 #'  iterations = 5
@@ -98,6 +135,7 @@ spatiotemp_thin <-  function(occ.data,
   list.of.thinned.dfs <- vector("list", iterations)
 
   for (It in 1:iterations) {
+
     # Create null vector to bind results to in each split
     results <- NULL
 
@@ -114,10 +152,9 @@ spatiotemp_thin <-  function(occ.data,
       if (temporal.method == "DOY") {
 
         # Turn dates into "day of year"
-        dayofyear <-
-          c(lubridate::yday(as.Date(with(
-            occ.data.split, paste(year, month, day, sep = "-")
-          ), "%Y-%m-%d")))
+        dayofyear <- c(lubridate::yday(as.Date(with(occ.data.split,
+                                                    paste(year, month, day, sep = "-")),
+                                                    "%Y-%m-%d")))
 
         # Create matrix of distance in days between records based on day of year
         matrix <- matrix(NA, nrow = length(dayofyear), length(dayofyear))
@@ -152,6 +189,7 @@ spatiotemp_thin <-  function(occ.data,
         matrix <- as.matrix(dist(dayssince))
         matrix <- matrix < temporal.dist
         diag(matrix) <- FALSE
+
       }
 
       matrix.original <- matrix

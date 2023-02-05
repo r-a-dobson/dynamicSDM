@@ -44,6 +44,8 @@ function.
 Functions for preparing species distribution or abundance model input
 data for modelling with spatiotemporally dynamic explanatory variables.
 
+  - `convert_gbif()` Transform Global Biodiversity Information Facility
+    occurrence records to `dynamicSDM` compatible.
   - `spatiotemp_check()` Check species occurrence record formatting,
     completeness and validity.
   - `spatiotemp_extent()` Filter species occurrence records by a given
