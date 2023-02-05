@@ -65,8 +65,7 @@ calculates a mathematical function on such data.
 \section{Google Earth Engine}{
 \code{extract_dynamic_coords()} requires users to have installed R package \code{rgee} (Aybar et al.,
 2020) and initialised Google Earth Engine with valid log-in credentials. Please follow
-instructions on the following website
-\url{https://cran.r-project.org/web/packages/rgee/vignettes/rgee01.html}.
+instructions on the following website \url{https://cran.r-project.org/package=rgee}.
 \itemize{
 \item \code{datasetname} must be in the accepted Google Earth Engine catalogue layout (e.g.
 \code{"MODIS/006/MCD12Q1"} "or \code{"UCSB-CHG/CHIRPS/DAILY"})

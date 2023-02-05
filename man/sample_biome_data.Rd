@@ -27,6 +27,6 @@ Potential Distribution of Biomes (Hengl et al., 2018).
 \references{
 Hengl T, Walsh MG, Sanderman J, Wheeler I, Harrison SP, Prentice IC. (2018) Global Mapping of
 Potential Natural Vegetation: An Assessment of Machine Learning Algorithms for Estimating Land
-Potential. PeerJ Preprints. <10.7287/peerj.preprints.26811v1>
+Potential. PeerJ Preprints.
 }
 \keyword{datasets}

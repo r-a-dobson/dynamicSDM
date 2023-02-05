@@ -49,7 +49,7 @@
 #'@references Zizka A, Silvestro D, Andermann T, Azevedo J, Duarte Ritter C, Edler D, Farooq H,
 #'Herdean A, Ariza M, Scharn R, Svanteson S, Wengstrom N, Zizka V, Antonelli A (2019).
 #'“CoordinateCleaner: standardized cleaning of occurrence records from biological collection
-#'databases.” Methods in Ecology and Evolution, -7. <doi:10.1111/2041-210X.13152>, R package version
+#'databases.” Methods in Ecology and Evolution, -7. \doi{10.1111/2041-210X.13152}, R package version
 #'2.0-20, <https://github.com/ropensci/CoordinateCleaner>.
 #'@return By default, returns occurrence record data frame, filtered to exclude records containing
 #'  missing, duplicate or invalid data in record co-ordinates and dates.

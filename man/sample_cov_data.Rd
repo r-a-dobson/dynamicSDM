@@ -31,11 +31,10 @@ cropped to southern Africa at 2 degree resolution.
 \references{
 Friedl, M., Sulla-Menashe, D. (2019). MCD12Q1 MODIS/Terra+Aqua Land Cover Type Yearly L3 Global
 500m SIN Grid V006. NASA EOSDIS Land Processes DAAC. Accessed 2022-11-24 from
-\url{https://doi.org/10.5067/MODIS/MCD12Q1.006}
 
 Funk, Chris, Pete Peterson, Martin Landsfeld, Diego Pedreros, James Verdin, Shraddhanand Shukla,
 Gregory Husak, James Rowland, Laura Harrison, Andrew Hoell & Joel Michaelsen. "The climate
 hazards infrared precipitation with stations-a new environmental record for monitoring extremes".
-Scientific Data 2, 150066. doi:<10.1038/sdata.2015.66 2015>.
+Scientific Data 2, 150066.
 }
 \keyword{datasets}

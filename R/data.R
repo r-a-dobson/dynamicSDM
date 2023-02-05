@@ -37,8 +37,8 @@
 #' @docType data
 #' @references
 #' Friedl, M., Sulla-Menashe, D. (2019). MCD12Q1 MODIS/Terra+Aqua Land Cover Type Yearly L3 Global
-#' 500m SIN Grid V006. NASA EOSDIS Land Processes DAAC. Accessed 2022-11-24 from
-#' <https://doi.org/10.5067/MODIS/MCD12Q1.006>
+#' 500m SIN Grid V006. NASA EOSDIS Land Processes DAAC.
+#'
 #'
 #' Funk, Chris, Pete Peterson, Martin Landsfeld, Diego Pedreros, James Verdin, Shraddhanand Shukla,
 #' Gregory Husak, James Rowland, Laura Harrison, Andrew Hoell & Joel Michaelsen. "The climate
@@ -147,7 +147,7 @@
 #' @references
 #' Hengl T, Walsh MG, Sanderman J, Wheeler I, Harrison SP, Prentice IC. (2018) Global Mapping of
 #' Potential Natural Vegetation: An Assessment of Machine Learning Algorithms for Estimating Land
-#' Potential. PeerJ Preprints. <10.7287/peerj.preprints.26811v1>
+#' Potential. PeerJ Preprints.
 "sample_biome_data"
 
 #' @name sample_events_data
@@ -202,12 +202,12 @@
 #' @references
 #' Friedl, M., Sulla-Menashe, D. (2019). MCD12Q1 MODIS/Terra+Aqua Land Cover Type Yearly L3 Global
 #' 500m SIN Grid V006. NASA EOSDIS Land Processes DAAC. Accessed 2022-11-24 from
-#' <https://doi.org/10.5067/MODIS/MCD12Q1.006>
+#'
 #'
 #' Funk, Chris, Pete Peterson, Martin Landsfeld, Diego Pedreros, James Verdin, Shraddhanand Shukla,
 #' Gregory Husak, James Rowland, Laura Harrison, Andrew Hoell & Joel Michaelsen. "The climate
 #' hazards infrared precipitation with stations-a new environmental record for monitoring extremes".
-#' Scientific Data 2, 150066. doi:<10.1038/sdata.2015.66 2015>.
+#' Scientific Data 2, 150066.
 "sample_cov_data"
 
 #' @name sample_proj_rast

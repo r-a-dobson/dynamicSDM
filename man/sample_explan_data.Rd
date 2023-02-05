@@ -46,8 +46,7 @@ are as follows:
 }
 \references{
 Friedl, M., Sulla-Menashe, D. (2019). MCD12Q1 MODIS/Terra+Aqua Land Cover Type Yearly L3 Global
-500m SIN Grid V006. NASA EOSDIS Land Processes DAAC. Accessed 2022-11-24 from
-\url{https://doi.org/10.5067/MODIS/MCD12Q1.006}
+500m SIN Grid V006. NASA EOSDIS Land Processes DAAC.
 
 Funk, Chris, Pete Peterson, Martin Landsfeld, Diego Pedreros, James Verdin, Shraddhanand Shukla,
 Gregory Husak, James Rowland, Laura Harrison, Andrew Hoell & Joel Michaelsen. "The climate
