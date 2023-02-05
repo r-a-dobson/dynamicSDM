@@ -24,7 +24,6 @@ Imports:
     ape,
     dplyr,
     gbm,
-    gargle,
     geodist,
     geosphere,
     ggplot2,
@@ -52,6 +51,7 @@ Depends:
     R (>= 3.5.0)
 Suggests: 
     covr,
+    gargle,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)

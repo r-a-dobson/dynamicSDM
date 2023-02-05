@@ -3,7 +3,7 @@ title: "dynamicSDM: dynamic distribution projections"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{dynamicSDM: dynamic distribution projections}
-  %\VignetteEngine{knitr::knitr}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 

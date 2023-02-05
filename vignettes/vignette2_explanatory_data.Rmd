@@ -3,7 +3,7 @@ title: "dynamicSDM: Explanatory variable data"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{dynamicSDM: Explanatory variable data}
-  %\VignetteEngine{knitr::knitr}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -79,12 +79,18 @@ data(sample_filt_data)
 ### a)	Extract dynamic explanatory variables
 
 extract_dynamic_coords() extracts processed remote sensing data using the Google Earth Engine cloud servers. There are various arguments to this function to specify the explanatory variable including:
-•	the dataset’s GEE catalogue name
-•	the band of interest
-•	the temporal resolution (i.e. the number of days to calculate the variable over)
-•	temporal direction (days either prior or post each record’s date)
-•	spatial resolution (the resolution in metres to extract data at) 
-•	the mathematical function to calculate across the period (e.g. mean, sum or standard deviation across the given period). 
+
+•	`datasetname`: the dataset’s Google Earth Engine catalogue name
+
+•	`bandname` : the band of interest with the dataset
+
+•	`temporal.res` : the temporal resolution (i.e. the number of days to calculate the variable over)
+
+•	`temporal.direction`: temporal direction (days either prior or post each record’s date)
+
+• `spatial.res.metres`: spatial resolution (the resolution in metres to extract data at) 
+
+•	`GEE.math.fun` : the mathematical function to calculate across the period (e.g. mean, sum or standard deviation across the given period). 
 
 #### Case study
 
