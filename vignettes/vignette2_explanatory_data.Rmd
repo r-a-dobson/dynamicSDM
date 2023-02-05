@@ -3,7 +3,7 @@ title: "dynamicSDM: Explanatory variable data"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{dynamicSDM: Explanatory variable data}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{knitr::knitr}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -56,14 +56,14 @@ variablenames<-c("eight_sum_prec","year_sum_prec","grass_crop_percentage")
 extraction_directories <- file.path(file.path(project_directory,"extraction"))
 dir.create(extraction_directories)
 
-extraction_directory_1 <- file.path(file.path(extraction_directories,variablenames[1]))
-dir.create(extraction_directory_1,recursive = TRUE)
+extraction_directory_1 <- file.path(file.path(project_directory,variablenames[1]))
+dir.create(extraction_directory_1)
 
-extraction_directory_2 <- file.path(file.path(extraction_directories,variablenames[2]))
-dir.create(extraction_directory_2,recursive = TRUE)
+extraction_directory_2 <- file.path(file.path(project_directory,variablenames[2]))
+dir.create(extraction_directory_2)
 
-extraction_directory_3 <- file.path(file.path(extraction_directories,variablenames[3]))
-dir.create(extraction_directory_3,recursive = TRUE)
+extraction_directory_3 <- file.path(file.path(project_directory,variablenames[3]))
+dir.create(extraction_directory_3)
 
 ```
 

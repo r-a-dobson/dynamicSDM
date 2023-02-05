@@ -3,7 +3,7 @@ title: "dynamicSDM: model fitting and autocorrelation"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{dynamicSDM: model fitting and autocorrelation}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{knitr::knitr}
   %\VignetteEncoding{UTF-8}
 ---
 

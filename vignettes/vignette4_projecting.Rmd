@@ -3,7 +3,7 @@ title: "dynamicSDM: dynamic distribution projections"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{dynamicSDM: dynamic distribution projections}
-  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEngine{knitr::knitr}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -38,8 +38,6 @@ rgee::ee_check()
 
 library(googledrive)
 googledrive::drive_user()
-
-
 #user.email<-"your_google_email_here"
 #save.drive.folder<-"your_google_folder_here"
 ```
