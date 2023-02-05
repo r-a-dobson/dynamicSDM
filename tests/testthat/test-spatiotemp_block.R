@@ -25,22 +25,22 @@ test_that("stops if temporal.block not accepted", {
 
 test_that("Only temporal blocking by one level, results in correct number of unique blocking categories", {
   n<-as.numeric(2)
-  df<-spatiotemp_block(occ.data = sample_model_data2,temporal.block=c("month"),vars.to.block.by=colnames(sample_model_data2)[14:16],n.blocks=n,iterations = 30)
+  df<-spatiotemp_block(occ.data = sample_model_data2,temporal.block=c("month"),vars.to.block.by=colnames(sample_model_data2)[14:16],n.blocks=n,iterations = 2000)
   expect_equal(length(unique(df$BLOCK.CATS)),n)})
 
 test_that("Doesn't error with only temporal blocking by two feature", {
   n<-as.numeric(2)
-  df<-spatiotemp_block(occ.data = sample_model_data2,temporal.block=c("quarter","year"),vars.to.block.by=colnames(sample_model_data2)[14:16],n.blocks=n,iterations = 30)
+  df<-spatiotemp_block(occ.data = sample_model_data2,temporal.block=c("quarter","year"),vars.to.block.by=colnames(sample_model_data2)[14:16],n.blocks=n,iterations = 2000)
 expect_equal(length(unique(df$BLOCK.CATS)),n)})
 
 test_that("Only spatial blocking, results in correct number of unique blocking categories", {
   n<-as.numeric(2)
-  df<-spatiotemp_block(occ.data = sample_model_data2,spatial.layer = biome_layer,spatial.split.degrees=3,vars.to.block.by=colnames(sample_model_data2)[14:16],n.blocks=n,iterations = 30)
+  df<-spatiotemp_block(occ.data = sample_model_data2,spatial.layer = biome_layer,spatial.split.degrees=3,vars.to.block.by=colnames(sample_model_data2)[14:16],n.blocks=n,iterations = 2000)
 expect_equal(length(unique(df$BLOCK.CATS)),n)})
 
 test_that("Both spatial and temporal blocking, results in correct number of unique blocking categories", {
   n<-as.numeric(2)
-  df<-spatiotemp_block(occ.data = sample_model_data2,spatial.layer = biome_layer,spatial.split.degrees=3,temporal.block=c("month"),vars.to.block.by=colnames(sample_model_data2)[14:16],n.blocks=n,iterations = 30)
+  df<-spatiotemp_block(occ.data = sample_model_data2,spatial.layer = biome_layer,spatial.split.degrees=3,temporal.block=c("month"),vars.to.block.by=colnames(sample_model_data2)[14:16],n.blocks=n,iterations = 2000)
   expect_equal(length(unique(df$BLOCK.CATS)),n)})
 
 test_that("Errors if too many blocks expected", {
