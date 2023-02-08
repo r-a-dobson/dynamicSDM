@@ -152,8 +152,9 @@ variablenames<-c("eight_sum_prec","year_sum_prec","grass_crop_percentage")
 n.trees <- 1500
 
 \dontshow{
-sample_explan_data<-sample_explan_data[1:200,]
-n.trees <- 10
+variablenames<-c("eight_sum_prec","year_sum_prec")
+sample_explan_data<-sample_explan_data[1:120,]
+n.trees <- 1
 }
 
 model <- brt_fit(sample_explan_data,
