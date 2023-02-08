@@ -110,13 +110,11 @@
 #'
 #'# Set number of trees for BRT
 #'n.trees <- 1500
-#'
 #'\dontshow{
-#'variablenames<-c("eight_sum_prec","year_sum_prec")
-#'sample_explan_data<-sample_explan_data[1:120,]
+#'variablenames<-c("eight_sum_prec")
+#'sample_explan_data<-sample_explan_data[1:100,]
 #'n.trees <- 1
 #'}
-#'
 #' model <- brt_fit(sample_explan_data,
 #'                  response.col = "presence.absence",
 #'                  varnames = variablenames,

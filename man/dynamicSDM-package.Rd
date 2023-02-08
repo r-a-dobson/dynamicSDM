@@ -17,7 +17,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Rachel Dobson \email{eerdord@gmail.com} (\href{https://orcid.org/0000-0003-3990-267X}{ORCID}) [contributor]
+\strong{Maintainer}: Rachel Dobson \email{eerdo@leeds.ac.uk} (\href{https://orcid.org/0000-0003-3990-267X}{ORCID}) [contributor]
 
 Authors:
 \itemize{

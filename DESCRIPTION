@@ -2,7 +2,7 @@ Package: dynamicSDM
 Title: Species Distribution and Abundance Modelling at High Spatio-Temporal Resolution
 Version: 1.0
 Authors@R: c(
-    person("Rachel", "Dobson", , "eerdord@gmail.com", role = c("aut", "cre", "ctb"),
+    person("Rachel", "Dobson", , "eerdo@leeds.ac.uk", role = c("aut", "cre", "ctb"),
            comment = c(ORCID = "0000-0003-3990-267X")),
     person("Andy J.", "Challinor", , "A.J.Challinor@leeds.ac.uk", role = c("aut", "ctb"),
            comment = c(ORCID = "0000-0002-8551-6617")),
