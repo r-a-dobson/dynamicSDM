@@ -106,7 +106,7 @@
 #'data("sample_explan_data")
 #'variablenames<-c("eight_sum_prec","year_sum_prec","grass_crop_percentage")
 #'\dontshow{
-#'sample_explan_data<-sample_explan_data[1:50,]
+#'sample_explan_data<-sample_explan_data[1:100,]
 #'variablenames<-c("eight_sum_prec","year_sum_prec")
 #'}
 #'
