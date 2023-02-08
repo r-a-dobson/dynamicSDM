@@ -26,8 +26,8 @@ The variables are as follows:
 Fink, D., T. Auer, A. Johnston, M. Strimas-Mackey, O. Robinson, S. Ligocki, W. Hochachka, L.
 Jaromczyk, C. Wood, I. Davies, M. Iliff, L. Seitz. 2021. eBird Status and Trends, Data Version:
 2020; Released: 2021. Cornell Lab of Ornithology, Ithaca, New York.
-\url{https://doi.org/10.2173/ebirdst.2020}
+\doi{10.2173/ebirdst.2020}
 
-GBIF.org (12 July 2021) GBIF Occurrence Download  \url{https://doi.org/10.15468/dl.ppcu6q}
+GBIF.org (12 July 2021) GBIF Occurrence Download \doi{10.15468/dl.ppcu6q}
 }
 \keyword{datasets}

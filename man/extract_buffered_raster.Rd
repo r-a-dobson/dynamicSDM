@@ -27,8 +27,8 @@ extract_buffered_raster(
 \item{dates}{a character string, vector of dates in format "YYYY-MM-DD".}
 
 \item{spatial.ext}{the spatial extent for the extracted raster. Object from which extent can be
-extracted of class \code{Extent}, \code{RasterLayer}, \code{sf} or \code{polygon} or numeric vector listing xmin,
-xmax, ymin and ymax in order.}
+extracted of class \code{Extent}, \code{RasterLayer},\code{SpatialPolygonsDataFrame}, \code{sf} or \code{polygon} or
+numeric vector listing xmin, xmax, ymin and ymax in order.}
 
 \item{datasetname}{a character string, the Google Earth Engine dataset to extract data from.}
 
@@ -65,11 +65,11 @@ are categorical. See details for more information.}
 \item{save.directory}{optional; a character string, path to local directory to save extracted
 rasters to.}
 
-\item{agg.factor}{optional; a numeric value, the factor to aggregate data by before spatial
-buffering.}
+\item{agg.factor}{optional;a postive integer, the aggregation factor expressed as number of cells
+in each direction. See details.}
 
-\item{save.drive.folder}{a character string, Google Drive folder to save extracted rasters to.
-Folder must be uniquely named within Google Drive. Do not provide path.}
+\item{save.drive.folder}{optional; a character string, Google Drive folder to save extracted
+rasters to. Folder must be uniquely named within Google Drive. Do not provide path.}
 }
 \value{
 Returns details of successful explanatory variable raster extractions for each projection
@@ -95,9 +95,13 @@ date (prior or post).
 }
 
 \section{Categorical data and temporally dynamic variables}{
-Please be aware, at current this function does not support the extraction of temporally dynamic
-variables for categorical datasets. However, some accepted mathematical functions such as
-"first" or "last" may be appropriate for such datasets.
+Please be aware, if specific categories are given (argument \code{categories}) when extracting
+categorical data, then temporal buffering cannot be completed. The most recent categorical data
+to the occurrence record date will be used and spatial buffering will take place.
+
+If, specific categories are not given when extracting from categorical datasets, be careful to
+choose appropriate mathematical functions for such data. For instance, "first" or "last" may be
+more relevant that "sum" of land cover classification numbers.
 }
 
 \section{Spatial dimension}{
@@ -125,6 +129,15 @@ in the dataset. Ensure that the \code{GEE.math.fun} given is appropriate for suc
 
 For example, this function could return the sum of suitable land cover classified cells in the
 “moving window” from each cell across spatial extent given.
+}
+
+\section{Aggregation factor}{
+\code{agg.factor} given represents the factor to aggregate \code{RasterLayer} data with function
+\code{aggregate} in \code{raster} R package (Hijmans et al., 2015). Aggregation uses the \code{GEE.math.fun} as
+the function. Following aggregation spatial buffering using the moving window matrix occurs.
+This is included to minimise computing time if data are of high spatial resolution and a large
+spatial buffer is needed. Ensure to calculate \code{get_moving_window()} with the spatial resolution
+of the data post-aggregation by this factor.
 }
 
 \section{Google Earth Engine}{

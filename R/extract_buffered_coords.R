@@ -29,8 +29,8 @@
 #'  across relative to the record date. One of `prior` or `post`: can be abbreviated.
 #'@param categories optional; a character string, the categories to use in calculation if data are
 #'  categorical. See details for more information.
-#'@param agg.factor optional; a numeric value, the factor to aggregate data by before spatial
-#'  buffering.
+#'@param agg.factor optional;a postive integer, the aggregation factor expressed as number of cells
+#'  in each direction. See details.
 #'@param prj a character string, the coordinate reference system of `occ.data` coordinates.Default
 #'  is "+proj=longlat +datum=WGS84".
 #'@param resume a logical indicating whether to search `save.directory` and return to previous
@@ -79,18 +79,34 @@
 #'
 #'  # Categorical data and temporally dynamic variables
 #'
-#'  Please be aware, at current this function does not support the extraction of temporally dynamic
-#'  variables for categorical datasets. However, some accepted mathematical functions such as
-#'  "first" or "last" may be appropriate for such datasets.
+#'  Please be aware, if specific categories are given (argument `categories`) when extracting
+#'  categorical data, then temporal buffering cannot be completed. The most recent categorical data
+#'  to the occurrence record date will be used and spatial buffering will take place.
+#'
+#'  If, specific categories are not given when extracting from categorical datasets, be careful to
+#'  choose appropriate mathematical functions for such data. For instance, "first" or "last" may be
+#'  more relevant that "sum" of land cover classification numbers.
 #'
 #'
-#'  # Temporal level to extract data at `temporal.level` states the temporal resolution of the
-#'  explanatory variable data and improves the speed of `extract_buffered_coords()` extraction. For
-#'  example, if the explanatory data represents an annual variable, then all record co-ordinates
-#'  from the same year can be extracted from the same buffered raster, saving computation time.
-#'  However, if the explanatory data represents a daily variable, then only records from the exact
-#'  same day can be extracted from the same raster. For the former, `temporal.level` argument should
-#'  be `year` and for the latter, `temporal.level` should be `day`.
+#'  # Temporal level to extract data at:
+#'
+#'  `temporal.level` states the temporal resolution of the explanatory variable data and improves
+#'  the speed of `extract_buffered_coords()` extraction. For example, if the explanatory data
+#'  represents an annual variable, then all record co-ordinates from the same year can be extracted
+#'  from the same buffered raster, saving computation time. However, if the explanatory data
+#'  represents a daily variable, then only records from the exact same day can be extracted from the
+#'  same raster. For the former, `temporal.level` argument should be `year` and for the latter,
+#'  `temporal.level` should be `day`.
+#'
+#'  # Aggregation factor
+#'
+#'  `agg.factor` given represents the factor to aggregate `RasterLayer` data with function
+#'  `aggregate` in `raster` R package (Hijmans et al., 2015). Aggregation uses the `GEE.math.fun` as
+#'  the function. Following aggregation spatial buffering using the moving window matrix occurs.
+#'  This is included to minimise computing time if data are of high spatial resolution and a large
+#'  spatial buffer is needed. Ensure to calculate `get_moving_window()` with the spatial resolution
+#'  of the data post-aggregation by this factor.
+#'
 #'
 #'  # Google Earth Engine
 #'
@@ -242,9 +258,11 @@ extract_buffered_coords <-  function(occ.data,
     googledrive::drive_auth(email = user.email)
     googledrive::drive_user()
 
+
     # Load Google Earth Engine
     rgee::ee_check("rgee")
     rgee::ee_Initialize(drive = T)
+
 
     # Assign occurrence record a unique ID for saving files.
     occ.data$unique.ID.DYN <- rep(1:nrow(occ.data))
@@ -332,6 +350,14 @@ extract_buffered_coords <-  function(occ.data,
       # occurrence co-ordinate to edge of matrix. (circumference/2)
       spatial.buffer <- nrow(moving.window.matrix) * spatial.res.metres / 2
 
+
+      # If aggregation factor is given, the moving window matrix will give how many cells of the
+      # aggregated size to calculate spatial buffer function over. Therefore, we need to work out
+      # number of spatial.res.metre size cells this will involve pre-aggregation
+      if(!missing(agg.factor)){
+       spatial.buffer <- (nrow(moving.window.matrix) * agg.factor * spatial.res.metres) /2
+      }
+
       # The matrix is square not circular, so then need to work out the radius
       # to furthest corner of matrix away from co-ordinate.
       # Rearrange pythagorus theorem (a2 + b2 = c2),
@@ -362,7 +388,7 @@ extract_buffered_coords <-  function(occ.data,
                                            c(xmax, ymax),
                                            c(xmax,  ymin)))
       # Static variable
-      if (missing(temporal.res)) {
+      if (missing(temporal.res) ||  !missing(categories)) {
 
         date1 <- as.character(date1)
 
@@ -375,7 +401,7 @@ extract_buffered_coords <-  function(occ.data,
         image_collection_reduced <- image_collection$reduce(ee$Reducer$first())
       }
 
-
+ if(missing(categories)){
       # Temporally dynamic variable
       if (!missing(temporal.res)) {
         firstdate <- date1
@@ -449,7 +475,7 @@ extract_buffered_coords <-  function(occ.data,
 
     # Reduce ImageCollection using function specified in GEE.math.fun
     image_collection_reduced <- image_collection$reduce(GEE.FUNC[[match(GEE.math.fun, namelist)]])
-      }
+      }}
 
       # Download raster of Reduced ImageCollection to Google Drive
       tryCatch({
@@ -473,12 +499,20 @@ extract_buffered_coords <-  function(occ.data,
       googledrive::drive_auth(email = user.email)
       googledrive::drive_user()
 
+
+
+      # List all files in Google Drive folders
+      folderpath <- googledrive::drive_find(pattern = "dynamicSDM_download_bucket", type = 'folder')
+      drivefiles <- googledrive::drive_ls(path = googledrive::as_id(folderpath$id))
+
+      # Get ID of most recent file in bucket with this name (prevents errors if duplicate)
+      drivefiles <- drivefiles[grep(paste0(varname, "_", date1, ".tif"),drivefiles$name),"id"][1,]
+
       # Download raster from Google Drive to temp directory for processing
-      googledrive::drive_download(paste0(varname, "_", date1, ".tif"),
+      googledrive::drive_download(googledrive::as_id(drivefiles$id),
                                   path = pathforthisfile,
                                   overwrite = T)
       raster <- raster::raster(pathforthisfile) # Read in raster from temp dir
-
 
 
       # Match GEE.math.fun argument to analogous R function
@@ -615,8 +649,7 @@ extract_buffered_coords <-  function(occ.data,
       # Record uniqueID of records explanatory data extracted for in this loop
       rowscomplete <- c(rowscomplete, nameofsplitfile)
 
-      # Remove the raster used in this loop from Google Drive
-      googledrive::drive_rm(paste0(varname, "_", date1, ".tif"))
+
     }
 
     # Print names of occurrence records data successfully extracted for
@@ -649,7 +682,6 @@ extract_buffered_coords <-  function(occ.data,
       )
 
       print("Clearing Google Drive download bucket - dynamicSDM_download_bucket")
-
       rgee::ee_clean_container(name="dynamicSDM_download_bucket",type="drive")
 
       return(combined_data_set)

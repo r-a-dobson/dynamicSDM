@@ -16,17 +16,23 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-dynamicSDM offers novel tools for developing species geographical distribution and abundance modelling (SDM) at high spatiotemporal resolution. Across the dynamicSDM vignettes, we demonstrate package functions on a case study species and guide users through the four key species distribution modelling stages:
+dynamicSDM offers novel tools for developing species geographical distribution and abundance
+modelling (SDM) at high spatiotemporal resolution. Across the dynamicSDM vignettes, we demonstrate
+package functions on a case study species and guide users through the four key species distribution
+modelling stages:
 
 + Stage 1: Organising response variable data including species occurrence and pseudo-absence records
-+ Stage 2: Extracting spatiotemporally-buffered explanatory variables
-+ Stage 3: Fitting SDMs whilst accounting for spatial and temporal autocorrelation
-+ Stage 4: Projecting intra- and inter- annual geographical distributions and abundances at high spatiotemporal resolution.
++ Stage 2: Extracting spatiotemporally-buffered explanatory variables 
++ Stage 3: Fitting SDMs whilst
+accounting for spatial and temporal autocorrelation 
++ Stage 4: Projecting intra- and inter- annual geographical distributions and abundances at high
+spatiotemporal resolution.
 
 
 ## Installation
 
-Before starting this tutorial, the dynamicSDM package needs to be installed. You can install the latest version from [GitHub](https://github.com/r-a-dobson/dynamicSDM) with:
+Before starting this tutorial, the dynamicSDM package needs to be installed. You can install the
+latest version from [GitHub](https://github.com/r-a-dobson/dynamicSDM) with:
 
 ```{r install package}
 # devtools::install_github('r-a-dobson/dynamicSDM')
@@ -36,7 +42,10 @@ library(sp)
 ```
 
 
-Due to the utilisation of Google Earth Engine and Google Drive across dynamicSDM functions, you must also set up a free Google account at [Google]( https://www.google.com/account/about/). Once you have your Google log-in details, these can be used to authorise Google Earth Engine in the rgee package and Google Drive in the googledrive package. 
+Due to the utilisation of Google Earth Engine and Google Drive across dynamicSDM functions, you must
+also set up a free Google account at [Google]( https://www.google.com/account/about/). Once you have
+your Google log-in details, these can be used to authorise Google Earth Engine in the rgee package
+and Google Drive in the googledrive package.
 
 ```{r check Google, eval=FALSE }
 library(rgee)
@@ -46,8 +55,6 @@ rgee::ee_check()
 library(googledrive)
 #googledrive::drive_auth_configure()
 googledrive::drive_user()
-
-
 ```
 
 
@@ -58,24 +65,28 @@ As we continue through the species distribution modelling framework, functions w
 ```{r create directory}
 project_directory <- file.path(file.path(tempdir(), "dynamicSDM_vignette"))
 # project_directory<-"your_path_here"
-
 dir.create(project_directory)
-
-
 ```
 
 
 ## Case study: the red-billed quelea 
 
-In this four stage tutorial, we will be studying the case study species, the red-billed quelea (Quelea quelea), a nomadic bird inhabiting sub-Saharan Africa. With highly variable distributions driven by short-term weather and resource availability, *dynamicSDM* provides key functions to accurately model quelea’s distribution through space and time. 
+In this four stage tutorial, we will be studying the case study species, the red-billed quelea
+(Quelea quelea), a nomadic bird inhabiting sub-Saharan Africa. With highly variable distributions
+driven by short-term weather and resource availability, *dynamicSDM* provides key functions to
+accurately model quelea’s distribution through space and time.
 
 ## Stage 1: Response variable data
 
-In this tutorial, we will be processing a sample of species occurrence records for the red-billed quelea (Quelea quelea) to generate an SDM response variable data frame. This will involve filtering records by spatiotemporal quality, extent and resolution; testing and accounting for spatiotemporal biases in records, and generating pseudo-absences through space and time. 
+In this tutorial, we will be processing a sample of species occurrence records for the red-billed
+quelea (Quelea quelea) to generate an SDM response variable data frame. This will involve filtering
+records by spatiotemporal quality, extent and resolution; testing and accounting for spatiotemporal
+biases in records, and generating pseudo-absences through space and time.
 
 ### a) Import occurrence records
 
-A sample of red-billed quelea occurrence data can be loaded into your local R environment using the code below.
+A sample of red-billed quelea occurrence data can be loaded into your local R environment using the
+code below.
 
 ```{r import occurrence}
 data("sample_occ_data")
@@ -83,13 +94,16 @@ data("sample_occ_data")
 ```
 
 
-These records are formatted as exported from the Global Biodiversity Information Facility, with columns labelled “decimalLongitude” and “decimalLatitude”. For dynamicSDM functions, occurrence data must be in a specific format; containing numeric data in columns labelled “x” and “y” for the record co-ordinates longitude and latitude, and “day”, “month” and “year” for the record’s date. 
+These records are formatted as exported from the Global Biodiversity Information Facility, with
+columns labelled “decimalLongitude” and “decimalLatitude”. For dynamicSDM functions, occurrence data
+must be in a specific format; containing numeric data in columns labelled “x” and “y” for the record
+co-ordinates longitude and latitude, and “day”, “month” and “year” for the record’s date.
 
-convert_gbif() can be used to convert between these formats, or this can be achieved manually for data not extracted from GBIF. 
+`convert_gbif()` can be used to convert between these formats, or this can be achieved manually for
+data not extracted from GBIF.
 
 ```{r example-convert_gbif}
 sample_occ <- convert_gbif(sample_occ_data)
-
 ```
 
 
@@ -97,7 +111,13 @@ sample_occ <- convert_gbif(sample_occ_data)
 
 #### Validity and completeness
 
-Species occurrence records may contain anomalous or missing values in the co-ordinates or dates given. spatiotemp_check() can be used to exclude records with missing (NA) values (argument na.handle), invalid co-ordinates (coord.handle), invalid dates (date.handle) and duplicate records (duplicate.handle). 
+Species occurrence records may contain anomalous or missing values in the co-ordinates or dates
+given. `spatiotemp_check()` can be used to exclude records with missing (NA) values (argument
+`na.handle`), invalid co-ordinates (`coord.handle`), invalid dates (`date.handle`) and duplicate
+records (`duplicate.handle`).
+
+Here, we specify `date.res = "day"` to check all date columns from year to day. If you only want to
+check the year of record dates, then you could specify `date.res = "year"`.
 
 ```{r example-spatiotemp_check}
 sample_occ_filtered <- spatiotemp_check(occ.data = sample_occ,
@@ -109,7 +129,9 @@ sample_occ_filtered <- spatiotemp_check(occ.data = sample_occ,
 print(nrow(sample_occ_filtered))
 ```
 
-Additionally, users can opt to take advantage of the CoordinateCleaner package function to exclude records flagged as containing potentially anomalous co-ordinates, based on a wider variety of spatial tests than dynamicSDM alone offers. 
+Additionally, users can opt to take advantage of the CoordinateCleaner package function to exclude
+records flagged as containing potentially anomalous co-ordinates, based on a wider variety of
+spatial tests than dynamicSDM alone offers.
 
 ```{r example-spatiotemp_check with Coordinate Cleaner,eval=F}
 sample_occ_filtered <- spatiotemp_check(occ.data = sample_occ,
@@ -118,18 +140,23 @@ sample_occ_filtered <- spatiotemp_check(occ.data = sample_occ,
                                                date.res = "day",
                                                coord.handle = "exclude",
                                                duplicate.handle = "exclude",
-                                               CoordClean = T,
-                                               CoordClean.species = "quelea",
-                                               CoordClean.handle = "exclude")
+                                               coordclean = T,
+                                               coordclean.species = "quelea",
+                                               coordclean.handle = "exclude")
 
 ```
 
 
 #### Spatiotemporal extent
 
-When generating dynamic species distribution models, it is important that occurrence records match the spatiotemporal extent of the study and any remote-sensing datasets to be utilised as explanatory variables. spatiotemporal_extent() removes any records outside of the set spatiotemporal extents. 
+When generating dynamic species distribution models, it is important that occurrence records match
+the spatiotemporal extent of the study and any remote-sensing datasets to be utilised as explanatory
+variables. `spatiotemporal_extent()` removes any records outside of the set spatiotemporal extents.
 
-In this case study, we want to model the subspecies Q. q. lathamii which is typically limited to southern Africa and we will incorporate remote sensing datasets available for the years 2001 to 2019. To filter records to these extents, we use a polygon of southern African countries, which can be read into your R environment and applied using the following code. 
+In this case study, we want to model the subspecies Q. q. lathamii which is typically limited to
+southern Africa and we will incorporate remote sensing datasets available for the years 2001 to
+2019. To filter records to these extents, we use a polygon of southern African countries, which can
+be read into your R environment and applied using the following code.
 
 ```{r example-spatiotemp_extent,fig.width=4, fig.height=4}
 data("sample_extent_data")
@@ -140,7 +167,6 @@ sample_occ_cropped <- spatiotemp_extent(occ.data = sample_occ_filtered,
                                                prj = "+proj=longlat +datum=WGS84 +no_defs")
 
 ## Lets plot the change
-
 plot(sample_extent_data$geometry)
 plot(SpatialPointsDataFrame(coords = sample_occ_filtered[, c("x", "y")], 
                             proj4string = sp::CRS("+proj=longlat +datum=WGS84 +no_defs"),
@@ -150,16 +176,17 @@ plot(sample_extent_data$geometry)
 plot(SpatialPointsDataFrame(coords = sample_occ_cropped[, c("x", "y")], 
                             proj4string = sp::CRS("+proj=longlat +datum=WGS84 +no_defs"),
                             data = sample_occ_cropped), add = T)
-
-
 ```
 
 
 #### Spatiotemporal resolution
 
-The spatial resolution of occurrence record co-ordinates and the temporal resolution of occurrence record dates are also important when generating dynamic SDMs. spatiotemp_resolution can filter records by set thresholds.
+The spatial resolution of occurrence record co-ordinates and the temporal resolution of occurrence
+record dates are also important when generating dynamic SDMs. `spatiotemp_resolution()` can filter
+records by set thresholds.
 
-As quelea migrations are driven by highly local and short-term environmental factors, we will filter to exclude records not given to the specific day and co-ordinates to four decimal places. 
+As quelea migrations are driven by highly local and short-term environmental factors, we will filter
+to exclude records not given to the specific day and co-ordinates to four decimal places.
 
 ```{r example-spatiotemp_resolution}
 sample_occ_cropped<-spatiotemp_resolution(occ.data = sample_occ_cropped,
@@ -167,17 +194,16 @@ sample_occ_cropped<-spatiotemp_resolution(occ.data = sample_occ_cropped,
                                              temporal.res = "day")
 
 nrow(sample_occ_cropped) # Even more records have been removed!
-
-
-
 ```
 
 
 ### c) Test for spatial and temporal sampling biases
 
-For many reasons, the collection of species occurrence records are biased through space and time. These biases can impact SDM performance by over- or under- representing conditions at a given site or time. spatiotemp_bias() returns the results of statistical tests and plots for visual assessment of such biases. 
-
-The code below tests for bias across the entire dataset and species range. 
+For many reasons, the collection of species occurrence records are biased through space and time.
+These biases can impact SDM performance by over- or under- representing conditions at a given site
+or time. `spatiotemp_bias()` returns the results of statistical tests and plots for visual
+assessment of such biases. 
+The code below tests for bias across the entire dataset and species range.
 
 ```{r example-spatiotemp_bias simple}
 bias_results <- spatiotemp_bias(occ.data = sample_occ_cropped,
@@ -185,7 +211,6 @@ bias_results <- spatiotemp_bias(occ.data = sample_occ_cropped,
                                 plot = FALSE,
                                 spatial.method = "simple",
                                 prj = "+proj=longlat +datum=WGS84")
-
 print(bias_results)
 ```
 
@@ -197,17 +222,25 @@ bias_results <- spatiotemp_bias(occ.data = sample_occ_cropped,
                                 plot = FALSE,
                                 spatial.method = "core",
                                 prj = "+proj=longlat +datum=WGS84")
-
 print(bias_results)
 ```
 
-Both approaches can generate important results. The latter may be a more reliable indicator if the species range is expanding or shifting in response to global change. This is because records at the range periphery that have been collected randomly may still not be evenly distributed through space and time due to underlying ecological processes. Therefore, focusing on species core may be more representative. 
+Both approaches can generate important results. The latter may be a more reliable indicator if the
+species range is expanding or shifting in response to global change. This is because records at the
+range periphery that have been collected randomly may still not be evenly distributed through space
+and time due to underlying ecological processes. Therefore, testing for biased on the species range
+core may be more representative of true spatial and temporal sampling biases.
 
 ### d) Account for spatial and temporal sampling biases
 
 #### Occurrence record thinning
 
-One approach to correct spatiotemporal sampling biases are to “thin” records, which involves excluding records that have been collected too closely in space or time. spatiotemp_thin() allows users to specify the spatial and temporal distance to thin records by. An important argument of spatiotemp_thin() is spatial.split.degrees which specifies the size of grid cells to split occurrence records into before temporal thinning. This prevents spatially distant but temporally close records from being filtered out. 
+One approach to correct spatiotemporal sampling biases are to “thin” records, which involves
+excluding records that have been collected too closely in space or time. `spatiotemp_thin()` allows
+users to specify the spatial and temporal distance to thin records by. An important argument of
+`spatiotemp_thin()` is `spatial.split.degrees` which specifies the size of grid cells to split
+occurrence records into before temporal thinning. This prevents spatially distant but temporally
+close records from being filtered out.
 
 ```{r example-spatiotemp_thin,fig.width=4, fig.height=4}
 occ_thin <- spatiotemp_thin(occ.data = sample_occ_cropped,
@@ -218,7 +251,6 @@ occ_thin <- spatiotemp_thin(occ.data = sample_occ_cropped,
                                    iterations = 5)
 
 # Plot the difference in spatial distribution after thinning
-
 # Non-thinned
 plot(sample_extent_data$geometry)
 sp::plot(sp::SpatialPointsDataFrame(coords = sample_occ_cropped[, c("x", "y")],
@@ -230,19 +262,18 @@ plot(sample_extent_data$geometry)
 sp::plot(sp::SpatialPointsDataFrame(coords = occ_thin[, c("x", "y")],
                                     proj4string = sp::CRS("+proj=longlat +datum=WGS84 +no_defs"),
                                     data = occ_thin), add = T)
-
-# Plot the difference in temporal distribution after thinning
-
-thin_dates <- as.Date(with(occ_thin, paste(year, month, day, sep = "-")), "%Y-%m-%d")
-
-og_dates <- as.Date(with(sample_occ_cropped, paste(year, month, day, sep = "-")), "%Y-%m-%d")
-
 ```
 
 
 #### Weight records by sampling effort
 
-Another approach to account for spatiotemporal sampling biases is to weight records by sampling effort when fitting SDMs. This results in the down weighing of the importance of records from over-sampled regions and vice versa. Here, we will read in a sample of e-Bird avian sampling records in southern Africa to use as a sampling effort proxy, and sum these across a spatial and temporal buffer from each occurrence record using spatiotemp_weights(). 
+Another approach to account for spatiotemporal sampling biases is to weight records by sampling
+effort when fitting SDMs.This results in the down weighing of the importance of records from
+over-sampled regions and vice versa. 
+
+Here, we will read in a sample of e-Bird avian sampling records
+in southern Africa to use as a sampling effort proxy, and sum these across a spatial and temporal
+buffer from each occurrence record using `spatiotemp_weights()`.
 
 ```{r example-spatiotemp_weights}
 data("sample_events_data")
@@ -257,7 +288,13 @@ sample_occ_cropped <- spatiotemp_weights(occ.data = sample_occ_cropped,
 
 ### e) Generate pseudo-absences through space and time
 
-Often the paucity of species absence records necessitates the generation of pseudo-absences, which are inferred absences based upon presence records. When modelling a species distribution at high spatiotemporal resolution, it may be best to generate pseudo-absences within close spatial and temporal buffers of species occurrence. This is because model presence-absence comparisons are made at fine scales, instead of coarsely between biomes and seasons. Using spatiotemp_pseudoabs() you can specify the spatial and temporal buffer size or extents to randomly generate pseudo-absences within. 
+Often the paucity of species absence records necessitates the generation of pseudo-absences, which
+are inferred absences based upon presence records. When modelling a species distribution at high
+spatiotemporal resolution, it may be best to generate pseudo-absences within close spatial and
+temporal buffers of species occurrence. This is because model presence-absence comparisons are made
+at fine scales, instead of coarsely between biomes and seasons. Using `spatiotemp_pseudoabs()` you
+can specify the spatial and temporal buffer size or extents to randomly generate pseudo-absences
+within.
 
 ```{r example-spatiotemp_pseudoabs,fig.width=4, fig.height=4}
 # Pseudo-absences generated within spatial and temporal buffer
@@ -296,7 +333,8 @@ sp::plot(sp::SpatialPointsDataFrame(coords = pseudo_abs_rand[, c("x", "y")],
                                     data = pseudo_abs_rand), col = "red",add = T)
 ```
 
-Then, the generated pseudo-absences need to be added to the occurrence record data frame by adding relevant columns and binding the rows together. 
+Then, the generated pseudo-absences need to be added to the occurrence record data frame by adding
+relevant columns and binding the rows together.
 
 ```{r complete_dataset,eval=F}
 pseudo_abs_buff$decimalLatitude <- pseudo_abs_buff$y
@@ -309,16 +347,16 @@ pseudo_abs_buff<-spatiotemp_weights(occ.data = pseudo_abs_buff,
                                        temporal.dist = 30,
                                        prj = "+proj=longlat +datum=WGS84")
 
-
 complete.dataset <- as.data.frame(rbind(sample_occ_cropped, pseudo_abs_buff))
 ```
 
 ## Summary
-At the end of this vignette, we now have a complete data frame of filtered species occurrence and pseudo-absence records of appropriate spatiotemporal quality, extent and resolution. Let’s save this to our project directory for use in the next tutorial!
+At the end of this vignette, we now have a complete data frame of filtered species occurrence and
+pseudo-absence records of appropriate spatiotemporal quality, extent and resolution. Let’s save this
+to our project directory for use in the next tutorial!
 
 ```{r export_dataset,eval=F}
 write.csv(complete.dataset, file = paste0(project_directory, "/filtered_quelea_occ.csv"))
-
 ```
 
 

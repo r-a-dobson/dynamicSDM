@@ -66,8 +66,8 @@ categorical. See details for more information.}
 \item{save.directory}{a character string, path to a local directory to save extracted variable
 data to.}
 
-\item{agg.factor}{optional; a numeric value, the factor to aggregate data by before spatial
-buffering.}
+\item{agg.factor}{optional;a postive integer, the aggregation factor expressed as number of cells
+in each direction. See details.}
 
 \item{prj}{a character string, the coordinate reference system of \code{occ.data} coordinates.Default
 is "+proj=longlat +datum=WGS84".}
@@ -126,18 +126,32 @@ from the species occurrence record co-ordinates.
 }
 
 \section{Categorical data and temporally dynamic variables}{
-Please be aware, at current this function does not support the extraction of temporally dynamic
-variables for categorical datasets. However, some accepted mathematical functions such as
-"first" or "last" may be appropriate for such datasets.
+Please be aware, if specific categories are given (argument \code{categories}) when extracting
+categorical data, then temporal buffering cannot be completed. The most recent categorical data
+to the occurrence record date will be used and spatial buffering will take place.
+
+If, specific categories are not given when extracting from categorical datasets, be careful to
+choose appropriate mathematical functions for such data. For instance, "first" or "last" may be
+more relevant that "sum" of land cover classification numbers.
 }
 
-\section{Temporal level to extract data at \code{temporal.level} states the temporal resolution of the}{
-explanatory variable data and improves the speed of \code{extract_buffered_coords()} extraction. For
-example, if the explanatory data represents an annual variable, then all record co-ordinates
-from the same year can be extracted from the same buffered raster, saving computation time.
-However, if the explanatory data represents a daily variable, then only records from the exact
-same day can be extracted from the same raster. For the former, \code{temporal.level} argument should
-be \code{year} and for the latter, \code{temporal.level} should be \code{day}.
+\section{Temporal level to extract data at:}{
+\code{temporal.level} states the temporal resolution of the explanatory variable data and improves
+the speed of \code{extract_buffered_coords()} extraction. For example, if the explanatory data
+represents an annual variable, then all record co-ordinates from the same year can be extracted
+from the same buffered raster, saving computation time. However, if the explanatory data
+represents a daily variable, then only records from the exact same day can be extracted from the
+same raster. For the former, \code{temporal.level} argument should be \code{year} and for the latter,
+\code{temporal.level} should be \code{day}.
+}
+
+\section{Aggregation factor}{
+\code{agg.factor} given represents the factor to aggregate \code{RasterLayer} data with function
+\code{aggregate} in \code{raster} R package (Hijmans et al., 2015). Aggregation uses the \code{GEE.math.fun} as
+the function. Following aggregation spatial buffering using the moving window matrix occurs.
+This is included to minimise computing time if data are of high spatial resolution and a large
+spatial buffer is needed. Ensure to calculate \code{get_moving_window()} with the spatial resolution
+of the data post-aggregation by this factor.
 }
 
 \section{Google Earth Engine}{

@@ -37,8 +37,8 @@ if \code{drive.folder} or \code{save.drive.folder} used.}
 directories to read projection covariate rasters from.}
 
 \item{spatial.ext}{optional; the spatial extent to crop explanatory variable rasters to. Object of
-class \code{Extent}, \code{RasterLayer}, \code{sf}, \code{polygon} or numeric vector listing xmin, xmax, ymin and
-ymax in order.}
+class \code{Extent}, \code{RasterLayer}, \code{sf}, \code{SpatialPolygonsDataFrame}, \code{polygon} or numeric vector
+listing xmin, xmax, ymin and ymax in order.}
 
 \item{spatial.mask}{an object of class \code{Raster}, \code{sf} or \code{Spatial}, represeting a mask in which NA
 cells in the mask layer are removed from the projection covariates.}

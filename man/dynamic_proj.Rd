@@ -145,29 +145,25 @@ instructions on \url{https://googledrive.tidyverse.org/}.
 
 data("sample_explan_data")
 variablenames<-c("eight_sum_prec","year_sum_prec","grass_crop_percentage")
+\dontshow{
+sample_explan_data<-sample_explan_data[1:40,]
+variablenames<-c("eight_sum_prec","year_sum_prec")
+}
+
 model <- brt_fit(sample_explan_data,
                  response.col = "presence.absence",
                  varnames = variablenames,
-                 interaction.depth=2,
+                 interaction.depth = 1,
                  distribution = "bernoulli")
 
 data(sample_cov_data)
-data(sample_extent_data)
-write.csv(sample_cov_data,file=paste0(tempdir(),"/2018-04-01_covariates.csv"))
+utils::write.csv(sample_cov_data,file=paste0(tempdir(),"/2018-04-01_covariates.csv"))
 
 dynamic_proj(dates = "2018-04-01",
-            projection.method = c("proportional","binary"),
+            projection.method = c("proportional"),
             local.directory = tempdir(),
-           cov.file.type = "csv",
+            cov.file.type = "csv",
             sdm.mod = model,
-            spatial.mask = sample_extent_data,
             save.directory = tempdir())
-
-sp::plot(raster::raster(paste0(tempdir(),"/2018-04-01_proportional.tif")))
-
-
-
-
-
 
 }

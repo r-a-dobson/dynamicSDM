@@ -23,9 +23,9 @@
 #'  generate pseudo-absences dates within. Required if `temporal.method` is `random`, and optionally
 #'  used if `buffer`. See details.
 #'@param spatial.ext the spatial extent to randomly generate pseudo-absences within. Object from
-#'  which extent can be extracted of class `Extent`, `RasterLayer`, `sf` or `polygon` or numeric
-#'  vector listing xmin, xmax, ymin and ymax in order. Required if `spatial.method` is
-#'  `random`, and optionally used if `buffer`. See details.
+#'  which extent can be extracted of class `Extent`, `RasterLayer`,`SpatialPolygonsDataFrame`, `sf`
+#'  or `polygon` or numeric vector listing xmin, xmax, ymin and ymax in order. Required if
+#'  `spatial.method` is `random`, and optionally used if `buffer`. See details.
 #'@param prj a character string, the coordinate reference system of input `occ.data` co-ordinates
 #'  Default is "+proj=longlat +datum=WGS84".
 #'@details
@@ -168,7 +168,7 @@ spatiotemp_pseudoabs <-  function(spatial.method,
       stop("No temporal.ext specified to randomly generate pseudo-absence dates within.")
     }
 
-    if (!class(temporal.ext) == "character") {
+    if (!inherits(temporal.ext, "character")) {
       stop("temporal.ext must be character vector of length 2")
     }
 
@@ -220,7 +220,8 @@ spatiotemp_pseudoabs <-  function(spatial.method,
 
   if (spatial.method == "buffer") {
 
-    # Check that if spatial buffer chosen, a temporal buffer of appropriate class, length and order is provided
+    # Check that if spatial buffer chosen, a temporal buffer of appropriate class, length and order
+    # is provided
     if (missing(spatial.buffer)) {
       stop("No spatial.buffer to generate pseudo-absence co-ordinates within.")
     }
@@ -281,6 +282,9 @@ spatiotemp_pseudoabs <-  function(spatial.method,
         # Intersect - remove any buffered area not intersecting with spatial.ext
         cropped_buffer <- sf::st_intersection(buffer_difference, spatial.ext)
 
+        if(length(cropped_buffer) == 0){
+          stop("For at least one occurrence, buffer does not intersect spatial.ext")}
+
         samp <- sf::st_sample(
           cropped_buffer,
           type = 'random',
@@ -321,7 +325,7 @@ spatiotemp_pseudoabs <-  function(spatial.method,
       stop("No temporal.buffer specified specified to generate pseudo-absence dates within.")
     }
 
-    if (!class(temporal.buffer) == "numeric") {
+    if (!inherits(temporal.buffer, "numeric")) {
       stop("temporal.buffer must be numeric")
     }
 
@@ -418,7 +422,8 @@ spatiotemp_pseudoabs <-  function(spatial.method,
   # If either "buffer" is chosen, there may be slightly more generated than
   # specified by n.pseudoabs, so randomly select this amount from generated
 
-  # Keeps co-ordinates and dates relevant to same occurrence record together before randomly selecting
+  # Keeps co-ordinates and dates relevant to same occurrence record together before randomly
+  # selecting
   if (temporal.method == "buffer" && spatial.method == "buffer") {
     pseudo.df <- dplyr::sample_n(as.data.frame(cbind(PA_coords, PA_dates)),
                       n.pseudoabs)

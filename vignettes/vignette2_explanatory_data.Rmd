@@ -17,8 +17,6 @@ knitr::opts_chunk$set(
 ```{r, include = FALSE}
 user.email="eerdord@gmail.com"
 save.drive.folder<-"rasters_proj"
-
-  
 ```
 
 ```{r setup}
@@ -27,7 +25,11 @@ library(dynamicSDM)
 
 ## Stage 2: Explanatory variable data
 
-In this tutorial, we will be extracting spatiotemporally buffered explanatory variables for each occurrence and pseudo-absence record. The *dynamicSDM* functions for extracting such variables require Google Earth Engine and Google Drive to be initialised. Fill in the code below with your Google account email, and run the code to check that *rgee* and *googledrive* have been correctly installed and authorised.
+In this tutorial, we will be extracting spatiotemporally buffered explanatory variables for each
+occurrence and pseudo-absence record. The *dynamicSDM* functions for extracting such variables
+require Google Earth Engine and Google Drive to be initialised. Fill in the code below with your
+Google account email, and run the code to check that *rgee* and *googledrive* have been correctly
+installed and authorised.
 
 ```{r check Google, eval=FALSE}
 library(rgee)
@@ -41,10 +43,14 @@ googledrive::drive_user()
 #save.drive.folder<-"your_google_folder_here"
 ```
 
-Note: You will need internet connection for this tutorial. Variable extraction may take some time depending on your internet connection strength. If you try out these functions and are excited to move onto the next tutorial, then don’t worry - you can read the extracted data into your R environment from the dynamicSDM package. 
+Note: You will need internet connection for this tutorial. Variable extraction may take some time
+depending on your internet connection strength. If you try out these functions and are excited to
+move onto the next tutorial, then don’t worry - you can read the extracted data into your R
+environment from the dynamicSDM package.
 
-## Directory organisation
-We will be extracting data for three dynamic explanatory variables. Let’s first create new folders within the project directory to export extracted variable data to. 
+## Directory organisation 
+We will be extracting data for three dynamic explanatory variables. Let’s
+first create new folders within the project directory to export extracted variable data to.
 
 ```{r create directories}
 project_directory <- file.path(file.path(tempdir(), "dynamicSDM_vignette"))
@@ -67,36 +73,45 @@ dir.create(extraction_directory_3)
 
 ```
 
-Now, the filtered occurrence and pseudo-absence record data frame generated in the first tutorial can be imported or read into your R environment from the *dynamicSDM* package.
+Now, the filtered occurrence and pseudo-absence record data frame generated in the first tutorial
+can be imported or read into your R environment from the *dynamicSDM* package.
 
 ```{r load data}
 # sample_filt_data<-read.csv(paste0(project_directory,"/filtered_quelea_occ.csv"))
 data(sample_filt_data)
-
 ```
 
 
 ### a)	Extract dynamic explanatory variables
 
-extract_dynamic_coords() extracts processed remote sensing data using the Google Earth Engine cloud servers. There are various arguments to this function to specify the explanatory variable including:
+`extract_dynamic_coords()` extracts processed remote sensing data using the Google Earth Engine
+cloud servers. There are various arguments to this function to specify the explanatory variable
+including:
 
-•	`datasetname`: the dataset’s Google Earth Engine catalogue name
+•	`datasetname`: the dataset’s Google Earth Engine catalogue name.
 
-•	`bandname` : the band of interest with the dataset
+•	`bandname` : the band of interest with the dataset.
 
-•	`temporal.res` : the temporal resolution (i.e. the number of days to calculate the variable over)
+•	`temporal.res` : the temporal resolution (i.e. the number of days to calculate the variable over).
 
-•	`temporal.direction`: temporal direction (days either prior or post each record’s date)
+•	`temporal.direction`: temporal direction (days either prior or post each record’s date).
 
-• `spatial.res.metres`: spatial resolution (the resolution in metres to extract data at) 
+• `spatial.res.metres`: spatial resolution (the resolution in metres to extract data at). 
 
-•	`GEE.math.fun` : the mathematical function to calculate across the period (e.g. mean, sum or standard deviation across the given period). 
+•	`GEE.math.fun` : the mathematical function to calculate across the period (e.g. mean, sum or
+standard deviation across the given period).
 
 #### Case study
 
-The distribution of our case study species, the red-billed quelea, is driven by precipitation levels. Run the code below to extract the sum of precipitation across the 8-week and 52-week period prior to each occurrence record from the Climate Hazards Group InfraRed Precipitation with Station data (CHIRPS) dataset [googleearthenginecatalogue](https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY). 
+The distribution of our case study species, the red-billed quelea, is driven by precipitation
+levels. Run the code below to extract the sum of precipitation across the 8-week and 52-week period
+prior to each occurrence record from the Climate Hazards Group InfraRed Precipitation with Station
+data (CHIRPS) dataset at
+[GEE](https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY).
 
-For the 8-week precipitation extraction, we will use the split method to save extracted data. Notice how each record’s data are extracted and exported individually. If you specify resume = T, then if internet connection is lost you can resume extraction to where the code stopped. 
+For the 8-week precipitation extraction, we will use the split method to save extracted data. Notice
+how each record’s data are extracted and exported individually. If you specify `resume = T`, then if
+internet connection is lost you can resume extraction to where the code stopped.
 
 ```{r example-extract_dynamic_coords week, eval=F}
 # 8-week total precipitation
@@ -114,7 +129,10 @@ dynamicSDM::extract_dynamic_coords(occ.data=sample_filt_data,
 ```
 
 
-For the 52-week precipitation extraction, we will use the combined method to save extracted data. Here, all data are extracted and then exported as a single data frame. This approach writes fewer files but may be more vulnerable to internet connection outage as all progress is lost and cannot be resumed. 
+For the 52-week precipitation extraction, we will use the combined method to save extracted data.
+Here, all data are extracted and then exported as a single data frame. This approach writes fewer
+files but may be more vulnerable to internet connection outage as all progress is lost and cannot be
+resumed.
 
 ```{r example-extract_dynamic_coords annual,eval=F}
 # 52-week total precipitation
@@ -128,22 +146,30 @@ dynamicSDM::extract_dynamic_coords(occ.data=sample_filt_data,
                                    save.method="combined",
                                    varname = variablenames[2],
                                    save.directory= save.drive.folder)
-
-
 ```
 
 
 ### b) Extract spatially buffered explanatory variables
 
-extract_buffered_coords() extracts explanatory variable data across a spatial buffer from occurrence record co-ordinates. These variables can be categorical or continuous, but if a temporal buffer is also used only continuous data will work. This function utilises a “moving window matrix” that specifies the neighbourhood of cells (spatial buffer area) surrounding each occurrence record’s cell that will also be included in the calculation. get_moving_window() generates the optimal “moving window matrix” sizes based upon a given spatial radius and resolution of remote-sensing data. 
+`extract_buffered_coords() `extracts explanatory variable data across a spatial buffer from
+occurrence record co-ordinates. These variables can be categorical or continuous, but if a temporal
+buffer is also used only continuous data will work. This function utilises a “moving window matrix”
+that specifies the neighbourhood of cells (spatial buffer area) surrounding each occurrence record’s
+cell that will also be included in the calculation. `get_moving_window()` generates the optimal
+“moving window matrix” sizes based upon a given spatial radius and resolution of remote-sensing
+data.
 
 
 #### Case study
 
-The distribution of red-billed quelea is driven by availability of wild grass and cereal crop seed availability. 
-The code below extracts the total number of grassland or cereal cropland cells across a spatial buffer from the MODIS Annual Land Cover Type dataset [googleearthenginecatalogue](https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MCD12Q1#bands). 
+The distribution of red-billed quelea is driven by availability of wild grass and cereal crop seed
+availability. The code below extracts the total number of grassland or cereal cropland cells across
+a spatial buffer from the MODIS Annual Land Cover Type dataset
+[googleearthenginecatalogue](https://developers.google.com/earth-engine/datasets/catalog/MODIS_061_MCD12Q1#bands).
 
-First, however, we must generate the optimal moving window matrix for this calculated based upon the fact that quelea travel up to 10km to access resources and that the data will be at 0.05 degree resolution (500m aggregated by 12). 
+First, however, we must generate the optimal moving window matrix for this calculated based upon the
+fact that quelea travel up to 10km to access resources and that the data will be at 0.05 degree
+resolution (500m aggregated by 12).
 
 ```{r example-get_moving_window}
 matrix <- get_moving_window(radial.distance = 10000,
@@ -155,7 +181,8 @@ matrix
 
 ### c) Combine explanatory variable data
 
-Data for each explanatory variable have been saved across multiple directories and files. extract_coord_combine() combine the extracted explanatory variable data into a single data frame.
+Data for each explanatory variable have been saved across multiple directories and files.
+`extract_coord_combine()` combine the extracted explanatory variable data into a single data frame.
 
 ```{r example-extract_buffered_coords,eval=F}
 # Total grassland and cereal cropland cells in surrounding area
@@ -165,7 +192,6 @@ extract_buffered_coords(occ.data=sample_filt_data,
                         spatial.res.metres = 500,
                         GEE.math.fun = "sum",
                         moving.window.matrix=matrix,
-                        extraction.drive.folder = save.drive.folder,
                         user.email= user.email,
                         save.method="split",
                         temporal.level="year",
@@ -174,14 +200,14 @@ extract_buffered_coords(occ.data=sample_filt_data,
                         varname = variablenames[3],
                         save.directory=extraction_directory_3
 )
-
-
 ```
 
 
 ## Summary
 
-At the end of this vignette, we now have a complete data frame of filtered species occurrence and pseudo-absence records with associated extracted dynamic variables. Let’s save this to our project directory for use in the next tutorial!
+At the end of this vignette, we now have a complete data frame of filtered species occurrence and
+pseudo-absence records with associated extracted dynamic variables. Let’s save this to our project
+directory for use in the next tutorial!
 
 ```{r save extracted data,eval=F}
 complete.dataset <- extract_coords_combine(varnames = variablenames,

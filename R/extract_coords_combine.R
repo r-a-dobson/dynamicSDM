@@ -52,7 +52,8 @@
 #'  save.directory = tempdir()
 #' )
 #'
-#' extract_coords_combine(varnames = c("eightweekprec", "annualweekprec"), local.directory = tempdir())
+#'extract_coords_combine(varnames = c("eightweekprec", "annualweekprec"), local.directory =
+#'tempdir())
 #'@export
 
 extract_coords_combine <- function(varnames,

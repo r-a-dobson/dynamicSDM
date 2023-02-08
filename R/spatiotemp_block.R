@@ -14,8 +14,8 @@
 #'  `spatial.layer` by. Required if `spatial.layer` given.
 #'@param temporal.block optional; a character string or vector, the time step for sampling unit
 #'  splitting. Any combination of `day`, `month`, `year` or `quarter.` See details.
-#'@param n.blocks optional; a numeric value, the number of blocks to group occurrence records into.
-#'  Default; 10.
+#'@param n.blocks optional; a numeric value not equal to one, the number of blocks to group
+#'  occurrence records into. Default; 10.
 #'@param iterations optional; a numeric value, the number of random block groupings to trial before
 #'  selecting the optimal grouping. Default; 5000.
 #'@details
@@ -93,12 +93,17 @@ spatiotemp_block <- function(occ.data,
     # Save occ.data to return with added block column at end
     occ.data.save <- occ.data
 
+    if (n.blocks < 2) {
+      stop("n.blocks must be over one for blocking")
+    }
+
     if (missing(spatial.layer)) {
       message("spatial.layer is missing. No blocking by spatial features.")
     }
 
     if (missing(temporal.block)) {
       message("temporal.block is missing. No blocking by temporal features.")
+      temporal.block.2 <-NULL
     }
 
     if (!missing(temporal.block)) {
@@ -116,13 +121,13 @@ spatiotemp_block <- function(occ.data,
 
     if (!missing(spatial.layer)) {
 
-      if (!class(spatial.layer) == "RasterLayer") {
+      if (!inherits(spatial.layer, "RasterLayer")) {
         stop("spatial.layer must be of class RasterLayer")
       }
       if (missing(spatial.split.degrees)) {
         stop("spatial.layer given but not spatial.split.degrees")
       }
-      if (!class(spatial.split.degrees) == "numeric") {
+      if (!inherits(spatial.split.degrees, "numeric")) {
         stop("spatial.split.degrees must be of class numeric")
       }
 
@@ -154,9 +159,9 @@ spatiotemp_block <- function(occ.data,
 
     # Set column names depending on methods employed
 
-    cols <-c(if (exists("split1")) "split1",
-             if (exists("split2")) "split2",
-             if (exists("temporal.block.2")) temporal.block.2)
+    cols <-c(if("split1" %in% colnames(occ.data)) "split1",
+             if("split2" %in% colnames(occ.data)) "split2",
+             if(all(temporal.block.2 %in% colnames(occ.data))) temporal.block.2)
 
     ## Create unique ID based on the spatial.layer, split cell and temporal
 
@@ -252,8 +257,10 @@ spatiotemp_block <- function(occ.data,
     # So no variable has more weighting than another when minimising mean/var
 
     results <- as.data.frame(sapply(results, function(x) {(x - min(x)) / (max(x) - min(x))}))
+
+
     # Select grouping with minimum variance in mean and range across variables.
-    optimal.blocking <- groupings[[which.min(rowSums(results))]]
+    optimal.blocking <- groupings[[which.min(rowSums(results,na.rm=T))]]
 
     # Extract sample units within each block of optimal grouping
     blocks <- lapply(optimal.blocking, function(x) {x[, "ID_BL"]})

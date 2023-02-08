@@ -83,4 +83,56 @@ install_github("r-a-dobson/dynamicSDM")
 
 ```
 
+# Common installation errors 
+
+dynamicSDM depends on a range of spatial and graphic R packages, which may result in some persistent
+errors on installation or running of certain functions. 
+
+If you encounter an error or bug when installing and using dynamicSDM, please post a comment
+[here](https://github.com/r-a-dobson/dynamicSDM/issues) for guidance and support from us. 
+
+Below we have outlined common errors and typical solutions to try, depending on your operating
+system
+
+#### rgl error 
+
+```{r}
+# Loading rgl's DLL failed. This build of rgl depends on XQuartz, which failed to load.
+options(rgl.useNULL = TRUE)
+library(rgl)
+```
+
+#### installing dependency package terra 
+
+```{Homebrew}
+brew install pkg-config
+brew install gdal
+```
+
+```{Linux}
+sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev netcdf-bin 
+```
+
+```{r}
+install.packages("Rcpp")
+install.packages('terra', repos='https://rspatial.r-universe.dev')
+```
+
+
+#### installing dependency package magick 
+
+On MacOS run the following in Homebrew:
+```{Homebrew}
+ brew install imagemagick@6
+```
+
+On Linux run the following:
+```{Linux}
+sudo apt-get install -y libmagick++-dev
+```
+
+
+
+
+
 

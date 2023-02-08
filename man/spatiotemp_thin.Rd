@@ -9,7 +9,7 @@ spatiotemp_thin(
   temporal.method,
   temporal.dist,
   spatial.split.degrees,
-  spatial.dist,
+  spatial.dist = 0,
   iterations = 100
 )
 }
@@ -26,7 +26,8 @@ records. One of \code{DOY} or \code{day.} See details for more information.}
 \item{spatial.split.degrees}{a numeric value, the grid cell resolution in degrees to split
 occurrence records by before temporal thinning.}
 
-\item{spatial.dist}{a numeric value, the spatial buffer distances in metres to thin records by.}
+\item{spatial.dist}{a numeric value, the spatial buffer distances in metres to thin records by.
+Default no spatial thinning.}
 
 \item{iterations}{a numeric value, the number of iterations to randomly thin occurrence records
 by. Default; 100.}
@@ -41,10 +42,8 @@ Thins species occurrence records that are within minimum spatial and temporal di
 \section{Overview}{
 \code{spatiotemp_thin()} calculates the temporal distance between occurrence records in given area
 and excludes records below minimum temporal distance apart. Then calculates spatial distance
-between all occurrence records and filters records below minimum spatial distance apart. Thus,
-\code{spatiotemp_thin()} offers spatial and temporal thinning, improving functionality for dynamic species
-distribution modelling compared to existing \code{spThin} package functions (Aiello-Lammens et al.,
-2015).
+between all occurrence records and filters records below minimum spatial distance apart using
+existing \code{spThin} package functions (Aiello-Lammens et al., 2015).
 }
 
 \section{Temporal thinning methods}{
@@ -80,8 +79,8 @@ towards a given point in linear time.
 Following temporal thinning, spatial thinning occurs across entire dataset. The spatial distance
 between each record is calculated, and records within the given spatial distance (\code{spatial.dist})
 from each other are excluded by randomly selecting one of these. This iterates through until no
-records are with the given spatial distances of each other across entire dataset, again following
-a similar algorithm to \code{spThin} (Aiello-Lammens et al., 2015).
+records are with the given spatial distances of each other across entire dataset using package
+\code{spThin} (Aiello-Lammens et al., 2015).
 
 As random selection could alter the total number of occurrence records remaining in the occurrence
 record dataset, this process is iterated through a specified number of times and the thinned data
@@ -92,13 +91,18 @@ frame with the highest number of records remaining is returned.
 
 data("sample_filt_data")
 
+n.iterations <- 500
+\dontshow{
+sample_filt_data<-sample_filt_data[1:50,]
+n.iterations <- 1
+}
 spatiotemp_thin(
  occ.data = sample_filt_data,
  temporal.method = "day",
  temporal.dist = 100,
  spatial.split.degrees = 3,
  spatial.dist = 100000,
- iterations = 5
+ iterations = n.iterations
 )
 }
 \references{

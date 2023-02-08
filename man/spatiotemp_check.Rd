@@ -34,8 +34,8 @@ One of \code{exclude} or \code{ignore}: can be abbreviated. Default; \code{exclu
 \item{date.handle}{a character string, method for handling invalid dates in record data. One of
 \code{exclude} or \code{ignore}: can be abbreviated. Default; \code{exclude}.}
 
-\item{date.res}{a character string, stating the temporal resolution to exclude dates by. One of
-\code{year}, \code{month} or \code{day}.}
+\item{date.res}{a character string, stating the temporal resolution to complete checks on. One of
+\code{year}, \code{month} or \code{day}. Default \code{day}.}
 
 \item{coordclean}{a logical indicating whether to run function
 \code{clean_coordinates} from package \code{CoordinateCleaner} on \code{occ.data}. Default = FALSE.}
@@ -58,7 +58,10 @@ Checks the occurrence record data frame contains the column names and classes re
 dynamicSDM functions. Option to exclude records containing missing, duplicate or invalid
 co-ordinates or dates.
 }
-\details{
+\section{\code{date.res} argument}{
+The date.res states the resolution to check dates at. This includes when searching for duplicate
+records, removing records with NA values and checking for invalid dates.
+
 Record dates and co-ordinates are checked for validity using the following rules:
 \itemize{
 \item Dates must be real dates that could exist. For example, 50th February 2000 is not a valid date.
@@ -66,6 +69,7 @@ Record dates and co-ordinates are checked for validity using the following rules
 between -90 and 90 to be considered valid.
 }
 }
+
 \section{\code{CoordinateCleaner} compatibility}{
 \code{spatiotemp_check()} acts as a helper function for compatibility with the R package
 \code{CoordinateCleaner} (Zizka et al., 2019), which offers a diversity of functions for checking the
@@ -101,7 +105,7 @@ filtered_CC<-spatiotemp_check(
  date.handle = "exclude",
  duplicate.handle = "exclude",
  na.handle = "exclude",
- coordclean = T,
+ coordclean = TRUE,
  coordclean.species = "quelea",
  coordclean.handle = "exclude"
 )

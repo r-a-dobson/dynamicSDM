@@ -33,8 +33,8 @@ southern Africa and quality checked using \code{dynamicSDM} functions.
 The variables are as follows:
 }
 \references{
-GBIF.org (12 July 2021) GBIF Occurrence Download \url{https://doi.org/10.15468/dl.ppcu6q}
+GBIF.org (12 July 2021) GBIF Occurrence Download \doi{10.15468/dl.ppcu6q}
 
-GBIF.org (25 July 2022) GBIF Occurrence Download \url{https://doi.org/10.15468/dl.k2kftv}
+GBIF.org (25 July 2022) GBIF Occurrence Download \doi{10.15468/dl.k2kftv}
 }
 \keyword{datasets}

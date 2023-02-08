@@ -4,10 +4,10 @@
 #' functions.
 #'
 #' @param gbif.df a data frame, the direct output from GBIF occurrence record download.
-#' @details For most `dynamicSDM` functions, an occurrence data frame with record co-ordinate columns
-#'   labelled "x" and "y" with numeric columns for record "day", "month" and "year" are required.
-#'   This functions takes the input data frame and returns a reformatted data frame suitable for
-#'   direct input into `dynamicSDM` functions.
+#' @details For most `dynamicSDM` functions, an occurrence data frame with record co-ordinate
+#'   columns labelled "x" and "y" with numeric columns for record "day", "month" and "year" are
+#'   required. This functions takes the input data frame and returns a reformatted data frame
+#'   suitable for direct input into `dynamicSDM` functions.
 #' @return Returns data frame correctly formatted for input into `dynamicSDM` functions.
 #' @examples
 #'

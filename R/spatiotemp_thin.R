@@ -8,6 +8,7 @@
 #'@param temporal.method a character string, the method to calculate temporal distance between
 #'  records. One of `DOY` or `day.` See details for more information.
 #'@param spatial.dist a numeric value, the spatial buffer distances in metres to thin records by.
+#'  Default no spatial thinning.
 #'@param temporal.dist a numeric value, the temporal buffer in days to thin records by.
 #'@param spatial.split.degrees a numeric value, the grid cell resolution in degrees to split
 #'  occurrence records by before temporal thinning.
@@ -17,10 +18,8 @@
 #'# Overview
 #'`spatiotemp_thin()` calculates the temporal distance between occurrence records in given area
 #'and excludes records below minimum temporal distance apart. Then calculates spatial distance
-#'between all occurrence records and filters records below minimum spatial distance apart. Thus,
-#'`spatiotemp_thin()` offers spatial and temporal thinning, improving functionality for dynamic species
-#'distribution modelling compared to existing `spThin` package functions (Aiello-Lammens et al.,
-#'2015).
+#'between all occurrence records and filters records below minimum spatial distance apart using
+#'existing `spThin` package functions (Aiello-Lammens et al., 2015).
 #'
 #'
 #'# Temporal thinning methods
@@ -50,8 +49,8 @@
 #'Following temporal thinning, spatial thinning occurs across entire dataset. The spatial distance
 #'between each record is calculated, and records within the given spatial distance (`spatial.dist`)
 #'from each other are excluded by randomly selecting one of these. This iterates through until no
-#'records are with the given spatial distances of each other across entire dataset, again following
-#'a similar algorithm to `spThin` (Aiello-Lammens et al., 2015).
+#'records are with the given spatial distances of each other across entire dataset using package
+#'`spThin` (Aiello-Lammens et al., 2015).
 #'
 #'As random selection could alter the total number of occurrence records remaining in the occurrence
 #'record dataset, this process is iterated through a specified number of times and the thinned data
@@ -66,13 +65,18 @@
 #'
 #' data("sample_filt_data")
 #'
+#' n.iterations <- 500
+#'\dontshow{
+#'sample_filt_data<-sample_filt_data[1:50,]
+#'n.iterations <- 1
+#'}
 #'spatiotemp_thin(
 #'  occ.data = sample_filt_data,
 #'  temporal.method = "day",
 #'  temporal.dist = 100,
 #'  spatial.split.degrees = 3,
 #'  spatial.dist = 100000,
-#'  iterations = 5
+#'  iterations = n.iterations
 #')
 #'@export
 
@@ -80,7 +84,7 @@ spatiotemp_thin <-  function(occ.data,
                              temporal.method,
                              temporal.dist,
                              spatial.split.degrees,
-                             spatial.dist,
+                             spatial.dist = 0,
                              iterations = 100) {
 
 
@@ -103,11 +107,11 @@ spatiotemp_thin <-  function(occ.data,
   }
 
   # Round min coords down to nearest 10 to ensure all points included in a cell
-  xmin <- floor(min(occ.data$x) / 10) * 10
-  ymin <- floor(min(occ.data$y) / 10) * 10
+  xmin <- floor(min(occ.data$x, na.rm = T) / 10) * 10
+  ymin <- floor(min(occ.data$y, na.rm = T) / 10) * 10
   # Round max coords up to nearest 10 to ensure all points included in a cell
-  xmax <- ceiling(max(occ.data$x) / 10) * 10
-  ymax <- ceiling(max(occ.data$y) / 10) * 10
+  xmax <- ceiling(max(occ.data$x, na.rm = T) / 10) * 10
+  ymax <- ceiling(max(occ.data$y, na.rm = T) / 10) * 10
 
   # Create a grid using the rounded minimum and maximum longitude and latitude
   split_grid <- raster::raster(raster::extent(c(xmin, xmax, ymin, ymax)))
@@ -119,9 +123,16 @@ spatiotemp_thin <-  function(occ.data,
   split_grid <- raster::setValues(split_grid,  1:raster::ncell(split_grid))
 
   # Convert occ.data co-ordinates into spatial points
+  tryCatch({
   occ.data.points <- sp::SpatialPointsDataFrame(data = occ.data,
                                                 coords = cbind(occ.data$x,
                                                                occ.data$y))
+  }, error = function(e) {
+
+    stop(print(e),
+         "Error making SpatialPointsDataFrame from co-ordinates filter occ.data spatiotemp_check()")
+    })
+
   # Extract grid cell number each record belongs to, to group before thinning
    split2 <- raster::extract(split_grid, occ.data.points)
 
@@ -178,13 +189,11 @@ spatiotemp_thin <-  function(occ.data,
       if (temporal.method == "day") {
 
         # Standardise all dates compared to earliest data in data.frame
-        dayssince <-
-          as.Date(with(occ.data.split, paste(year, month, day, sep = "-")),
+        dayssince <- as.Date(with(occ.data.split, paste(year, month, day, sep = "-")),
                   "%Y-%m-%d") -
           min(as.Date(with(
             occ.data.split, paste(year, month, day, sep = "-")
           ), "%Y-%m-%d"))
-
         # Create matrix of distance apart in days of each date
         matrix <- as.matrix(dist(dayssince))
         matrix <- matrix < temporal.dist
@@ -242,58 +251,26 @@ spatiotemp_thin <-  function(occ.data,
     # Spatial thinning
     #-------------------------------------------------------
 
-    # Which distances between records are below the distance set by user
-    distance_matrix <- geodist::geodist(data.frame(results$x, results$y),
-                                        measure = 'geodesic') < spatial.dist
+    # Create species column that spThin requires
+    results$species <- rep("species1", nrow(results))
 
-    # Set diagonal as FALSE as these will always be below the spatial.dist
-    diag(distance_matrix) <- FALSE
 
-    # Create empty list to fill with thinned dataset after each iteration
+    # This loop will be iterated as specified by iterations so only five reps here
+    thin_res <- spThin::thin(loc.data = results,
+                            long = "x",
+                            lat = "y",
+                            spec.col = "species",
+                            thin.par = spatial.dist/1000, # in km but dynSDM uses metres
+                            reps = 1,
+                            write.files = F,
+                            write.log.file = F,
+                            locs.thinned.list.return = T)
 
-    matrix.original <- distance_matrix
 
-    # Work out how many records each record is under the thinning distance from
-    level.of.overlap <- rowSums(matrix.original, na.rm = T)
+    results <- results[as.numeric(rownames(as.data.frame(thin_res))), ]
 
-    # Make a vector of TRUE to record which row gets removed in the iteration
-    record.of.removal <- rep(TRUE, length(level.of.overlap))
-
-    # For each iteration reset these
-    matrix <- matrix.original
-    overlap <- level.of.overlap
-    remove <- record.of.removal
-
-    # While there are still records too close together,
-    # keep iterating through and randomly removing them
-    # and look at impact on others to select next record to remove
-
-    while (any(matrix)) {
-
-      # Identify rows with highest overlap as we want to exclude these first
-      rows.to.remove <- as.numeric(which(overlap == max(overlap, na.rm = T)))
-
-      # Randomly select one of the rows with highest overlap to exclude first
-      rows.to.remove <- sample(rows.to.remove, 1)
-
-      # Remove the row from  distance matrix, minus its impact from overlap
-      overlap <- overlap - matrix[rows.to.remove, ]
-
-      # Removed row no longer overlaps any others
-      overlap[rows.to.remove] <- 0
-
-      # Change value of removed row from TRUE to FALSE as removed from matrix
-      matrix[rows.to.remove, ] <- FALSE
-      matrix[, rows.to.remove] <- FALSE
-
-      # Keep record of which rows to remove from final occurrence data frame
-      remove[rows.to.remove] <- FALSE
-    }
-
-    # Make the new, thinned, data set
-    thinned.data.frame <- results[remove, , drop = FALSE]
-
-    list.of.thinned.dfs[[It]] <- thinned.data.frame
+    # Remove species name column
+      list.of.thinned.dfs[[It]] <- results[, -which(names(results) %in% c("species"))]
   }
 
   # Calculate which thinned dataframe has the most records remaining
@@ -301,6 +278,9 @@ spatiotemp_thin <-  function(occ.data,
   n.records <- unlist(lapply(list.of.thinned.dfs, nrow))
 
   thinned.df <- as.data.frame(list.of.thinned.dfs[which.max(n.records)])
+
+  # Remove split name
+  thinned.df <- thinned.df[, -which(names(thinned.df) %in% c("split2"))]
 
   return(thinned.df)
 }

@@ -10,8 +10,8 @@
 #'  represents start of temporal extent and second date represents end of temporal extent for
 #'  inclusion.
 #'@param spatial.ext the spatial extent to filter by. Object from which extent can be extracted of
-#'  class `Extent`, `RasterLayer`, `sf` or `polygon` or numeric vector listing xmin, xmax, ymin and
-#'  ymax in order.
+#'  class `Extent`, `RasterLayer`, `SpatialPolygonsDataFrame`,`sf` or `polygon` or numeric vector
+#'  listing xmin, xmax, ymin and ymax in order.
 #'@param prj a character string, the coordinate reference system of input `occ.data` co-ordinates
 #'  Default is "+proj=longlat +datum=WGS84".
 #'@details # Spatial extent
@@ -19,6 +19,7 @@
 #'If `spatial.ext` is provided, `spatiotemp_extent()` checks whether species occurrence record
 #'co-ordinates are within the given spatial extent of the study (`spatial.ext`) and excludes any
 #'outside of this extent.
+#'
 #'
 #'If `spatial.ext` object can be used as a mask by `raster::mask()` then the mask is used to filter
 #'records in a more targetted way. If not, then the rectangular extent of the `spatial.ext` object
@@ -100,14 +101,14 @@ spatiotemp_extent <- function(occ.data,
     }
 
     # Create spatial points dataframe from occurrence records
-    points<-sp::SpatialPointsDataFrame(coords = occ.data[,c("x","y")],
+    points <- sp::SpatialPointsDataFrame(coords = occ.data[,c("x","y")],
                                        data = occ.data,
                                        proj4string = sp::CRS(prj))
-    r<-spatial.ext
+    r <- spatial.ext
 
     # Convert sf object to Spatial object that can be tranformed into raster
     if("sf" %in% class(spatial.ext)){
-      spatial.ext<-as(spatial.ext,"Spatial")}
+      spatial.ext <- as(spatial.ext,"Spatial")}
 
 
     # Convert polygon object to Extent object that can be transformed into raster
@@ -119,10 +120,14 @@ spatiotemp_extent <- function(occ.data,
       r<-raster::extent(xmin,xmax,ymin,ymax)}
 
 
+    if("RasterLayer" %in% class(spatial.ext)){
+      spatial.ext <- raster::rasterToPolygons(spatial.ext)}
+
+
     # Convert spatial.ext to raster in same projection
     r <- raster::raster(r)
     raster::crs(r) <- prj
-    raster::res(r)<-0.01 # High resolution for precise clipping
+    raster::res(r) <- 0.01 # High resolution for precise clipping
     r <- raster::setValues(r, values = 1:raster::ncell(r)) # Set fake raster values - not important
 
 
@@ -130,7 +135,9 @@ spatiotemp_extent <- function(occ.data,
     tryCatch({
       r <- raster::mask(r, spatial.ext)
     }, error = function(error_message) {
-      r <- r })
+      r <- r
+      print("spatial.mask could not be used. Check valid input type.")})
+
 
     # Remove points that return NA as these do not overlap the spatial extent
     occ.data<-occ.data[!is.na(raster::extract(r,points)),]

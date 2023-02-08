@@ -4,8 +4,8 @@
 #'projection date using Google Earth Engine.
 #'@param dates a character string, vector of dates in format "YYYY-MM-DD".
 #'@param spatial.ext the spatial extent for the extracted raster. Object from which extent can be
-#'  extracted of class `Extent`, `RasterLayer`, `sf` or `polygon` or numeric vector listing xmin,
-#'  xmax, ymin and ymax in order.
+#'  extracted of class `Extent`, `RasterLayer`,`SpatialPolygonsDataFrame`, `sf` or `polygon` or
+#'  numeric vector listing xmin, xmax, ymin and ymax in order.
 #'@param datasetname a character string, the Google Earth Engine dataset to extract data from.
 #'@param bandname a character string, the Google Earth Engine dataset bandname to extract data for.
 #'@param temporal.level a character string indicating the temporal resolution of the remote-sensing
@@ -29,10 +29,10 @@
 #'  are categorical. See details for more information.
 #'@param save.directory optional; a character string, path to local directory to save extracted
 #'  rasters to.
-#'@param save.drive.folder a character string, Google Drive folder to save extracted rasters to.
-#'  Folder must be uniquely named within Google Drive. Do not provide path.
-#'@param agg.factor optional; a numeric value, the factor to aggregate data by before spatial
-#'  buffering.
+#'@param save.drive.folder optional; a character string, Google Drive folder to save extracted
+#'  rasters to. Folder must be uniquely named within Google Drive. Do not provide path.
+#'@param agg.factor optional;a postive integer, the aggregation factor expressed as number of cells
+#'  in each direction. See details.
 #'@details For each projection date, this function downloads rasters at given spatial extent and
 #'  resolution for spatially buffered and temporally dynamic explanatory variables. Rasters are
 #'  saved directly to Google Drive, with option to export to local directory too. These can be
@@ -49,9 +49,13 @@
 #'
 #'  # Categorical data and temporally dynamic variables
 #'
-#'  Please be aware, at current this function does not support the extraction of temporally dynamic
-#'  variables for categorical datasets. However, some accepted mathematical functions such as
-#'  "first" or "last" may be appropriate for such datasets.
+#'  Please be aware, if specific categories are given (argument `categories`) when extracting
+#'  categorical data, then temporal buffering cannot be completed. The most recent categorical data
+#'  to the occurrence record date will be used and spatial buffering will take place.
+#'
+#'  If, specific categories are not given when extracting from categorical datasets, be careful to
+#'  choose appropriate mathematical functions for such data. For instance, "first" or "last" may be
+#'  more relevant that "sum" of land cover classification numbers.
 #'
 #'
 #'  # Spatial dimension
@@ -80,6 +84,17 @@
 #'
 #'  For example, this function could return the sum of suitable land cover classified cells in the
 #'  “moving window” from each cell across spatial extent given.
+#'
+#'
+#'  # Aggregation factor
+#'
+#'  `agg.factor` given represents the factor to aggregate `RasterLayer` data with function
+#'  `aggregate` in `raster` R package (Hijmans et al., 2015). Aggregation uses the `GEE.math.fun` as
+#'  the function. Following aggregation spatial buffering using the moving window matrix occurs.
+#'  This is included to minimise computing time if data are of high spatial resolution and a large
+#'  spatial buffer is needed. Ensure to calculate `get_moving_window()` with the spatial resolution
+#'  of the data post-aggregation by this factor.
+#'
 #'
 #'  # Google Earth Engine
 #'
@@ -170,11 +185,24 @@ extract_buffered_raster <- function(dates,
 
      if (missing(temporal.level)) {stop("temporal.level is missing.")}
 
-    if (missing(save.drive.folder)) {stop("save.drive.folder is missing")}
 
-  if (!any(class(spatial.ext)  %in% c("numeric", "sf", "Extent", "RasterLayer", "Polygon"))) {
-    stop("spatial.ext must be class numeric, Extent, sf, RasterLayer or Polygon")
+  if (!any(class(spatial.ext) %in% c("numeric",
+                                     "SpatialPolygonsDataFrame",
+                                     "Extent",
+                                     "RasterLayer",
+                                     "Polygon",
+                                     "sf"))) {
+
+    stop("Please check the class of spatial.ext")
+
   }
+
+
+  if (missing(save.directory) && missing(save.drive.folder)) {
+    stop("Please give save.directory or save.drive.folder to export raster to.")
+  }
+
+
 
     # Check user email provided
     if (missing(user.email)) {stop("Provide user.email for Google Drive")}
@@ -266,7 +294,7 @@ extract_buffered_raster <- function(dates,
 
       ### Numeric extent to co-ords
 
-      if (class(spatial.ext) == "numeric" && !length(spatial.ext) == 4) {
+      if (inherits(spatial.ext, "numeric") && !length(spatial.ext) == 4) {
         stop("spatial.ext should be length four: xmin, xmax, ymin and ymax")
       }
 
@@ -282,7 +310,7 @@ extract_buffered_raster <- function(dates,
                                            c(xmax,  ymax),
                                            c(xmax,  ymin)))
 
-      if (missing(temporal.res)) {
+      if (missing(temporal.res) ||  !missing(categories)) {
 
         extraction_date <- as.character(extraction_date)
 
@@ -375,7 +403,7 @@ extract_buffered_raster <- function(dates,
       tryCatch({
         rgee::ee_as_raster(
           image = image_collection_reduced,
-          container = save.drive.folder,
+          container = "dynamicSDM_download_bucket",
           scale = spatial.res.metres,
           dsn = paste0(varname, "_", date1, "_unprocessed"),
           region = geometry,
@@ -497,6 +525,7 @@ extract_buffered_raster <- function(dates,
       raster::writeRaster(focalraster, pathforthisfile, overwrite = T)
 
 
+      if(!missing(save.drive.folder)){
       # Check folder exists in  Google Drive
       save.folderpath <- googledrive::drive_find(pattern = save.drive.folder, type = 'folder')
 
@@ -515,15 +544,13 @@ extract_buffered_raster <- function(dates,
         stop("save.drive.folder doesn't exist")
       }
 
-
-
       googledrive::drive_upload(
         media = pathforthisfile,
         path = googledrive::as_id(save.folderpath$id),
         name = paste0(varname, "_", date1, ".tif"),
         overwrite = T
       )
-
+   }
       if (temporal.level == "month") {
         dates.in.period <- merge(uniquedates[x, , drop = F],
                                  dates_df,
@@ -546,6 +573,10 @@ extract_buffered_raster <- function(dates,
       }
 
       if (length(dates.in.period) > 1) {
+
+
+        if (!missing(save.drive.folder)) {
+
         lapply(dates.in.period[2:length(dates.in.period)], FUN = function(savefile)
             googledrive::drive_upload(
               media = pathforthisfile,
@@ -553,7 +584,7 @@ extract_buffered_raster <- function(dates,
               name = paste0(varname, "_", savefile, ".tif"),
               overwrite = T
             )
-        )
+        )}
 
       if (!missing(save.directory)) {
 
@@ -575,7 +606,12 @@ extract_buffered_raster <- function(dates,
       print(paste0("Data extracted to Google Drive folder:", save.drive.folder))
     }
 
-    if (!missing(save.directory)) {
+    if (missing(save.drive.folder)) {
+      print(paste0("Data extracted to local directory:",
+                   save.directory))
+    }
+
+    if(!missing(save.directory) && !missing(save.drive.folder)){
       print(paste0("Data extracted to Google Drive folder:",
                    save.drive.folder,
                    " and local directory:",

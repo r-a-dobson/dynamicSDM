@@ -47,18 +47,25 @@
 #'
 #'  Options for colour palettes using `viridis` are illustrated at:
 #'  <https://ggplot2.tidyverse.org/reference/scale_viridis.html>. Available options include: "magma"
-#'  (or "A"), "inferno" (or "B"), "plasma" (or "C"), "viridis" (or "D", the default option) and
-#'  "cividis" (or "E").
-#' @references Wickham, H., and Chang, W, 2016. Package ‘ggplot2’. Create elegant data visualisations
-#'  using the grammar of graphics. Version, 2(1), pp.1-189.
+#'  (or "A"), "inferno" (or "B"), "plasma" (or "C"), "viridis" (or "D", the default option),
+#'  "cividis" (or "E"), "rocket" (or "F"), "mako"(or "G") and "turbo" (or "H").
+#'
+#'
+#'
+#'
+#' @references Wickham, H., and Chang, W, 2016. Package ‘ggplot2’. Create elegant data
+#'   visualisations using the grammar of graphics. Version, 2(1), pp.1-189.
 #' @return Exports GIF to Google Drive folder or local directory.
 #' @examples
 #'projectiondates <- dynamic_proj_dates(startdate = "2018-01-01",
 #'                                      enddate = "2018-12-01",
 #'                                      interval = 3,
 #'                                      interval.level = "month")
-#' data(sample_proj_rast)
-#'
+#'data(sample_proj_rast)
+#'\dontshow{
+#'sample_proj_rast<-raster::subset(sample_proj_rast, 1)
+#'projectiondates<-projectiondates[1]
+#'}
 #'# Save sample projection rasters to replicate output from `dynamic_proj()`
 #'raster::writeRaster(
 #'  sample_proj_rast,
@@ -75,7 +82,6 @@
 #')
 #'
 #'@export
-
 
 dynamic_proj_GIF <- function(dates,
                              projection.type,
@@ -110,9 +116,9 @@ dynamic_proj_GIF <- function(dates,
     tempfilelist <- NULL # Empty vector to bind  written .png file names to
 
     # Iterate through each projection date.
-    for (x in 1:length(dates)) {
+    for (d in 1:length(dates)) {
 
-      date <- dates[x]
+      date <- dates[d]
 
       # Read in projection rasters from local directory
       if (!missing(local.directory)) {
@@ -148,17 +154,16 @@ dynamic_proj_GIF <- function(dates,
                                                     drive.folderpath$name), ]
         }
 
-
-        # Get raster file name
-        filename <- googledrive::drive_ls(path = googledrive::as_id(drive.folderpath$id))$name
-        filename <- filename[grep(date, filename)] # Select files for date and
-        filename <- filename[grep(projection.type, filename)] # projection.type.
+        drivefiles <- googledrive::drive_ls(path = googledrive::as_id(drive.folderpath$id))[,1:2]
+        fileid <- drivefiles[grep(date, drivefiles$name),]
+        fileid <- fileid[grep(projection.type, fileid$name),"id"]
 
         #Read raster file into R
         pathforthisfile <- paste0(tempfile(), ".tif") # Create temp file name
 
         # Download raster to temp dir
-        googledrive::drive_download(file = filename, path = pathforthisfile, overwrite = T)
+        googledrive::drive_download(file = googledrive::as_id(fileid$id),
+                                    path = pathforthisfile, overwrite = T)
         projraster <- raster::raster(pathforthisfile) # Import raster
       }
 
@@ -180,11 +185,12 @@ dynamic_proj_GIF <- function(dates,
 
       x <- projraster$x
       y <- projraster$y
+
       value <- projraster$value
       # Plot projection with ggplot2
       plot <- ggplot2::ggplot(data = projraster) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value)) +
-        ggplot2::ggtitle(dates[x]) +
+        ggplot2::ggtitle(as.character(date)) +
         viridis::scale_fill_viridis(
           option=colour.palette,
           name = legend.name,
@@ -200,9 +206,9 @@ dynamic_proj_GIF <- function(dates,
       # Save temporary  png file of plot
       tempname <- paste0(tempfile(), ".png")
       tempfilelist <- c(tempfilelist, tempname)
-      png(filename = paste0(tempname), width = width, height = height)
+      grDevices::png(filename = paste0(tempname), width = width, height = height)
       print(plot)
-      dev.off()
+      grDevices::dev.off()
     }
 
     # Read in all png images and create a GIF file

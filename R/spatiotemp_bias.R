@@ -111,7 +111,7 @@ spatiotemp_bias <-  function(occ.data,
 
     # Plot histogram of frequency of records for each day to visualise bias
     p<- ggplot2::ggplot(occ.data,
-                                     ggplot2::aes_string(x = as.numeric(as.vector((occ.data[, temp])))))+
+                     ggplot2::aes_string(x = as.numeric(as.vector((occ.data[, temp])))))+
                      ggplot2::geom_histogram(binwidth = 1,
                                              color = "black",
                                              fill = "white")+
@@ -144,7 +144,7 @@ spatiotemp_bias <-  function(occ.data,
             ID = "A")))
 
     # Crop occ.data to this area
-    clipped.occ <- spatiotemp_extent(occ.data, spatial.ext = area, prj = prj)
+    clipped.occ <- dynamicSDM::spatiotemp_extent(occ.data, spatial.ext = area, prj = prj)
 
   }
 
@@ -169,7 +169,7 @@ spatiotemp_bias <-  function(occ.data,
 
 
     # Crop occ.data to this area
-    clipped.occ <- spatiotemp_extent(occ.data, spatial.ext = area, prj = prj)
+    clipped.occ <- dynamicSDM::spatiotemp_extent(occ.data, spatial.ext = area, prj = prj)
   }
 
   if (spatial.method == "convex_hull") {
@@ -180,7 +180,7 @@ spatiotemp_bias <-  function(occ.data,
     area <- sf::as_Spatial(area)
 
     # Crop occ.data to this area
-    clipped.occ <- spatiotemp_extent(occ.data, spatial.ext = area, prj = prj)
+    clipped.occ <- dynamicSDM::spatiotemp_extent(occ.data, spatial.ext = area, prj = prj)
 
   }
 
@@ -188,8 +188,7 @@ spatiotemp_bias <-  function(occ.data,
   dist <- geosphere::distm(data.frame(clipped.occ$x, clipped.occ$y))
 
   # Calculate which column contain the minimum distance from another record
-  min.d <- apply(dist, 1, function(x)
-    order(x, decreasing = F)[2])
+  min.d <- apply(dist, 1, function(x)   order(x, decreasing = F)[2])
 
   # Add column numbers for each occurrence record
   min.d <- cbind(min.d, rep(1:ncol(dist), 1))

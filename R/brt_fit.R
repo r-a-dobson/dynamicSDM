@@ -15,8 +15,8 @@
 #'  spatiotemporal block numbers for `occ.data` splitting. See details for more information.
 #'@param weights.col a character string, the name of the column in `occ.data` containing
 #'  spatiotemporal sampling effort weights to be used in fitting process.
-#'@param test.data optional; a data frame, the testing dataset for optimising `interaction.depth` when
-#'  blocking is not used.
+#'@param test.data optional; a data frame, the testing dataset for optimising `interaction.depth`
+#'  when blocking is not used.
 #'@param n.trees optional; an integer, the number of trees in boosted regression tree models.
 #'  Default is 5000.
 #'@param shrinkage optional; an integer, the shrinkage parameter applied to each tree in the boosted
@@ -147,7 +147,7 @@ brt_fit <- function(occ.data,
 
 
   # Create formula using response and explanatory variables specified
-formula <- as.formula(paste(response.col, paste(varnames, collapse = " + "), sep = " ~ "))
+    formula <- stats::formula(paste(response.col, paste(varnames, collapse = " + "), sep = " ~ "))
 
     # Set response variable as correct class for "bernoulli" distribution
     if (distribution == "bernoulli") {

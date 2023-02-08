@@ -23,8 +23,8 @@ extract_dynamic_raster(
 \item{dates}{a character string, vector of dates in format "YYYY-MM-DD".}
 
 \item{spatial.ext}{the spatial extent for the extracted raster. Object from which extent can be
-extracted of class \code{Extent}, \code{RasterLayer}, \code{sf} or \code{polygon} or numeric vector listing xmin,
-xmax, ymin and ymax in order.}
+extracted of class \code{Extent}, \code{RasterLayer}, \code{SpatialPolygonsDataFrame}, \code{sf} or \code{polygon} or
+numeric vector listing xmin, xmax, ymin and ymax in order.}
 
 \item{datasetname}{a character string, the Google Earth Engine dataset to extract data from.}
 
@@ -50,8 +50,8 @@ be abbreviated.}
 \item{save.directory}{optional; a character string, path to local directory to save extracted
 rasters to.}
 
-\item{save.drive.folder}{a character string, Google Drive folder name to save extracted rasters
-to. Folder must be uniquely named within your Google Drive. Do not provide path.}
+\item{save.drive.folder}{optional; a character string, Google Drive folder name to save extracted
+rasters to. Folder must be uniquely named within your Google Drive. Do not provide path.}
 }
 \value{
 Returns details of successful explanatory variable extractions for each projection date.
@@ -102,6 +102,15 @@ functions (\url{https://developers.google.com/earth-engine/apidocs/}) for which 
 function is available. This includes: "allNonZero","anyNonZero", "count",
 "first","firstNonNull", "last", "lastNonNull", "max","mean", "median","min", "mode","product",
 "sampleStdDev", "sampleVariance", "stdDev", "sum" and "variance".
+}
+
+\section{Categorical data}{
+Please be aware, at current this function does not support the extraction of temporally dynamic
+variables for specific categories within categorical datasets.
+
+When extracting from categorical datasets, be careful to choose appropriate mathematical
+functions for such data. For instance, "first" or "last" may be more relevant that "sum" of land
+cover classification numbers.
 }
 
 \examples{

@@ -130,7 +130,8 @@ spatiotemp_autocorr <- function(occ.data,
 
     # Names the results
 
-    list.of.results.split <- list(Temporal_autocorrelation = list.of.temp, Spatial_autocorrelation= SA)
+    list.of.results.split <- list(Temporal_autocorrelation = list.of.temp,
+                                  Spatial_autocorrelation = SA)
 
     list.of.results[[v]] <- list.of.results.split # Bind results to list
 

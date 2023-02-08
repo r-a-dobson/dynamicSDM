@@ -88,8 +88,8 @@ instructions on \url{https://googledrive.tidyverse.org/}.
 
 Options for colour palettes using \code{viridis} are illustrated at:
 \url{https://ggplot2.tidyverse.org/reference/scale_viridis.html}. Available options include: "magma"
-(or "A"), "inferno" (or "B"), "plasma" (or "C"), "viridis" (or "D", the default option) and
-"cividis" (or "E").
+(or "A"), "inferno" (or "B"), "plasma" (or "C"), "viridis" (or "D", the default option),
+"cividis" (or "E"), "rocket" (or "F"), "mako"(or "G") and "turbo" (or "H").
 }
 
 \examples{
@@ -98,7 +98,10 @@ projectiondates <- dynamic_proj_dates(startdate = "2018-01-01",
                                      interval = 3,
                                      interval.level = "month")
 data(sample_proj_rast)
-
+\dontshow{
+sample_proj_rast<-raster::subset(sample_proj_rast, 1)
+projectiondates<-projectiondates[1]
+}
 # Save sample projection rasters to replicate output from `dynamic_proj()`
 raster::writeRaster(
  sample_proj_rast,

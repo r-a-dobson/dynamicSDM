@@ -5,8 +5,8 @@
 #'
 #'@param dates a character string, vector of dates in format "YYYY-MM-DD".
 #'@param spatial.ext optional; the spatial extent to crop explanatory variable rasters to. Object of
-#'  class `Extent`, `RasterLayer`, `sf`, `polygon` or numeric vector listing xmin, xmax, ymin and
-#'  ymax in order.
+#'  class `Extent`, `RasterLayer`, `sf`, `SpatialPolygonsDataFrame`, `polygon` or numeric vector
+#'  listing xmin, xmax, ymin and ymax in order.
 #'@param varnames a character string, the unique names for each explanatory variable.
 #'@param spatial.res.degrees optional; a numeric value, the spatial resolution in degrees for
 #'  projection rasters to be resampled to. Required if `spatial.ext` given.
@@ -194,8 +194,16 @@ dynamic_proj_covariates <- function(dates,
     # Check spatial.ext appropriate object class.
 
   if (!missing(spatial.ext)) {
-    if (!any(class(spatial.ext) %in% c("numeric", "sf", "Extent", "RasterLayer", "Polygon"))) {
-      stop("spatial.ext must be numeric, Extent, sf, RasterLayer or Polygon")
+
+    if (!any(class(spatial.ext) %in% c("numeric",
+                                       "SpatialPolygonsDataFrame",
+                                       "Extent",
+                                       "RasterLayer",
+                                       "Polygon",
+                                       "sf"))) {
+
+      stop("Please check spatial.ext is of the correct class")
+
     }
 
 
@@ -209,6 +217,7 @@ dynamic_proj_covariates <- function(dates,
       xmax <- extract_xy_min_max(spatial.ext)[2]
       ymin <- extract_xy_min_max(spatial.ext)[3]
       ymax <- extract_xy_min_max(spatial.ext)[4]
+
     }
 
     # If drive.folder given intitate Google Drive and list files in the folder(s)
@@ -239,7 +248,9 @@ dynamic_proj_covariates <- function(dates,
 
         if (nrow(folderpath) == 0) {stop("drive.folder does not exist.")}
 
-        drivefiles <- c(drivefiles, googledrive::drive_ls(path = googledrive::as_id(folderpath$id))$name)
+        drivefiles <- rbind(drivefiles,
+                        googledrive::drive_ls(path = googledrive::as_id(folderpath$id))[,1:2])
+
 
       }
     }
@@ -252,7 +263,7 @@ dynamic_proj_covariates <- function(dates,
 
     # Iterate through each projection date and variable.
 
-    listofdone <- NULL # Empty vector to record dates completed
+    listofdone <- as.Date("2000-01-01") # Date vector to record completed (removed before return)
 
     for (x in 1:length(dates)) {
       date <- dates[x]
@@ -265,13 +276,19 @@ dynamic_proj_covariates <- function(dates,
         # Read in raster for this variable and date from Google Drive
 
         if (!missing(drive.folder)) {
-          filedownload <- drivefiles[grep(name, drivefiles)]
-          filedownload <- filedownload[grep(date, filedownload)] # Select files
+
+          # Extract the ID for the file (prevents error if duplicate named files within Drive
+          fileid <- drivefiles[grep(name, drivefiles$name),]
+          fileid <- fileid[grep(date, fileid$name),"id"]
+
           pathforthisfile <- paste0(tempfile(), ".tif") # Create temp file name
-          googledrive::drive_download(file = filedownload,
+
+          googledrive::drive_download(file = googledrive::as_id(fileid$id),
                                       path = pathforthisfile,
                                       overwrite = T) # Download from Drive
+
           raster <- raster::raster(pathforthisfile)# Read raster from temp dir
+
           raster::crs(raster) <- prj # Check that projection is set
         }
 
@@ -292,8 +309,13 @@ dynamic_proj_covariates <- function(dates,
           r <- raster::setValues(r, 1:raster::ncell(r))
 
           if(!missing(spatial.mask)) {
-            r <- raster::mask(r, mask = spatial.mask)
-          }
+            # Mask to original spatial.ext, if fails keep original. Depending on spatial.ext type.
+            tryCatch({
+              r <- raster::mask(r, spatial.ext)
+            }, error = function(error_message) {
+              r <- r
+              print("spatial.mask could not be used. Check valid input type.")
+              })}
 
           # Resample raster using single method given
           if (length(resample.method) == 1) {
@@ -352,7 +374,12 @@ dynamic_proj_covariates <- function(dates,
         stack <- as.data.frame(raster::rasterToPoints(stack)) # Create data frame
 
         csvfile <- paste0(tempfile(), ".csv")
-        write.csv(stack, file = csvfile) # Save to temporary location
+
+        if (!missing(save.directory)) {
+          csvfile <- paste0(save.directory, "/", date, "_projection_dataframe.csv")
+        }
+
+        utils::write.csv(stack, file = csvfile, row.names = FALSE) # Save to temporary location
 
         googledrive::drive_upload( # Upload to Google Drive
           media = csvfile,
@@ -385,13 +412,7 @@ dynamic_proj_covariates <- function(dates,
         }
 
 
-        if (cov.file.type == "csv") {
 
-        stack <- as.data.frame(raster::rasterToPoints(stack)) # Create data frame
-
-        write.csv(stack, file = paste0(save.directory, "/", date, "_projection_dataframe.csv"))
-
-        }
 
         if (cov.file.type == "tif") {
 
@@ -402,7 +423,7 @@ dynamic_proj_covariates <- function(dates,
 
         }}
 
-      listofdone <- rbind(listofdone, date) # Record that this date has been completed
+      listofdone <- c(listofdone, dates[x]) # Record that this date has been completed
     }
 
     if (!missing(save.directory)) {
@@ -413,5 +434,5 @@ dynamic_proj_covariates <- function(dates,
       print(paste0("Data extracted and saved to:",save.drive.folder))
     }
 
-    return(listofdone)
+    return(listofdone[2:length(listofdone)])
   }

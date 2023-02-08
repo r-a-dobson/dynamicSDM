@@ -23,8 +23,8 @@
 #'   spatiotemporal buffer of occurrence record location and dates relative to other records}
 #'   \item{unique.ID.DYN}{unique id value assigned when extracting dynamic explanatory variable
 #'   data}
-#'   \item{eight_sum_prec}{sum Climate Hazards Group InfraRed Precipitation With Station Data
-#'   (Funk et al., 2016) total daily precipitation at record co-ordinate across 52-weeks prior to record
+#'   \item{eight_sum_prec}{sum Climate Hazards Group InfraRed Precipitation With Station Data (Funk
+#'   et al., 2016) total daily precipitation at record co-ordinate across 52-weeks prior to record
 #'   date (mm).}
 #'   \item{grass_crop_percentage}{total number of MODIS Land Cover Type Yearly 500m (Friedl &
 #'   Sulla-Menashe, 2019) "cereal cropland" and "grassland" cells in surrounding area of record
@@ -45,9 +45,9 @@
 #' hazards infrared precipitation with stations-a new environmental record for monitoring extremes".
 #' Scientific Data 2, 150066. doi:10.1038/sdata.2015.66 2015.
 #'
-#' GBIF.org (12 July 2021) GBIF Occurrence Download <https://doi.org/10.15468/dl.ppcu6q>
+#' GBIF.org (12 July 2021) GBIF Occurrence Download \doi{10.15468/dl.ppcu6q}
 #'
-#' GBIF.org (25 July 2022) GBIF Occurrence Download <https://doi.org/10.15468/dl.k2kftv>
+#' GBIF.org (25 July 2022) GBIF Occurrence Download \doi{10.15468/dl.k2kftv}
 #'
 "sample_explan_data"
 
@@ -86,9 +86,9 @@
 #' }
 #' @docType data
 #' @references
-#' GBIF.org (12 July 2021) GBIF Occurrence Download <https://doi.org/10.15468/dl.ppcu6q>
+#' GBIF.org (12 July 2021) GBIF Occurrence Download \doi{10.15468/dl.ppcu6q}
 #'
-#' GBIF.org (25 July 2022) GBIF Occurrence Download <https://doi.org/10.15468/dl.k2kftv>
+#' GBIF.org (25 July 2022) GBIF Occurrence Download \doi{10.15468/dl.k2kftv}
 "sample_occ_data"
 
 
@@ -121,9 +121,9 @@
 #' }
 #' @docType data
 #' @references
-#' GBIF.org (12 July 2021) GBIF Occurrence Download <https://doi.org/10.15468/dl.ppcu6q>
+#' GBIF.org (12 July 2021) GBIF Occurrence Download \doi{10.15468/dl.ppcu6q}
 #'
-#' GBIF.org (25 July 2022) GBIF Occurrence Download <https://doi.org/10.15468/dl.k2kftv>
+#' GBIF.org (25 July 2022) GBIF Occurrence Download \doi{10.15468/dl.k2kftv}
 "sample_filt_data"
 
 
@@ -171,9 +171,10 @@
 #' Fink, D., T. Auer, A. Johnston, M. Strimas-Mackey, O. Robinson, S. Ligocki, W. Hochachka, L.
 #' Jaromczyk, C. Wood, I. Davies, M. Iliff, L. Seitz. 2021. eBird Status and Trends, Data Version:
 #' 2020; Released: 2021. Cornell Lab of Ornithology, Ithaca, New York.
-#' <https://doi.org/10.2173/ebirdst.2020>
+#'  \doi{10.2173/ebirdst.2020}
 #'
-#'GBIF.org (12 July 2021) GBIF Occurrence Download  <https://doi.org/10.15468/dl.ppcu6q>
+#' GBIF.org (12 July 2021) GBIF Occurrence Download \doi{10.15468/dl.ppcu6q}
+
 "sample_events_data"
 
 
@@ -223,8 +224,8 @@
 #'   \item{resolution}{1, 1  (x, y)}
 #'   \item{extent}{11.6901, 41.6901, -35.43802, -4.438023  (xmin, xmax, ymin, ymax)}
 #'   \item{crs}{"+proj=longlat +datum=WGS84 +no_defs"}
-#'   \item{source}{memory}
-#'   \item{names}{ X2018.01.01_proportional, X2018.04.01_proportional, X2018.07.01_proportional, X2018.10.01_proportional }
+#'   \item{source}{memory} \item{names}{ X2018.01.01_proportional, X2018.04.01_proportional,
+#'   X2018.07.01_proportional, X2018.10.01_proportional }
 #'   \item{min values}{Numerical minimum distribution suitability projected in each layer.}
 #'   \item{max values}{Numerical maximum distribution suitability projected in each layer.}
 #' }

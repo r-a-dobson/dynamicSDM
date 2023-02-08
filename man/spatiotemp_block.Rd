@@ -31,8 +31,8 @@ unit splitting.}
 \item{temporal.block}{optional; a character string or vector, the time step for sampling unit
 splitting. Any combination of \code{day}, \code{month}, \code{year} or \code{quarter.} See details.}
 
-\item{n.blocks}{optional; a numeric value, the number of blocks to group occurrence records into.
-Default; 10.}
+\item{n.blocks}{optional; a numeric value not equal to one, the number of blocks to group
+occurrence records into. Default; 10.}
 
 \item{iterations}{optional; a numeric value, the number of random block groupings to trial before
 selecting the optimal grouping. Default; 5000.}

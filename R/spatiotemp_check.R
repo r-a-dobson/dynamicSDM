@@ -15,8 +15,8 @@
 #'  One of `exclude` or `ignore`: can be abbreviated. Default; `exclude`.
 #'@param date.handle a character string, method for handling invalid dates in record data. One of
 #'  `exclude` or `ignore`: can be abbreviated. Default; `exclude`.
-#'@param date.res a character string, stating the temporal resolution to exclude dates by. One of
-#'  `year`, `month` or `day`.
+#'@param date.res a character string, stating the temporal resolution to complete checks on. One of
+#'  `year`, `month` or `day`. Default `day`.
 #' @param coordclean a logical indicating whether to run function
 #'  `clean_coordinates` from package `CoordinateCleaner` on `occ.data`. Default = FALSE.
 #'@param coordclean.species a character string or vector, specifying the name of the species that
@@ -26,6 +26,11 @@
 #'  `CoordinateCleaner`. One of `exclude` or `report`. Default: exclude.
 #'@param ... Other arguments passed onto `CoordinateCleaner`.
 #'@details
+#'
+#'# `date.res` argument
+#'
+#' The date.res states the resolution to check dates at. This includes when searching for duplicate
+#' records, removing records with NA values and checking for invalid dates.
 #'
 #'Record dates and co-ordinates are checked for validity using the following rules:
 #'
@@ -75,7 +80,7 @@
 #'  date.handle = "exclude",
 #'  duplicate.handle = "exclude",
 #'  na.handle = "exclude",
-#'  coordclean = T,
+#'  coordclean = TRUE,
 #'  coordclean.species = "quelea",
 #'  coordclean.handle = "exclude"
 #')
@@ -96,19 +101,26 @@ spatiotemp_check <- function(occ.data,
                              ...) {
 
     # Check occurrence data present correct class
-    if (!class(occ.data) == "data.frame") {
+    if (!inherits(occ.data, "data.frame")) {
       stop("occ.data must be of class data.frame")
     }
+
+
+    if(!missing(date.res)){
 
     # Check column names correct for dynamicSDM functions
     date.res <- match.arg(date.res, choices = c("day", "month", "year"))
 
     # Depending on date.res only need to check for certain columns
-    n <- match(date.res, c("year", "month", "day"))
+    n <- match(date.res, c("year", "month", "day"))}
 
+
+   if(missing(date.res)){n <- 0}
+
+   if (n > 0) {
     if (!"year" %in% colnames(occ.data)) {
       stop("year column not found. Ensure record year col is named 'year'")
-    }
+    }}
 
     if (n > 1) {
       if (!"month" %in% colnames(occ.data)) {
@@ -133,29 +145,31 @@ spatiotemp_check <- function(occ.data,
 
     # Check column classes are correct for dynamicSDM functions
 
-    if (!class(occ.data$year) == "numeric") {
+if (n > 0) {
+    if (!inherits(occ.data$year, "numeric")) {
+
       stop("year must be of class numeric")
-    }
+    }}
 
 
     if (n > 1) {
-      if (!class(occ.data$month) == "numeric") {
+      if (!inherits(occ.data$month, "numeric")) {
         stop("month must be of class numeric")
       }
     }
 
     if (n > 2) {
-      if (!class(occ.data$day) == "numeric") {
+      if (!inherits(occ.data$day, "numeric")) {
         stop("day must be of class numeric")
       }
     }
 
 
-    if (!class(occ.data$x) == "numeric") {
+    if (!inherits(occ.data$x, "numeric")) {
       stop("x must be of class numeric")
     }
 
-    if (!class(occ.data$y) == "numeric") {
+    if (!inherits(occ.data$y, "numeric")) {
       stop("y must be of class numeric")
     }
 
@@ -171,7 +185,9 @@ spatiotemp_check <- function(occ.data,
 
         message("omitting any species records with coordinates containing NA")
 
+        if (n > 0) {
         occ.data <- occ.data[!is.na(occ.data[, "year"]),]
+        }
 
         if (n > 1) { # n was set earlier depending on date resolution of interest
           occ.data <- occ.data[!is.na(occ.data[, "month"]),]

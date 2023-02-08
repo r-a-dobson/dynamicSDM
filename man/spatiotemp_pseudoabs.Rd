@@ -28,9 +28,9 @@ with column names as follows; record longitude as "x", latitude as "y", year as 
 "month", and day as "day". Required if either \code{temporal.method} or \code{spatial.method} is \code{buffer}.}
 
 \item{spatial.ext}{the spatial extent to randomly generate pseudo-absences within. Object from
-which extent can be extracted of class \code{Extent}, \code{RasterLayer}, \code{sf} or \code{polygon} or numeric
-vector listing xmin, xmax, ymin and ymax in order. Required if \code{spatial.method} is
-\code{random}, and optionally used if \code{buffer}. See details.}
+which extent can be extracted of class \code{Extent}, \code{RasterLayer},\code{SpatialPolygonsDataFrame}, \code{sf}
+or \code{polygon} or numeric vector listing xmin, xmax, ymin and ymax in order. Required if
+\code{spatial.method} is \code{random}, and optionally used if \code{buffer}. See details.}
 
 \item{temporal.ext}{optional; a character vector, two dates in format "YYYY-MM-DD". First
 represents start of temporal extent and second represents end of temporal extent to randomly

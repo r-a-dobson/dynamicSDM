@@ -48,8 +48,22 @@ spatiotemp_resolution <-  function(occ.data,
 
     if (!is.numeric(spatial.res)) {stop("spatial.res should be numeric")}
 
+    x <- NULL # Add visible binding for x and y
+    y <- NULL
+
     # Count number of digits after the decimal places
-    res <- nchar(stringr::str_split_fixed(as.character(occ.data$x), "[.]", 2)[, 2])
+    res <- nchar((occ.data %>% tidyr::separate(x,
+                                               into = paste0('CKLN', 1:2),
+                                               sep = '[.]', fill = "right"))[, 'CKLN2'])
+
+    # Filter records by given acceptable number of decimal places
+    occ.data <- occ.data[res >= spatial.res,]
+
+
+    # Count number of digits after the decimal places
+    res <- nchar((occ.data %>% tidyr::separate(y,
+                                               into = paste0('CKLT', 1:2),
+                                               sep = '[.]', fill = "right"))[, 'CKLT2'])
 
     # Filter records by given acceptable number of decimal places
     occ.data <- occ.data[res >= spatial.res,]
@@ -82,6 +96,7 @@ spatiotemp_resolution <-  function(occ.data,
       occ.data <- occ.data[!is.na(occ.data[, 'day']),]
     }
   }
+
 
   return(occ.data)
 
