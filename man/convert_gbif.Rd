@@ -17,10 +17,10 @@ Function converts GBIF occurrence records into the format required for \code{dyn
 functions.
 }
 \details{
-For most \code{dynamicSDM} functions, an occurrence data frame with record co-ordinate columns
-labelled "x" and "y" with numeric columns for record "day", "month" and "year" are required.
-This functions takes the input data frame and returns a reformatted data frame suitable for
-direct input into \code{dynamicSDM} functions.
+For most \code{dynamicSDM} functions, an occurrence data frame with record co-ordinate
+columns labelled "x" and "y" with numeric columns for record "day", "month" and "year" are
+required. This functions takes the input data frame and returns a reformatted data frame
+suitable for direct input into \code{dynamicSDM} functions.
 }
 \examples{
 

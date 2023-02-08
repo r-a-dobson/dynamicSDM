@@ -37,8 +37,8 @@ spatiotemporal block numbers for \code{occ.data} splitting. See details for more
 \item{weights.col}{a character string, the name of the column in \code{occ.data} containing
 spatiotemporal sampling effort weights to be used in fitting process.}
 
-\item{test.data}{optional; a data frame, the testing dataset for optimising \code{interaction.depth} when
-blocking is not used.}
+\item{test.data}{optional; a data frame, the testing dataset for optimising \code{interaction.depth}
+when blocking is not used.}
 
 \item{interaction.depth}{optional; an integer specifying the maximum depth of each tree (i.e.
 highest level of variable interactions allowed). Default optimises depth between 1 and 4.}

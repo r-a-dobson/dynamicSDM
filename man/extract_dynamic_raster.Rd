@@ -62,11 +62,12 @@ Earth Engine.
 }
 \details{
 For each projection date, this function downloads rasters at given spatial extent and
-resolution for specified temporally dynamic explanatory variables. For each cell in spatial extent, the
-GEE.math.fun is calculated for data extracted across the specified number of days prior or post the
-projection date. Rasters of such data are saved directly to Google Drive, with option to export to
-local directory too. These can be combined to create projection covariate data frames for
-projection dynamic species distribution and abundance at high spatiotemporal resolution
+resolution for specified temporally dynamic explanatory variables. For each cell in spatial
+extent, the GEE.math.fun is calculated for data extracted across the specified number of days
+prior or post the projection date. Rasters of such data are saved directly to Google Drive, with
+option to export to local directory too. These can be combined to create projection covariate
+data frames for projection dynamic species distribution and abundance at high spatiotemporal
+resolution.
 }
 \section{Google Earth Engine}{
 \code{extract_dynamic_raster()} requires users to have installed R package \code{rgee} (Aybar et al.,

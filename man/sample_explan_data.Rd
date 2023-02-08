@@ -23,8 +23,8 @@ occurrence record location and dates.}
 spatiotemporal buffer of occurrence record location and dates relative to other records}
 \item{unique.ID.DYN}{unique id value assigned when extracting dynamic explanatory variable
 data}
-\item{eight_sum_prec}{sum Climate Hazards Group InfraRed Precipitation With Station Data
-(Funk et al., 2016) total daily precipitation at record co-ordinate across 52-weeks prior to record
+\item{eight_sum_prec}{sum Climate Hazards Group InfraRed Precipitation With Station Data (Funk
+et al., 2016) total daily precipitation at record co-ordinate across 52-weeks prior to record
 date (mm).}
 \item{grass_crop_percentage}{total number of MODIS Land Cover Type Yearly 500m (Friedl &
 Sulla-Menashe, 2019) "cereal cropland" and "grassland" cells in surrounding area of record

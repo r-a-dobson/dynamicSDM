@@ -21,8 +21,8 @@ represents start of temporal extent and second date represents end of temporal e
 inclusion.}
 
 \item{spatial.ext}{the spatial extent to filter by. Object from which extent can be extracted of
-class \code{Extent}, \code{RasterLayer}, \code{SpatialPolygonsDataFrame},\code{sf} or \code{polygon} or numeric vector listing xmin, xmax, ymin and
-ymax in order.}
+class \code{Extent}, \code{RasterLayer}, \code{SpatialPolygonsDataFrame},\code{sf} or \code{polygon} or numeric vector
+listing xmin, xmax, ymin and ymax in order.}
 
 \item{prj}{a character string, the coordinate reference system of input \code{occ.data} co-ordinates
 Default is "+proj=longlat +datum=WGS84".}

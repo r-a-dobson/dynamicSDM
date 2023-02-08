@@ -119,6 +119,6 @@ save.directory = tempdir()
 
 }
 \references{
-Wickham, H., and Chang, W, 2016. Package ‘ggplot2’. Create elegant data visualisations
-using the grammar of graphics. Version, 2(1), pp.1-189.
+Wickham, H., and Chang, W, 2016. Package ‘ggplot2’. Create elegant data
+visualisations using the grammar of graphics. Version, 2(1), pp.1-189.
 }

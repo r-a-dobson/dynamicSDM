@@ -12,8 +12,8 @@ A RasterBrick
 \item{resolution}{1, 1  (x, y)}
 \item{extent}{11.6901, 41.6901, -35.43802, -4.438023  (xmin, xmax, ymin, ymax)}
 \item{crs}{"+proj=longlat +datum=WGS84 +no_defs"}
-\item{source}{memory}
-\item{names}{ X2018.01.01_proportional, X2018.04.01_proportional, X2018.07.01_proportional, X2018.10.01_proportional }
+\item{source}{memory} \item{names}{ X2018.01.01_proportional, X2018.04.01_proportional,
+X2018.07.01_proportional, X2018.10.01_proportional }
 \item{min values}{Numerical minimum distribution suitability projected in each layer.}
 \item{max values}{Numerical maximum distribution suitability projected in each layer.}
 }

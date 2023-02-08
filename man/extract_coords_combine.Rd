@@ -66,6 +66,7 @@ dynamicSDM::extract_dynamic_coords(
  save.directory = tempdir()
 )
 
-extract_coords_combine(varnames = c("eightweekprec", "annualweekprec"), local.directory = tempdir())
+extract_coords_combine(varnames = c("eightweekprec", "annualweekprec"), local.directory =
+tempdir())
 \dontshow{\}) # examplesIf}
 }
