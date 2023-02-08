@@ -94,43 +94,50 @@ If you encounter an error or bug when installing and using dynamicSDM, please po
 Below we have outlined common errors and typical solutions to try, depending on your operating
 system
 
-#### rgl error 
+#### 1) Error with rgl 
 
-```{r}
+```{r,eval=F}
 # Loading rgl's DLL failed. This build of rgl depends on XQuartz, which failed to load.
 options(rgl.useNULL = TRUE)
 library(rgl)
 ```
 
-#### installing dependency package terra 
+#### 2) Dependency package terra 
 
-```{Homebrew}
+On Homebrew (macOS) run:
+```{Homebrew,eval=F}
 brew install pkg-config
 brew install gdal
 ```
 
-```{Linux}
+On Linux run:
+```{Linux,eval=F}
 sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev netcdf-bin 
 ```
 
-```{r}
+Then in R run:
+```{r,eval=F}
 install.packages("Rcpp")
 install.packages('terra', repos='https://rspatial.r-universe.dev')
 ```
 
 
-#### installing dependency package magick 
+#### 3) Dependency package magick 
 
-On MacOS run the following in Homebrew:
-```{Homebrew}
+On Homebrew (macOS) run:
+```{Homebrew,eval=F}
  brew install imagemagick@6
 ```
 
-On Linux run the following:
-```{Linux}
+On Linux run:
+```{Linux,eval=F}
 sudo apt-get install -y libmagick++-dev
 ```
 
+Then in R run:
+```{r,eval=F}
+install.packages("magick")
+```
 
 
 

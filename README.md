@@ -33,11 +33,11 @@ and time. Our functions are:
 dynamicSDM functions are split into four key modelling stages: response
 data, explanatory variables, modelling relationships and dynamic
 projections. See the package manual
-[here](https://github.com/r-a-dobson/dynamicSDM/blob/main/man/figures/dynamicSDM_1.0.pdf)
+[here](https://github.com/r-a-dobson/dynamicSDM/tree/main/man/figures/dynamicSDM_1.0.pdf)
 for more details on each
 function.
 
-<a href='https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/main/man/figures/Figure1.png'><img src="https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/main/man/figures/Figure1.png" align="centre" height="320"/></a>
+<a href='https://r-a-dobson.github.io/dynamicSDM'><img src="https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/main/man/figures/Figure1.png" align="centre" height="320"/></a>
 
 ### 1\) Response data functions
 
@@ -59,7 +59,7 @@ data for modelling with spatiotemporally dynamic explanatory variables.
   - `spatiotemp_pseudoabs()` Generate pseudo-absence record coordinates
     and dates.
   - `spatiotemp_weights()` Calculate sampling effort across spatial and
-    temporal buffer from species occurrence records.
+    temporal buffer from occurrence records.
 
 ### 2\) Explanatory variable functions
 
@@ -114,4 +114,70 @@ dynamic distribution and abundance patterns onto these.
 ``` r
 # Install using Github 
 install_github("r-a-dobson/dynamicSDM")
+```
+
+# Common installation errors
+
+dynamicSDM depends on a range of spatial and graphic R packages, which
+may result in some persistent errors on installation or running of
+certain functions.
+
+If you encounter an error or bug when installing and using dynamicSDM,
+please post a comment
+[here](https://github.com/r-a-dobson/dynamicSDM/issues) for guidance and
+support from us.
+
+Below we have outlined common errors and typical solutions to try,
+depending on your operating
+system
+
+#### 1\) Error with rgl
+
+``` r
+# Loading rgl's DLL failed. This build of rgl depends on XQuartz, which failed to load.
+options(rgl.useNULL = TRUE)
+library(rgl)
+```
+
+#### 2\) Dependency package terra
+
+On Homebrew (macOS) run:
+
+``` homebrew
+brew install pkg-config
+brew install gdal
+```
+
+On Linux
+run:
+
+``` linux
+sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev netcdf-bin 
+```
+
+Then in R run:
+
+``` r
+install.packages("Rcpp")
+install.packages('terra', repos='https://rspatial.r-universe.dev')
+```
+
+#### 3\) Dependency package magick
+
+On Homebrew (macOS) run:
+
+``` homebrew
+ brew install imagemagick@6
+```
+
+On Linux run:
+
+``` linux
+sudo apt-get install -y libmagick++-dev
+```
+
+Then in R run:
+
+``` r
+install.packages("magick")
 ```
