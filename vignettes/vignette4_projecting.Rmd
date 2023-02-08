@@ -8,10 +8,7 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
-user.email="eerdord@gmail.com"
 save.drive.folder<-"rasters_proj"
-
-  
 ```
 
 ```{r, include = FALSE}

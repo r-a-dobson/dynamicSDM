@@ -15,7 +15,6 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, include = FALSE}
-user.email="eerdord@gmail.com"
 save.drive.folder<-"rasters_proj"
 ```
 

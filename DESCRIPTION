@@ -2,17 +2,17 @@ Package: dynamicSDM
 Title: Species Distribution and Abundance Modelling at High Spatio-Temporal Resolution
 Version: 1.0
 Authors@R: c(
-    person("Rachel", "Dobson", , "eerdord@gmail.com", role = c("aut", "cre"),
+    person("Rachel", "Dobson", , "eerdord@gmail.com", role = c("aut", "cre", "ctb"),
            comment = c(ORCID = "0000-0003-3990-267X")),
-    person("Andy J.", "Challinor", , "A.J.Challinor@leeds.ac.uk", role = "aut",
+    person("Andy J.", "Challinor", , "A.J.Challinor@leeds.ac.uk", role = c("aut", "ctb"),
            comment = c(ORCID = "0000-0002-8551-6617")),
-    person("Robert A.", "Cheke", , "R.A.Cheke@greenwich.ac.uk", role = "aut",
+    person("Robert A.", "Cheke", , "R.A.Cheke@greenwich.ac.uk", role = c("aut", "ctb"),
            comment = c(ORCID = "0000-0002-7437-1934")),
-    person("Stewart", "Jennings", , "S.A.Jennings@leeds.ac.uk", role = "aut",
+    person("Stewart", "Jennings", , "S.A.Jennings@leeds.ac.uk", role = c("aut", "ctb"),
            comment = c(ORCID = "0000-0002-1267-8623")),
-    person("Stephen G.", "Willis", , "s.g.willis@durham.ac.uk", role = "aut",
+    person("Stephen G.", "Willis", , "s.g.willis@durham.ac.uk", role = c("aut", "ctb"),
            comment = c(ORCID = "0000-0002-8656-5808")),
-    person("Martin", "Dallimer", , "M.Dallimer@leeds.ac.uk", role = "aut",
+    person("Martin", "Dallimer", , "M.Dallimer@leeds.ac.uk", role = c("aut", "ctb"),
            comment = c(ORCID = "0000-0001-8120-3309"))) 
 Description: A collection of novel tools for generating species distribution and abundance models (SDM) that are dynamic through both space and time. These highly flexible functions incorporate spatial and temporal aspects across key SDM stages; including when cleaning and filtering species occurrence data, generating pseudo-absence records, assessing and correcting sampling biases and autocorrelation, extracting explanatory variables and projecting distribution patterns. Throughout, functions utilise Google Earth Engine and Google Drive to minimise the computing power and storage demands associated with species distribution modelling at high spatio-temporal resolution.
 License: GPL (>= 3) + file LICENSE

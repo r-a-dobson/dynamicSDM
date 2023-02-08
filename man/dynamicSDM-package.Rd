@@ -9,15 +9,15 @@
 A collection of novel tools for generating species distribution and abundance models (SDM) that are dynamic through both space and time. These highly flexible functions incorporate spatial and temporal aspects across key SDM stages; including when cleaning and filtering species occurrence data, generating pseudo-absence records, assessing and correcting sampling biases and autocorrelation, extracting explanatory variables and projecting distribution patterns. Throughout, functions utilise Google Earth Engine and Google Drive to minimise the computing power and storage demands associated with species distribution modelling at high spatio-temporal resolution.
 }
 \author{
-\strong{Maintainer}: Rachel Dobson \email{eerdord@gmail.com} (\href{https://orcid.org/0000-0003-3990-267X}{ORCID})
+\strong{Maintainer}: Rachel Dobson \email{eerdord@gmail.com} (\href{https://orcid.org/0000-0003-3990-267X}{ORCID}) [contributor]
 
 Authors:
 \itemize{
-  \item Andy J. Challinor \email{A.J.Challinor@leeds.ac.uk} (\href{https://orcid.org/0000-0002-8551-6617}{ORCID})
-  \item Robert A. Cheke \email{R.A.Cheke@greenwich.ac.uk} (\href{https://orcid.org/0000-0002-7437-1934}{ORCID})
-  \item Stewart Jennings \email{S.A.Jennings@leeds.ac.uk} (\href{https://orcid.org/0000-0002-1267-8623}{ORCID})
-  \item Stephen G. Willis \email{s.g.willis@durham.ac.uk} (\href{https://orcid.org/0000-0002-8656-5808}{ORCID})
-  \item Martin Dallimer \email{M.Dallimer@leeds.ac.uk} (\href{https://orcid.org/0000-0001-8120-3309}{ORCID})
+  \item Andy J. Challinor \email{A.J.Challinor@leeds.ac.uk} (\href{https://orcid.org/0000-0002-8551-6617}{ORCID}) [contributor]
+  \item Robert A. Cheke \email{R.A.Cheke@greenwich.ac.uk} (\href{https://orcid.org/0000-0002-7437-1934}{ORCID}) [contributor]
+  \item Stewart Jennings \email{S.A.Jennings@leeds.ac.uk} (\href{https://orcid.org/0000-0002-1267-8623}{ORCID}) [contributor]
+  \item Stephen G. Willis \email{s.g.willis@durham.ac.uk} (\href{https://orcid.org/0000-0002-8656-5808}{ORCID}) [contributor]
+  \item Martin Dallimer \email{M.Dallimer@leeds.ac.uk} (\href{https://orcid.org/0000-0001-8120-3309}{ORCID}) [contributor]
 }
 
 }
