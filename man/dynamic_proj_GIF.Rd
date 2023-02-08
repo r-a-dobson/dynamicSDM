@@ -54,7 +54,7 @@ across projections.}
 \item{legend.name}{optional; a character string, the name for the legend title. Default =
 projection.type.}
 
-\item{file.name}{optional, a character string, the name for the saved GIF file. Default =
+\item{file.name}{optional, a character string, the name for the output GIF file. Default =
 \code{projection.type}.}
 
 \item{colour.palette}{optional; a character string, the colormap option to use from \code{viridis}. See
@@ -73,15 +73,15 @@ combined into a Graphics Interchange Format (GIF).
 }
 \section{Import projection rasters}{
 Projection rasters for each date must be “tif” files that are uniquely named with the date in
-format YYYY-MM-DD and projection.type. If more than one file name matches the date and
+format "YYYY-MM-DD" and \code{projection.type.} If more than one file name matches the date and
 \code{projection.type}, the function will error.
 }
 
 \section{Google Drive compatibility}{
-If \code{drive.folder} or \code{save.drive.folder} given, please ensure the folder name is unique within
-your Google Drive. Do not provide the path if the folder is nested within others.
+If \code{drive.folder} or \code{save.drive.folder} is given, please ensure the folder name is unique
+within your Google Drive. Do not provide the path if the folder is nested within others.
 
-If one of \code{drive.folder} or \code{save.drive.folder} are used then user.email is required to access
+If one of \code{drive.folder} or \code{save.drive.folder} are used then \code{user.email} is required to access
 the appropriate Google Drive user account. This requires users to have installed R package
 \code{googledrive} and initialised Google Drive with valid log-in credentials. Please follow
 instructions on \url{https://googledrive.tidyverse.org/}.

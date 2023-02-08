@@ -2,7 +2,7 @@
 % Please edit documentation in R/convert_gbif.R
 \name{convert_gbif}
 \alias{convert_gbif}
-\title{Reformats GBIF data into dynamicSDM data frame}
+\title{Reformats GBIF data into \code{dynamicSDM} data frame}
 \usage{
 convert_gbif(gbif.df)
 }
@@ -19,7 +19,7 @@ functions.
 \details{
 For most \code{dynamicSDM} functions, an occurrence data frame with record co-ordinate
 columns labelled "x" and "y" with numeric columns for record "day", "month" and "year" are
-required. This functions takes the input data frame and returns a reformatted data frame
+required. This function takes the input data frame and returns a reformatted data frame
 suitable for direct input into \code{dynamicSDM} functions.
 }
 \examples{

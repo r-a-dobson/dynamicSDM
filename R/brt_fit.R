@@ -12,15 +12,15 @@
 #'@param distribution a character string, the model distribution family to use, such as `gaussian`,
 #'  `poisson` or `bernoulli`.
 #'@param block.col optional; a character string, the name of the column in `occ.data` containing
-#'  spatiotemporal block numbers for `occ.data` splitting. See details for more information.
+#'  spatio-temporal block numbers for `occ.data` splitting. See details for more information.
 #'@param weights.col a character string, the name of the column in `occ.data` containing
-#'  spatiotemporal sampling effort weights to be used in fitting process.
+#'  spatio-temporal sampling effort weights to be used in the model fitting process.
 #'@param test.data optional; a data frame, the testing dataset for optimising `interaction.depth`
 #'  when blocking is not used.
 #'@param n.trees optional; an integer, the number of trees in boosted regression tree models.
 #'  Default is 5000.
 #'@param shrinkage optional; an integer, the shrinkage parameter applied to each tree in the boosted
-#'  regression tree expansion. Also known as learning rate. Default is 0.001.
+#'  regression tree expansion. Also known as the learning rate. Default is 0.001.
 #'@param interaction.depth optional; an integer specifying the maximum depth of each tree (i.e.
 #'  highest level of variable interactions allowed). Default optimises depth between 1 and 4.
 #'@details This function calculates a gradient boosting `gbm` object for the response and
@@ -28,18 +28,18 @@
 #'
 #'  Key functionality for dynamic SDMs within `brt_fit()` includes:
 #'
-#'  * Optimise interaction.depth
+#'  * Optimise `interaction.depth`
 #'
 #'  If `interaction.depth` is not given, then `brt_fit()` will vary the interaction depth parameter
-#'  between 1 (an additive model) and 4 (four-way interaction model). For each interaction.depth
+#'  between 1 (an additive model) and 4 (four-way interaction model). For each `interaction.depth`
 #'  value, model performance is measured by calculating the root-mean-square error of model
-#'  predictions compared to actual values in the testing data. The interaction.depth value that
+#'  predictions compared to actual values in the testing data. The `interaction.depth` value that
 #'  results in the lowest root-mean-square error is used when fitting the returned model.
 #'
-#'  The model testing dataset can either be given using `test.data` or `block.col`
-#'  (latter expanded on below).
+#'  The model testing dataset used can either be given using `test.data` or `block.col`
+#'  (expanded on below).
 #'
-#'  * Split by spatiotemporal blocks to account for spatial and temporal autocorrelation
+#'  * Split by spatio-temporal blocks to account for spatial and temporal autocorrelation
 #'
 #'  If `block.col` is specified, then each unique block is excluded in a jack-knife approach
 #'  following Bagchi et al., (2013). This approach uses each block as the model testing dataset in
@@ -52,12 +52,12 @@
 #'  If `block.col` is not given, models are fit to all occ.data and a single `gbm` model is
 #'  returned.
 #'
-#'  * Weighted by spatiotemporal sampling effort
+#'  * Weighted by spatio-temporal sampling effort
 #'
 #'  If `weights.col` is specified, records are weighted by their associated value in this column
 #'  when model fitting. For instance, the user may wish to down weigh the importance of records
 #'  collected at oversampled sites and times when fitting models, and vice versa, to account for
-#'  spatiotemporal biases in occurrence records.
+#'  spatio-temporal biases in occurrence records.
 #'
 #'@return Returns a `gbm` model object or list of `gbm` model objects.
 #'@references Bagchi, R., Crosby, M., Huntley, B., Hole, D. G., Butchart, S. H. M., Collingham, Y.,

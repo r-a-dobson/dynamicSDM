@@ -24,7 +24,7 @@ inclusion.}
 class \code{Extent}, \code{RasterLayer}, \code{SpatialPolygonsDataFrame},\code{sf} or \code{polygon} or numeric vector
 listing xmin, xmax, ymin and ymax in order.}
 
-\item{prj}{a character string, the coordinate reference system of input \code{occ.data} co-ordinates
+\item{prj}{a character string, the coordinate reference system of input \code{occ.data} co-ordinates.
 Default is "+proj=longlat +datum=WGS84".}
 }
 \value{
@@ -46,7 +46,8 @@ is used. If an \code{sf} polygon object is provided, this is first transformed i
 for use by \code{raster::mask()}.
 }
 
-\section{Temporal extent If \code{temporal.ext} is provided, \code{spatiotemp_extent()} checks whether species}{
+\section{Temporal extent}{
+If \code{temporal.ext} is provided, \code{spatiotemp_extent()} checks whether species
 occurrence record dates are within the given temporal extent of the study and excludes any outside
 of this extent.
 }

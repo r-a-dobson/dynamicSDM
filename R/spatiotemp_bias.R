@@ -11,27 +11,35 @@
 #'  One or multiple of `day` or `month`, `year.` Can be abbreviated.
 #'@param plot a logical indicating whether to generate plots of spatial and temporal bias. See
 #'  details for plot descriptions.
-#'@param spatial.method a character string, the method calculate the spatial bias statistic. One of;
-#'  `simple`, `convex_hull` or `core`. See details.
+#'@param spatial.method a character string, the method to calculate the spatial bias statistic. One
+#'  of; `simple`, `convex_hull` or `core`. See details.
 #'@param prj a character string, the coordinate reference system of occ.data co-ordinates. Default
 #'  is "+proj=longlat +datum=WGS84".
-#'@param centroid a numeric vector of length two, specifying the centroid co-ordinate in the order
+#'@param centroid a numeric vector of length two, specifying the centroid co-ordinates in the order
 #'  of longitude then latitude. Only required if `spatial.method` = `core.` Default is mean of all
 #'  occurrence record co-ordinates.
-#'@param radius a numeric value, the radial distance from the given centroid co-ordinate to measure
-#'  spatial bias within. Only required if `spatial.method` = `core.` See details for more
+#'@param radius a numeric value, the radial distance in metres from the given centroid co-ordinate
+#'  to measure spatial bias within. Only required if `spatial.method` = `core.` See details for more
 #'  information. Default is mean distance of all co-ordinates from `centroid`.
-#'@details # Temporal bias To assess temporal sampling bias, the function returns a histogram plot
+#'@details
+#'
+#'# Temporal bias
+#'
+#'To assess temporal sampling bias, the function returns a histogram plot
 #'of the frequency distribution of records across the given time step specified by `temporal.level`
-#'(if `plot` = T). The observed frequency of sampling across the categorical time steps are compared
+#'(if `plot = T`). The observed frequency of sampling across the categorical time steps are compared
 #'to the distribution expected from random sampling, using a chi-squared test.
 #'
-#'# Spatial bias To assess spatial sampling bias, the function returns a scatterplot of the spatial
-#'distribution of occurrence records to illustrate any spatial clustering (if `plot` = T). The
+#'# Spatial bias
+#'
+#' To assess spatial sampling bias, the function returns a scatterplot of the spatial
+#'distribution of occurrence records to illustrate any spatial clustering (if `plot = T`). The
 #'average nearest neighbour distance of record co-ordinates is then compared to that of records
 #'randomly generated at same density using a t-test.
 #'
-#'# Spatial bias: methods * `simple` - generates the random points within a rectangle created using
+#'# Spatial bias: methods
+#'
+#'* `simple` - generates the random points within a rectangle created using
 #'the minimum and maximum longitude and latitude of occurrence co-ordinates.
 #'
 #'* `convex_hull` - generates the random points within the convex hull of occurrence record

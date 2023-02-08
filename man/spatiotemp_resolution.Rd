@@ -41,8 +41,7 @@ values for year.
 resolution of the datasets to be utilised when extracting dynamic variables.
 
 For example, if explanatory variables datasets are annual, then a \code{temporal.res} of \code{year} is
-adequate, whereas if
-datasets are daily, then \code{temporal.res} of \code{day} may be more appropriate.
+adequate, whereas if datasets are daily, then \code{temporal.res} of \code{day} may be more appropriate.
 }
 \examples{
 data(sample_occ_data)

@@ -33,11 +33,11 @@
 #'  rasters to. Folder must be uniquely named within Google Drive. Do not provide path.
 #'@param agg.factor optional;a postive integer, the aggregation factor expressed as number of cells
 #'  in each direction. See details.
-#'@details For each projection date, this function downloads rasters at given spatial extent and
-#'  resolution for spatially buffered and temporally dynamic explanatory variables. Rasters are
-#'  saved directly to Google Drive, with option to export to local directory too. These can be
-#'  combined to create projection covariate data frames for projection dynamic species distribution
-#'  and abundance at high spatiotemporal resolution
+#'@details For each projection date, this function downloads rasters at a given spatial extent and
+#'  resolution for spatially buffered and temporally dynamic explanatory variables. Rasters can be
+#'  saved directly to Google Drive or a local directory. These rasters can be
+#'  combined to create projection covariate data frames for projecting dynamic species distribution
+#'  and abundance at high spatiotemporal resolution.
 #'
 #'  # Temporal dimension
 #'

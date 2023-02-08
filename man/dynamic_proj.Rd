@@ -38,7 +38,7 @@ covariate data frames from. Folder must be uniquely named within Google Drive. D
 path.}
 
 \item{user.email}{optional; a character string, user email for initialising Google Drive. Required
-if drive.folder or save.drive.folder used.}
+if \code{drive.folder} or \code{save.drive.folder} used.}
 
 \item{sdm.mod}{optional; a model object or list of model objects fitted to species distribution
 data.}
@@ -53,7 +53,7 @@ given in the same order as the \code{sdm.mod} list. Default is equal weighting t
 \item{sam.mod}{optional; a model object or list of model objects fitted to species abundance data.}
 
 \item{sam.weight}{optional; a numeric string, weights given to each \code{sdm.mod} model projection,
-given in the same order as the sam.mod list. Default is equal weighting to all models.}
+given in the same order as the \code{sam.mod} list. Default is equal weighting to all models.}
 
 \item{save.directory}{optional; a character string, path to local directory to save projection
 rasters to.}
@@ -70,8 +70,8 @@ Default is "+proj=longlat +datum=WGS84".}
 \item{proj.prj}{a character string, the coordinate reference system desired for output projection
 rasters. Default is assumed to be the same as prj.}
 
-\item{spatial.mask}{an object of class \code{Raster}, \code{sf} or \code{Spatial}, represeting a mask in which NA
-cells in the mask layer are removed from the projection covariates.}
+\item{spatial.mask}{an object of class \code{Raster}, \code{sf} or \code{Spatial}, representing a mask in which
+NA cells in the mask layer are removed from the projection covariates.}
 }
 \value{
 Exports projection rasters for each projection date to user-specified Google Drive
@@ -87,13 +87,13 @@ frames for each projection date given.
 }
 \section{Projection covariate input}{
 \itemize{
-\item Data frames: if \code{cov.file.type} = \code{csv}, then projection covariates must be saved ".csv" files
-in the drive.folder or local.directory given. Here, they must be unique in containing the
-relevant projection date in “YYYY-MM-DD” format. For instance, two or more “.csv” files saved
+\item Data frames: if \code{cov.file.type = csv}, then projection covariates must be saved "csv" files
+in the \code{drive.folder} or \code{local.directory} given. Here, they must be unique in containing the
+relevant projection date in “YYYY-MM-DD” format. For instance, two or more “csv” files saved
 within the Google Drive folder or local directory that contain the projection date will result
 in function error. Additionally, column names of projection covariate data frames must match the
 explanatory variable names that fitted models are trained on.
-\item Raster stacks: if \code{cov.file.type} = \code{tif}, then projection covariates must be saved ".tif"
+\item Raster stacks: if \code{cov.file.type = tif}, then projection covariates must be saved "tif"
 files, similarly named and formatted as above. Raster layer names must match the explanatory
 variable names that fitted models are trained on.
 }
@@ -132,11 +132,11 @@ rasters are to be saved.
 }
 
 \section{Google Drive compatibility}{
-If \code{drive.folder} or \code{save.drive.folder} given, please ensure the folder name is unique within your
-Google Drive. Do not provide the path if the folder is nested within others.
+If \code{drive.folder} or \code{save.drive.folder} given, please ensure the folder name is unique within
+your Google Drive. Do not provide the path if the folder is nested within others.
 
-If one of \code{drive.folder} or \code{save.drive.folder} are used then user.email is required to access the
-appropriate Google Drive user account. This requires users to have installed R package
+If one of \code{drive.folder} or \code{save.drive.folder} are used then \code{user.email} is required to access
+the appropriate Google Drive user account. This requires users to have installed R package
 \code{googledrive} and initialised Google Drive with valid log-in credentials. Please follow
 instructions on \url{https://googledrive.tidyverse.org/}.
 }

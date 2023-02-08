@@ -32,10 +32,10 @@ which extent can be extracted of class \code{Extent}, \code{RasterLayer},\code{S
 or \code{polygon} or numeric vector listing xmin, xmax, ymin and ymax in order. Required if
 \code{spatial.method} is \code{random}, and optionally used if \code{buffer}. See details.}
 
-\item{temporal.ext}{optional; a character vector, two dates in format "YYYY-MM-DD". First
-represents start of temporal extent and second represents end of temporal extent to randomly
-generate pseudo-absences dates within. Required if \code{temporal.method} is \code{random}, and optionally
-used if \code{buffer}. See details.}
+\item{temporal.ext}{optional; a character vector, two dates in format "YYYY-MM-DD". The first
+represents the start of the temporal extent and the second represents the end of temporal extent
+to randomly generate pseudo-absences dates within. Required if \code{temporal.method} is \code{random},
+and optionally used if \code{buffer}. See details.}
 
 \item{spatial.buffer}{optional; a numeric value or vector, the radius/radii in metres to generate
 buffered pseudo-absence coordinates within. Only required if spatial.method is \code{buffer}. See
@@ -48,7 +48,7 @@ details.}
 \item{n.pseudoabs}{optional; a numeric value, the number of pseudo-absence records to generate.
 Default; 100.}
 
-\item{prj}{a character string, the coordinate reference system of input \code{occ.data} co-ordinates
+\item{prj}{a character string, the coordinate reference system of input \code{occ.data} co-ordinates.
 Default is "+proj=longlat +datum=WGS84".}
 }
 \value{

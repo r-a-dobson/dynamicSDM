@@ -32,10 +32,10 @@ variables in \code{occ.data.}}
 \code{poisson} or \code{bernoulli}.}
 
 \item{block.col}{optional; a character string, the name of the column in \code{occ.data} containing
-spatiotemporal block numbers for \code{occ.data} splitting. See details for more information.}
+spatio-temporal block numbers for \code{occ.data} splitting. See details for more information.}
 
 \item{weights.col}{a character string, the name of the column in \code{occ.data} containing
-spatiotemporal sampling effort weights to be used in fitting process.}
+spatio-temporal sampling effort weights to be used in the model fitting process.}
 
 \item{test.data}{optional; a data frame, the testing dataset for optimising \code{interaction.depth}
 when blocking is not used.}
@@ -47,7 +47,7 @@ highest level of variable interactions allowed). Default optimises depth between
 Default is 5000.}
 
 \item{shrinkage}{optional; an integer, the shrinkage parameter applied to each tree in the boosted
-regression tree expansion. Also known as learning rate. Default is 0.001.}
+regression tree expansion. Also known as the learning rate. Default is 0.001.}
 }
 \value{
 Returns a \code{gbm} model object or list of \code{gbm} model objects.
@@ -62,19 +62,19 @@ explanatory variable data provided, using the \code{gbm} R package (Greenwell et
 
 Key functionality for dynamic SDMs within \code{brt_fit()} includes:
 \itemize{
-\item Optimise interaction.depth
+\item Optimise \code{interaction.depth}
 }
 
 If \code{interaction.depth} is not given, then \code{brt_fit()} will vary the interaction depth parameter
-between 1 (an additive model) and 4 (four-way interaction model). For each interaction.depth
+between 1 (an additive model) and 4 (four-way interaction model). For each \code{interaction.depth}
 value, model performance is measured by calculating the root-mean-square error of model
-predictions compared to actual values in the testing data. The interaction.depth value that
+predictions compared to actual values in the testing data. The \code{interaction.depth} value that
 results in the lowest root-mean-square error is used when fitting the returned model.
 
-The model testing dataset can either be given using \code{test.data} or \code{block.col}
-(latter expanded on below).
+The model testing dataset used can either be given using \code{test.data} or \code{block.col}
+(expanded on below).
 \itemize{
-\item Split by spatiotemporal blocks to account for spatial and temporal autocorrelation
+\item Split by spatio-temporal blocks to account for spatial and temporal autocorrelation
 }
 
 If \code{block.col} is specified, then each unique block is excluded in a jack-knife approach
@@ -88,13 +88,13 @@ length of unique blocking categories in \code{block.col}.
 If \code{block.col} is not given, models are fit to all occ.data and a single \code{gbm} model is
 returned.
 \itemize{
-\item Weighted by spatiotemporal sampling effort
+\item Weighted by spatio-temporal sampling effort
 }
 
 If \code{weights.col} is specified, records are weighted by their associated value in this column
 when model fitting. For instance, the user may wish to down weigh the importance of records
 collected at oversampled sites and times when fitting models, and vice versa, to account for
-spatiotemporal biases in occurrence records.
+spatio-temporal biases in occurrence records.
 }
 \examples{
 

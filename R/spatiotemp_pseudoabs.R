@@ -18,18 +18,17 @@
 #'  details.
 #'@param n.pseudoabs optional; a numeric value, the number of pseudo-absence records to generate.
 #'  Default; 100.
-#'@param temporal.ext optional; a character vector, two dates in format "YYYY-MM-DD". First
-#'  represents start of temporal extent and second represents end of temporal extent to randomly
-#'  generate pseudo-absences dates within. Required if `temporal.method` is `random`, and optionally
-#'  used if `buffer`. See details.
+#'@param temporal.ext optional; a character vector, two dates in format "YYYY-MM-DD". The first
+#'  represents the start of the temporal extent and the second represents the end of temporal extent
+#'  to randomly generate pseudo-absences dates within. Required if `temporal.method` is `random`,
+#'  and optionally used if `buffer`. See details.
 #'@param spatial.ext the spatial extent to randomly generate pseudo-absences within. Object from
 #'  which extent can be extracted of class `Extent`, `RasterLayer`,`SpatialPolygonsDataFrame`, `sf`
 #'  or `polygon` or numeric vector listing xmin, xmax, ymin and ymax in order. Required if
 #'  `spatial.method` is `random`, and optionally used if `buffer`. See details.
-#'@param prj a character string, the coordinate reference system of input `occ.data` co-ordinates
+#'@param prj a character string, the coordinate reference system of input `occ.data` co-ordinates.
 #'  Default is "+proj=longlat +datum=WGS84".
 #'@details
-#'
 #'
 #'# Spatial buffer
 #'

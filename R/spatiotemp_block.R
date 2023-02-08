@@ -1,20 +1,21 @@
 #'Split occurrence records into spatial and temporal blocks for model fitting.
 #'
 #'Splits occurrence records into spatial and temporal sampling units and groups sampling units into
-#'multiple blocks that have similar mean and range of environmental explanatory variables.
+#'multiple blocks that have similar mean and range of environmental explanatory variables and sample
+#'size.
 #'
 #'@param occ.data a data frame, with columns for occurrence record co-ordinates and dates with
 #'  column names as follows; record longitude as "x", latitude as "y", year as "year", month as
 #'  "month", and day as "day", and associated explanatory variable data.
 #'@param vars.to.block.by a character string or vector, the explanatory variable column names to
 #'  group sampling units based upon.
-#'@param spatial.layer optional; a `RasterLayer` object, a categorical spatial layer for sampling
+#'@param spatial.layer optional; a `RasterLayer` object, a categorical spatial layer for sample
 #'  unit splitting.
 #'@param spatial.split.degrees a numeric value, the grid cell resolution in degrees to split
 #'  `spatial.layer` by. Required if `spatial.layer` given.
 #'@param temporal.block optional; a character string or vector, the time step for sampling unit
 #'  splitting. Any combination of `day`, `month`, `year` or `quarter.` See details.
-#'@param n.blocks optional; a numeric value not equal to one, the number of blocks to group
+#'@param n.blocks optional; a numeric value of two or more, the number of blocks to group
 #'  occurrence records into. Default; 10.
 #'@param iterations optional; a numeric value, the number of random block groupings to trial before
 #'  selecting the optimal grouping. Default; 5000.
@@ -22,12 +23,12 @@
 #'
 #'# Blocking for autocorrelation
 #'
-#'Blocking is an established method to account for spatial
-#'autocorrelation in SDMs. Following Bagchi et al., (2013), the blocking method involves splitting
-#'occurrence data into sampling units based upon non-contiguous ecoregions, which are then grouped
-#'into spatially disaggregated blocks of approximately equal sample size, within which the mean and
-#'range of explanatory variable data are similar. When species distribution model fitting, blocks
-#'are left out in-turn in a jack-knife approach for model training and testing.
+#'Blocking is an established method to account for spatial autocorrelation in SDMs. Following Bagchi
+#'et al., (2013), the blocking method involves splitting occurrence data into sampling units based
+#'upon non-contiguous ecoregions, which are then grouped into spatially disaggregated blocks of
+#'approximately equal sample size, within which the mean and range of explanatory variable data are
+#'similar. When species distribution model fitting, blocks are left out in-turn in a jack-knife
+#'approach for model training and testing.
 #'
 #'We adapt this approach to account for temporal autocorrelation by enabling users to split records
 #'into sampling units based upon spatial and temporal characteristic before blocking occurs.
@@ -40,7 +41,7 @@
 #'
 #'# Temporal splitting
 #'
-#'If temporal.block is given, then occurrence records with unique values for given level are
+#'If `temporal.block` is given, then occurrence records with unique values for the given level are
 #'considered unique sampling unit. For instance, if `temporal.block` = `year`, then records from the
 #'same year are considered a sampling unit to be grouped into blocks.
 #'
@@ -54,10 +55,10 @@
 #'
 #'# Block generation
 #'
-#'Once split into sampling units based upon temporal and spatial characteristics,
-#'these units are then assigned into given number of blocks (`n.blocks`), so that the mean and range
-#'of explanatory variables (`vars.to.block.by`) and total size are similar across each. The number
-#'of `iterations` specifies how many random shuffles are used to optimise block equalisation.
+#'Once split into sampling units based upon temporal and spatial characteristics, these units are
+#'then assigned into given number of blocks (`n.blocks`), so that the mean and range of explanatory
+#'variables (`vars.to.block.by`) and total sample size are similar across each. The number of
+#'`iterations` specifies how many random shuffles are used to optimise block equalisation.
 #'
 #'
 #'@references Bagchi, R., Crosby, M., Huntley, B., Hole, D. G., Butchart, S. H. M., Collingham, Y.,

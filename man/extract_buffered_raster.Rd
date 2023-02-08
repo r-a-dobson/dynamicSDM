@@ -80,11 +80,11 @@ Extract rasters for spatially buffered and temporally dynamic explanatory variab
 projection date using Google Earth Engine.
 }
 \details{
-For each projection date, this function downloads rasters at given spatial extent and
-resolution for spatially buffered and temporally dynamic explanatory variables. Rasters are
-saved directly to Google Drive, with option to export to local directory too. These can be
-combined to create projection covariate data frames for projection dynamic species distribution
-and abundance at high spatiotemporal resolution
+For each projection date, this function downloads rasters at a given spatial extent and
+resolution for spatially buffered and temporally dynamic explanatory variables. Rasters can be
+saved directly to Google Drive or a local directory. These rasters can be
+combined to create projection covariate data frames for projecting dynamic species distribution
+and abundance at high spatiotemporal resolution.
 }
 \section{Temporal dimension}{
 If \code{temporal.res} and \code{temporal.direction} are not given, explanatory variable data for all

@@ -41,19 +41,19 @@ Thins species occurrence records that are within minimum spatial and temporal di
 }
 \section{Overview}{
 \code{spatiotemp_thin()} calculates the temporal distance between occurrence records in given area
-and excludes records below minimum temporal distance apart. Then calculates spatial distance
-between all occurrence records and filters records below minimum spatial distance apart using
-existing \code{spThin} package functions (Aiello-Lammens et al., 2015).
+and excludes records below minimum temporal distance apart. Then calculates the spatial distance
+between all occurrence records and filters records below the minimum spatial distance apart using
+the \code{spThin} package function for spatial thinning (Aiello-Lammens et al., 2015).
 }
 
 \section{Temporal thinning methods}{
-For temporal thinning, the function first splits occurrence records into grid cells of
-given size in degrees (set by spatial.split.degrees). This is to prevent spatially distant but
-temporally close records from being excluded. For each grid cell, all records within the cell are
-temporally thinned. This process works by removing records that are within given temporal distance
-(temporal.dist) from each other by randomly selecting one of the two. This iterates through until
-no records are within the given temporal distance of each other in each grid cell, following a
-similar algorithm to \code{spThin} (Aiello-Lammens et al., 2015).
+For temporal thinning, the function first splits occurrence records into grid cells of given size
+in degrees (set by \code{spatial.split.degrees}). This is to prevent spatially distant but temporally
+close records from being excluded. For each grid cell, all records within the cell are temporally
+thinned. This process works by removing records that are within given temporal distance
+(\code{temporal.dist}) from each other by randomly selecting one of the two. This iterates through
+until no records are within the given temporal distance of each other in each grid cell, following
+a similar algorithm to \code{spThin} (Aiello-Lammens et al., 2015).
 
 Two methods exist for measuring the temporal distance between occurrence records.
 \itemize{
@@ -63,28 +63,27 @@ Two methods exist for measuring the temporal distance between occurrence records
 }
 \item 
 \enumerate{
-\item \code{day} uses the absolute number of days.
+\item \code{day} - uses the absolute number of days.
 }
 }
 
-For instance, two dates “2010-01-05” and “2012-12-05” can be calculated as either
-1065 absolute days apart, or within the annual cycle these dates represent day 5 and day 339 of
-the year, and are 31 days apart. Therefore, thinning by 40 days using the DOY method would remove
-one of these records, but using the day method would not. The chosen \code{temporal.method} will depend
-upon whether bias towards a point within the annual cycle is more likely to bias models than bias
-towards a given point in linear time.
+For instance, two dates “2010-01-05” and “2012-12-05” can be calculated as either 1065 absolute
+days apart, or within the annual cycle these dates represent day 5 and day 339 of the year, and
+are 31 days apart. Therefore, thinning by 40 days using the \code{DOY} method would remove one of these
+records, but using the \code{day} method would not. The chosen \code{temporal.method} will depend upon
+whether bias towards a point within the annual cycle or a point in linear time.
 }
 
 \section{Spatial thinning}{
 Following temporal thinning, spatial thinning occurs across entire dataset. The spatial distance
 between each record is calculated, and records within the given spatial distance (\code{spatial.dist})
 from each other are excluded by randomly selecting one of these. This iterates through until no
-records are with the given spatial distances of each other across entire dataset using package
+records are with the given spatial distances of each other across entire dataset using the package
 \code{spThin} (Aiello-Lammens et al., 2015).
 
 As random selection could alter the total number of occurrence records remaining in the occurrence
-record dataset, this process is iterated through a specified number of times and the thinned data
-frame with the highest number of records remaining is returned.
+record dataset, this process is iterated through a specified number of times (\code{iterations}) and
+the thinned data frame with the highest number of records remaining is returned.
 }
 
 \examples{

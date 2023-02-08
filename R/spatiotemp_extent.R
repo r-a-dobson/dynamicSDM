@@ -12,9 +12,11 @@
 #'@param spatial.ext the spatial extent to filter by. Object from which extent can be extracted of
 #'  class `Extent`, `RasterLayer`, `SpatialPolygonsDataFrame`,`sf` or `polygon` or numeric vector
 #'  listing xmin, xmax, ymin and ymax in order.
-#'@param prj a character string, the coordinate reference system of input `occ.data` co-ordinates
+#'@param prj a character string, the coordinate reference system of input `occ.data` co-ordinates.
 #'  Default is "+proj=longlat +datum=WGS84".
-#'@details # Spatial extent
+#'@details
+#'
+#' # Spatial extent
 #'
 #'If `spatial.ext` is provided, `spatiotemp_extent()` checks whether species occurrence record
 #'co-ordinates are within the given spatial extent of the study (`spatial.ext`) and excludes any
@@ -26,7 +28,9 @@
 #'is used. If an `sf` polygon object is provided, this is first transformed into a `Spatial` object
 #'for use by `raster::mask()`.
 #'
-#'# Temporal extent If `temporal.ext` is provided, `spatiotemp_extent()` checks whether species
+#'# Temporal extent
+#'
+#'If `temporal.ext` is provided, `spatiotemp_extent()` checks whether species
 #'occurrence record dates are within the given temporal extent of the study and excludes any outside
 #'of this extent.
 #'@return Returns data frame of occurrence records filtered to the spatial and temporal extent

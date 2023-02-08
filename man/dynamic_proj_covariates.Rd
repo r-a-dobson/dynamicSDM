@@ -40,14 +40,14 @@ directories to read projection covariate rasters from.}
 class \code{Extent}, \code{RasterLayer}, \code{sf}, \code{SpatialPolygonsDataFrame}, \code{polygon} or numeric vector
 listing xmin, xmax, ymin and ymax in order.}
 
-\item{spatial.mask}{an object of class \code{Raster}, \code{sf} or \code{Spatial}, represeting a mask in which NA
-cells in the mask layer are removed from the projection covariates.}
+\item{spatial.mask}{an object of class \code{Raster}, \code{sf} or \code{Spatial}, representing a mask in which
+NA cells in the mask layer are removed from the projection covariates.}
 
 \item{spatial.res.degrees}{optional; a numeric value, the spatial resolution in degrees for
 projection rasters to be resampled to. Required if \code{spatial.ext} given.}
 
 \item{resample.method}{a character string or vector length of varnames, specifying resampling
-method to use. One of "ngb" and "bilinear". See details for more information.}
+method to use. One of \code{ngb} and \code{bilinear}. See details for more information.}
 
 \item{cov.file.type}{a character string, the type of file to export projection covariates as. One
 of: \code{tif} (raster stack) or \code{csv}(data frame).}
@@ -56,7 +56,7 @@ of: \code{tif} (raster stack) or \code{csv}(data frame).}
 Default is "+proj=longlat +datum=WGS84".}
 
 \item{cov.prj}{a character string, the coordinate reference system desired for output projection
-covariates. Default is assumed to be the same as prj.}
+covariates. Default is assumed to be the same as \code{prj}.}
 
 \item{save.directory}{optional; a character string, path to local directory to save projection
 covariates to.}
@@ -65,25 +65,27 @@ covariates to.}
 covariates to. Folder must be uniquely named within Google Drive. Do not provide path.}
 }
 \value{
-Exports combined covariates in csv or tif file for each projection date to local
+Exports combined covariates in "csv" or "tif" file for each projection date to the local
 directory or Google Drive folder.
 }
 \description{
-Explanatory variable rasters are imported, resampled to given spatial resolution and extent,
+Explanatory variable rasters are imported, resampled to a given spatial resolution and extent,
 stacked and then exported as a covariate data frame or raster stack for each projection date.
 }
-\section{Input variable rasters For each projection date, the rasters for each explanatory}{
-variable are imported from a local directory or Google Drive folder.
+\section{Input variable rasters}{
+For each projection date, the rasters for each explanatory variable are imported from a local
+directory or Google Drive folder.
 
-Such rasters should be uniquely named "tif" files within the given directory or drive folder,
-containing the variable name (as stated in \code{varnames}) and projection date in format "YYYY-MM-DD".
+Such rasters should be uniquely named "tif" files within the directory or drive folder and
+contain the variable name (as stated in \code{varnames}) and projection date in format "YYYY-MM-DD".
 If more than one “tif” file in the Google Drive folder or local directory matches the projection
 date and explanatory variable name, then the function will error.
 }
 
-\section{Processing rasters If required, rasters are cropped and resampled to the same spatial extent and}{
-resolution. If spatial.mask given, then NA in the mask layer are removed from the projection
-covariates. See \code{raster::mask()} in R package \code{raster} for details.
+\section{Processing rasters}{
+If required, rasters are cropped and resampled to the same spatial extent and resolution. If
+\code{spatial.mask} is given, then cells with NA in this mask layer are removed from the returned
+projection covariates. See \code{raster::mask()} in R package \code{raster} for details.
 
 Rasters are then stacked and reprojected if \code{cov.prj} is different to \code{prj}.
 
@@ -92,9 +94,8 @@ function will error. Resample methods (\code{resample.method}) include:
 \itemize{
 \item \code{ngb}:  Each cell acquires the value of its nearest neighbour cell in the original raster. This
 is typically used for categorical variables.
-\item \code{bilinear}: the distance-weighted average of the
-four nearest cells are used to estimate a new cell value. This is typically used for continuous
-variables.
+\item \code{bilinear}: the distance-weighted average of the four nearest cells are used to estimate a new
+cell value. This is typically used for continuous variables.
 }
 
 If only one \code{resample.method} is given, but these are more than one explanatory variables, the
@@ -102,7 +103,7 @@ same \code{resample.method} is used for all.
 }
 
 \section{Output covariates}{
-The raster stacks are then converted into data frames or raster stacks depending on
+The raster stacks are then converted into data frames or remain as raster stacks depending on
 \code{cov.file.type}. Column names or raster layer names will be the unique explanatory variable names
 (\code{varnames}). These are exported to the local directory or Google Drive folder with file names
 containing the relevant projection date in "YYYY-MM-DD" format.

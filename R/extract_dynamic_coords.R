@@ -60,10 +60,7 @@
 #'  functions for such data. For instance, "first" or "last" may be more relevant that "sum" of land
 #'  cover classification numbers.
 #'
-#'
-#'  However, some accepted mathematical functions such as
-#'  "first" or "last" may be appropriate for such datasets.
-#'
+
 #'  # Exporting extracted data
 #'
 #'  For `save.method` = `combined`, the function with save “csv” files containing all occurrence

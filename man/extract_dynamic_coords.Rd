@@ -92,9 +92,6 @@ variables for specific categories within categorical datasets.
 When extracting from categorical datasets, be careful to choose appropriate mathematical
 functions for such data. For instance, "first" or "last" may be more relevant that "sum" of land
 cover classification numbers.
-
-However, some accepted mathematical functions such as
-"first" or "last" may be appropriate for such datasets.
 }
 
 \section{Exporting extracted data}{

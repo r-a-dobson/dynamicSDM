@@ -25,10 +25,11 @@
 #'  resolution of the datasets to be utilised when extracting dynamic variables.
 #'
 #'  For example, if explanatory variables datasets are annual, then a `temporal.res` of `year` is
-#'  adequate, whereas if
-#'  datasets are daily, then `temporal.res` of `day` may be more appropriate.
+#'  adequate, whereas if datasets are daily, then `temporal.res` of `day` may be more appropriate.
+#'
 #'@return Returns a data frame of species records filtered by the minimum acceptable spatial
 #'  resolution of co-ordinates and temporal resolution of dates.
+#'
 #' @examples
 #'data(sample_occ_data)
 #'sample_occ_data <- convert_gbif(sample_occ_data)

@@ -24,7 +24,7 @@
 #'  projection.type.
 #'@param colour.palette optional; a character string, the colormap option to use from `viridis`. See
 #'  details for colour palette options.
-#'@param file.name optional, a character string, the name for the saved GIF file. Default =
+#'@param file.name optional, a character string, the name for the output GIF file. Default =
 #'  `projection.type`.
 #'@details Function reads in projection rasters for each date. These are plotted using `ggplot2` and
 #'  combined into a Graphics Interchange Format (GIF).
@@ -32,15 +32,15 @@
 #'  # Import projection rasters
 #'
 #'  Projection rasters for each date must be “tif” files that are uniquely named with the date in
-#'  format YYYY-MM-DD and projection.type. If more than one file name matches the date and
+#'  format "YYYY-MM-DD" and `projection.type.` If more than one file name matches the date and
 #'  `projection.type`, the function will error.
 #'
 #'  # Google Drive compatibility
 #'
-#'  If `drive.folder` or `save.drive.folder` given, please ensure the folder name is unique within
-#'  your Google Drive. Do not provide the path if the folder is nested within others.
+#'  If `drive.folder` or `save.drive.folder` is given, please ensure the folder name is unique
+#'  within your Google Drive. Do not provide the path if the folder is nested within others.
 #'
-#'  If one of `drive.folder` or `save.drive.folder` are used then user.email is required to access
+#'  If one of `drive.folder` or `save.drive.folder` are used then `user.email` is required to access
 #'  the appropriate Google Drive user account. This requires users to have installed R package
 #'  `googledrive` and initialised Google Drive with valid log-in credentials. Please follow
 #'  instructions on <https://googledrive.tidyverse.org/>.
@@ -49,9 +49,6 @@
 #'  <https://ggplot2.tidyverse.org/reference/scale_viridis.html>. Available options include: "magma"
 #'  (or "A"), "inferno" (or "B"), "plasma" (or "C"), "viridis" (or "D", the default option),
 #'  "cividis" (or "E"), "rocket" (or "F"), "mako"(or "G") and "turbo" (or "H").
-#'
-#'
-#'
 #'
 #' @references Wickham, H., and Chang, W, 2016. Package ‘ggplot2’. Create elegant data
 #'   visualisations using the grammar of graphics. Version, 2(1), pp.1-189.

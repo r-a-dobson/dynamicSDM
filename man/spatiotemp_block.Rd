@@ -22,7 +22,7 @@ column names as follows; record longitude as "x", latitude as "y", year as "year
 \item{vars.to.block.by}{a character string or vector, the explanatory variable column names to
 group sampling units based upon.}
 
-\item{spatial.layer}{optional; a \code{RasterLayer} object, a categorical spatial layer for sampling
+\item{spatial.layer}{optional; a \code{RasterLayer} object, a categorical spatial layer for sample
 unit splitting.}
 
 \item{spatial.split.degrees}{a numeric value, the grid cell resolution in degrees to split
@@ -31,7 +31,7 @@ unit splitting.}
 \item{temporal.block}{optional; a character string or vector, the time step for sampling unit
 splitting. Any combination of \code{day}, \code{month}, \code{year} or \code{quarter.} See details.}
 
-\item{n.blocks}{optional; a numeric value not equal to one, the number of blocks to group
+\item{n.blocks}{optional; a numeric value of two or more, the number of blocks to group
 occurrence records into. Default; 10.}
 
 \item{iterations}{optional; a numeric value, the number of random block groupings to trial before
@@ -43,15 +43,16 @@ spatiotemporal block.
 }
 \description{
 Splits occurrence records into spatial and temporal sampling units and groups sampling units into
-multiple blocks that have similar mean and range of environmental explanatory variables.
+multiple blocks that have similar mean and range of environmental explanatory variables and sample
+size.
 }
 \section{Blocking for autocorrelation}{
-Blocking is an established method to account for spatial
-autocorrelation in SDMs. Following Bagchi et al., (2013), the blocking method involves splitting
-occurrence data into sampling units based upon non-contiguous ecoregions, which are then grouped
-into spatially disaggregated blocks of approximately equal sample size, within which the mean and
-range of explanatory variable data are similar. When species distribution model fitting, blocks
-are left out in-turn in a jack-knife approach for model training and testing.
+Blocking is an established method to account for spatial autocorrelation in SDMs. Following Bagchi
+et al., (2013), the blocking method involves splitting occurrence data into sampling units based
+upon non-contiguous ecoregions, which are then grouped into spatially disaggregated blocks of
+approximately equal sample size, within which the mean and range of explanatory variable data are
+similar. When species distribution model fitting, blocks are left out in-turn in a jack-knife
+approach for model training and testing.
 
 We adapt this approach to account for temporal autocorrelation by enabling users to split records
 into sampling units based upon spatial and temporal characteristic before blocking occurs.
@@ -64,7 +65,7 @@ resolution (\code{spatial.split.degrees}).
 }
 
 \section{Temporal splitting}{
-If temporal.block is given, then occurrence records with unique values for given level are
+If \code{temporal.block} is given, then occurrence records with unique values for the given level are
 considered unique sampling unit. For instance, if \code{temporal.block} = \code{year}, then records from the
 same year are considered a sampling unit to be grouped into blocks.
 
@@ -78,10 +79,10 @@ record collection are driving autocorrelation.
 }
 
 \section{Block generation}{
-Once split into sampling units based upon temporal and spatial characteristics,
-these units are then assigned into given number of blocks (\code{n.blocks}), so that the mean and range
-of explanatory variables (\code{vars.to.block.by}) and total size are similar across each. The number
-of \code{iterations} specifies how many random shuffles are used to optimise block equalisation.
+Once split into sampling units based upon temporal and spatial characteristics, these units are
+then assigned into given number of blocks (\code{n.blocks}), so that the mean and range of explanatory
+variables (\code{vars.to.block.by}) and total sample size are similar across each. The number of
+\code{iterations} specifies how many random shuffles are used to optimise block equalisation.
 }
 
 \examples{

@@ -59,9 +59,11 @@ dynamicSDM functions. Option to exclude records containing missing, duplicate or
 co-ordinates or dates.
 }
 \section{\code{date.res} argument}{
-The date.res states the resolution to check dates at. This includes when searching for duplicate
-records, removing records with NA values and checking for invalid dates.
+The \code{date.res} states the temporal resolution to check dates, including when searching for
+duplicate records, removing records with NA values and checking for invalid dates.
+}
 
+\section{Validity checks}{
 Record dates and co-ordinates are checked for validity using the following rules:
 \itemize{
 \item Dates must be real dates that could exist. For example, 50th February 2000 is not a valid date.
@@ -78,8 +80,10 @@ co-ordinates of occurrence records.
 If \code{coordclean} = T, then \code{coordclean.species} must be provided to identify which species each
 record belonds to. If \code{coordclean.handle} = \code{exclude} then all \code{occ.data} records flagged by
 \code{CoordinateCleaner::clean_coordinates()} as potentially erroneous are removed in the returned
-data. If  \code{coordclean.handle} = \code{report}, then the in-built report output by
-\code{CoordinateCleaner::clean_coordinates()}is returned. This contains logicals specifying the
+data.
+
+If  \code{coordclean.handle} = \code{report}, then the in-built report output by
+\code{CoordinateCleaner::clean_coordinates()}is returned. This report contains logicals specifying the
 potentially erroneous records.
 }
 

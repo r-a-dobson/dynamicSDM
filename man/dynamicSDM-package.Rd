@@ -8,6 +8,14 @@
 \description{
 A collection of novel tools for generating species distribution and abundance models (SDM) that are dynamic through both space and time. These highly flexible functions incorporate spatial and temporal aspects across key SDM stages; including when cleaning and filtering species occurrence data, generating pseudo-absence records, assessing and correcting sampling biases and autocorrelation, extracting explanatory variables and projecting distribution patterns. Throughout, functions utilise Google Earth Engine and Google Drive to minimise the computing power and storage demands associated with species distribution modelling at high spatio-temporal resolution.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/r-a-dobson/dynamicSDM}
+  \item Report bugs at \url{https://github.com/r-a-dobson/dynamicSDM/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Rachel Dobson \email{eerdord@gmail.com} (\href{https://orcid.org/0000-0003-3990-267X}{ORCID}) [contributor]
 

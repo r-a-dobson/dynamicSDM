@@ -1,6 +1,6 @@
 #'Combine explanatory variable rasters into covariates for each projection date.
 #'
-#'Explanatory variable rasters are imported, resampled to given spatial resolution and extent,
+#'Explanatory variable rasters are imported, resampled to a given spatial resolution and extent,
 #'stacked and then exported as a covariate data frame or raster stack for each projection date.
 #'
 #'@param dates a character string, vector of dates in format "YYYY-MM-DD".
@@ -11,7 +11,7 @@
 #'@param spatial.res.degrees optional; a numeric value, the spatial resolution in degrees for
 #'  projection rasters to be resampled to. Required if `spatial.ext` given.
 #'@param resample.method a character string or vector length of varnames, specifying resampling
-#'  method to use. One of "ngb" and "bilinear". See details for more information.
+#'  method to use. One of `ngb` and `bilinear`. See details for more information.
 #'@param drive.folder optional; a character string or vector, Google Drive folder or folders to read
 #'  projection covariate rasters from. Folder must be uniquely named within Google Drive. Do not
 #'  provide path.
@@ -28,20 +28,24 @@
 #'@param prj a character string, the coordinate reference system desired for projection covariates.
 #'  Default is "+proj=longlat +datum=WGS84".
 #'@param cov.prj a character string, the coordinate reference system desired for output projection
-#'  covariates. Default is assumed to be the same as prj.
-#'@param spatial.mask an object of class `Raster`, `sf` or `Spatial`, represeting a mask in which NA
-#'  cells in the mask layer are removed from the projection covariates.
-#'@details # Input variable rasters For each projection date, the rasters for each explanatory
-#'variable are imported from a local directory or Google Drive folder.
+#'  covariates. Default is assumed to be the same as `prj`.
+#'@param spatial.mask an object of class `Raster`, `sf` or `Spatial`, representing a mask in which
+#'  NA cells in the mask layer are removed from the projection covariates.
+#'@details
+#'# Input variable rasters
 #'
-#'Such rasters should be uniquely named "tif" files within the given directory or drive folder,
-#'containing the variable name (as stated in `varnames`) and projection date in format "YYYY-MM-DD".
+#'For each projection date, the rasters for each explanatory variable are imported from a local
+#'directory or Google Drive folder.
+#'
+#'Such rasters should be uniquely named "tif" files within the directory or drive folder and
+#'contain the variable name (as stated in `varnames`) and projection date in format "YYYY-MM-DD".
 #'If more than one “tif” file in the Google Drive folder or local directory matches the projection
 #'date and explanatory variable name, then the function will error.
 #'
-#'# Processing rasters If required, rasters are cropped and resampled to the same spatial extent and
-#'resolution. If spatial.mask given, then NA in the mask layer are removed from the projection
-#'covariates. See `raster::mask()` in R package `raster` for details.
+#'# Processing rasters
+#'If required, rasters are cropped and resampled to the same spatial extent and resolution. If
+#'`spatial.mask` is given, then cells with NA in this mask layer are removed from the returned
+#'projection covariates. See `raster::mask()` in R package `raster` for details.
 #'
 #'Rasters are then stacked and reprojected if `cov.prj` is different to `prj`.
 #'
@@ -51,16 +55,15 @@
 #'* `ngb`:  Each cell acquires the value of its nearest neighbour cell in the original raster. This
 #'is typically used for categorical variables.
 #'
-#'* `bilinear`: the distance-weighted average of the
-#'four nearest cells are used to estimate a new cell value. This is typically used for continuous
-#'variables.
+#'* `bilinear`: the distance-weighted average of the four nearest cells are used to estimate a new
+#'cell value. This is typically used for continuous variables.
 #'
 #'If only one `resample.method` is given, but these are more than one explanatory variables, the
 #'same `resample.method` is used for all.
 #'
 #'# Output covariates
 #'
-#'The raster stacks are then converted into data frames or raster stacks depending on
+#'The raster stacks are then converted into data frames or remain as raster stacks depending on
 #'`cov.file.type`. Column names or raster layer names will be the unique explanatory variable names
 #'(`varnames`). These are exported to the local directory or Google Drive folder with file names
 #'containing the relevant projection date in "YYYY-MM-DD" format.
@@ -74,8 +77,8 @@
 #'appropriate Google Drive user account. This requires users to have installed R package
 #'`googledrive` and initialised Google Drive with valid log-in credentials. Please follow
 #'instructions on <https://googledrive.tidyverse.org/>.
-#'@returns Exports combined covariates in csv or tif file for each projection date to local
-#'  directory or Google Drive folder.
+#'@returns Exports combined covariates in "csv" or "tif" file for each projection date to the local
+#'directory or Google Drive folder.
 #'@export
 #'@examplesIf googledrive::drive_has_token()
 #'

@@ -81,9 +81,9 @@
 #'
 #'  Please be aware, if specific categories are given (argument `categories`) when extracting
 #'  categorical data, then temporal buffering cannot be completed. The most recent categorical data
-#'  to the occurrence record date will be used and spatial buffering will take place.
+#'  to the occurrence record date will be used for spatial buffering.
 #'
-#'  If, specific categories are not given when extracting from categorical datasets, be careful to
+#'  If specific categories are not given when extracting from categorical datasets, be careful to
 #'  choose appropriate mathematical functions for such data. For instance, "first" or "last" may be
 #'  more relevant that "sum" of land cover classification numbers.
 #'

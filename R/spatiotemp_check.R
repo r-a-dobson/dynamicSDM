@@ -29,10 +29,12 @@
 #'
 #'# `date.res` argument
 #'
-#' The date.res states the resolution to check dates at. This includes when searching for duplicate
-#' records, removing records with NA values and checking for invalid dates.
+#' The `date.res` states the temporal resolution to check dates, including when searching for
+#' duplicate records, removing records with NA values and checking for invalid dates.
 #'
-#'Record dates and co-ordinates are checked for validity using the following rules:
+#' # Validity checks
+#'
+#' Record dates and co-ordinates are checked for validity using the following rules:
 #'
 #'* Dates must be real dates that could exist. For example, 50th February 2000 is not a valid date.
 #'
@@ -48,9 +50,13 @@
 #'If `coordclean` = T, then `coordclean.species` must be provided to identify which species each
 #'record belonds to. If `coordclean.handle` = `exclude` then all `occ.data` records flagged by
 #'`CoordinateCleaner::clean_coordinates()` as potentially erroneous are removed in the returned
-#'data. If  `coordclean.handle` = `report`, then the in-built report output by
-#'`CoordinateCleaner::clean_coordinates()`is returned. This contains logicals specifying the
+#'data.
+#'
+#'If  `coordclean.handle` = `report`, then the in-built report output by
+#'`CoordinateCleaner::clean_coordinates()`is returned. This report contains logicals specifying the
 #'potentially erroneous records.
+#'
+#'
 #'@references Zizka A, Silvestro D, Andermann T, Azevedo J, Duarte Ritter C, Edler D, Farooq H,
 #'Herdean A, Ariza M, Scharn R, Svanteson S, Wengstrom N, Zizka V, Antonelli A (2019).
 #'“CoordinateCleaner: standardized cleaning of occurrence records from biological collection

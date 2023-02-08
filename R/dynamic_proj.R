@@ -15,7 +15,7 @@
 #'@param local.directory optional; a character string, the path to a local directory to read
 #'  projection covariate data frames from.
 #'@param user.email optional; a character string, user email for initialising Google Drive. Required
-#'  if drive.folder or save.drive.folder used.
+#'  if `drive.folder` or `save.drive.folder` used.
 #'@param sdm.mod optional; a model object or list of model objects fitted to species distribution
 #'  data.
 #'@param sam.mod optional; a model object or list of model objects fitted to species abundance data.
@@ -25,7 +25,7 @@
 #'  suitability into binary presence-absence. Default 0.5. Required if projection.method is
 #'  "`binary`" or  "`stacked`".
 #'@param sam.weight optional; a numeric string, weights given to each `sdm.mod` model projection,
-#'  given in the same order as the sam.mod list. Default is equal weighting to all models.
+#'  given in the same order as the `sam.mod` list. Default is equal weighting to all models.
 #'@param save.directory optional; a character string, path to local directory to save projection
 #'  rasters to.
 #'@param save.drive.folder optional; a character string, Google Drive folder to save projection
@@ -34,21 +34,21 @@
 #'  Default is "+proj=longlat +datum=WGS84".
 #'@param proj.prj a character string, the coordinate reference system desired for output projection
 #'  rasters. Default is assumed to be the same as prj.
-#'@param spatial.mask an object of class `Raster`, `sf` or `Spatial`, represeting a mask in which NA
-#'  cells in the mask layer are removed from the projection covariates.
+#'@param spatial.mask an object of class `Raster`, `sf` or `Spatial`, representing a mask in which
+#'  NA cells in the mask layer are removed from the projection covariates.
 #'@details Function projects a model object or list of model objects onto projection covariate data
 #'  frames for each projection date given.
 #'
 #'  # Projection covariate input
 #'
-#'  * Data frames: if `cov.file.type` = `csv`, then projection covariates must be saved ".csv" files
-#'  in the drive.folder or local.directory given. Here, they must be unique in containing the
-#'  relevant projection date in “YYYY-MM-DD” format. For instance, two or more “.csv” files saved
+#'  * Data frames: if `cov.file.type = csv`, then projection covariates must be saved "csv" files
+#'  in the `drive.folder` or `local.directory` given. Here, they must be unique in containing the
+#'  relevant projection date in “YYYY-MM-DD” format. For instance, two or more “csv” files saved
 #'  within the Google Drive folder or local directory that contain the projection date will result
 #'  in function error. Additionally, column names of projection covariate data frames must match the
 #'  explanatory variable names that fitted models are trained on.
 #'
-#'  * Raster stacks: if `cov.file.type` = `tif`, then projection covariates must be saved ".tif"
+#'  * Raster stacks: if `cov.file.type = tif`, then projection covariates must be saved "tif"
 #'  files, similarly named and formatted as above. Raster layer names must match the explanatory
 #'  variable names that fitted models are trained on.
 #'
@@ -89,11 +89,11 @@
 #'
 #'  # Google Drive compatibility
 #'
-#'  If `drive.folder` or `save.drive.folder` given, please ensure the folder name is unique within your
-#'  Google Drive. Do not provide the path if the folder is nested within others.
+#'  If `drive.folder` or `save.drive.folder` given, please ensure the folder name is unique within
+#'  your Google Drive. Do not provide the path if the folder is nested within others.
 #'
-#'  If one of `drive.folder` or `save.drive.folder` are used then user.email is required to access the
-#'  appropriate Google Drive user account. This requires users to have installed R package
+#'  If one of `drive.folder` or `save.drive.folder` are used then `user.email` is required to access
+#'  the appropriate Google Drive user account. This requires users to have installed R package
 #'  `googledrive` and initialised Google Drive with valid log-in credentials. Please follow
 #'  instructions on <https://googledrive.tidyverse.org/>.
 #'

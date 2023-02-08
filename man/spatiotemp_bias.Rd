@@ -25,15 +25,15 @@ One or multiple of \code{day} or \code{month}, \code{year.} Can be abbreviated.}
 \item{plot}{a logical indicating whether to generate plots of spatial and temporal bias. See
 details for plot descriptions.}
 
-\item{spatial.method}{a character string, the method calculate the spatial bias statistic. One of;
-\code{simple}, \code{convex_hull} or \code{core}. See details.}
+\item{spatial.method}{a character string, the method to calculate the spatial bias statistic. One
+of; \code{simple}, \code{convex_hull} or \code{core}. See details.}
 
-\item{centroid}{a numeric vector of length two, specifying the centroid co-ordinate in the order
+\item{centroid}{a numeric vector of length two, specifying the centroid co-ordinates in the order
 of longitude then latitude. Only required if \code{spatial.method} = \code{core.} Default is mean of all
 occurrence record co-ordinates.}
 
-\item{radius}{a numeric value, the radial distance from the given centroid co-ordinate to measure
-spatial bias within. Only required if \code{spatial.method} = \code{core.} See details for more
+\item{radius}{a numeric value, the radial distance in metres from the given centroid co-ordinate
+to measure spatial bias within. Only required if \code{spatial.method} = \code{core.} See details for more
 information. Default is mean distance of all co-ordinates from \code{centroid}.}
 
 \item{prj}{a character string, the coordinate reference system of occ.data co-ordinates. Default
@@ -47,21 +47,24 @@ Generates plots for visual assessment of spatial and temporal biases in occurren
 whether the spatiotemporal distribution of records is significantly different from the
 distribution from random sampling.
 }
-\section{Temporal bias To assess temporal sampling bias, the function returns a histogram plot}{
+\section{Temporal bias}{
+To assess temporal sampling bias, the function returns a histogram plot
 of the frequency distribution of records across the given time step specified by \code{temporal.level}
-(if \code{plot} = T). The observed frequency of sampling across the categorical time steps are compared
+(if \code{plot = T}). The observed frequency of sampling across the categorical time steps are compared
 to the distribution expected from random sampling, using a chi-squared test.
 }
 
-\section{Spatial bias To assess spatial sampling bias, the function returns a scatterplot of the spatial}{
-distribution of occurrence records to illustrate any spatial clustering (if \code{plot} = T). The
+\section{Spatial bias}{
+To assess spatial sampling bias, the function returns a scatterplot of the spatial
+distribution of occurrence records to illustrate any spatial clustering (if \code{plot = T}). The
 average nearest neighbour distance of record co-ordinates is then compared to that of records
 randomly generated at same density using a t-test.
 }
 
-\section{Spatial bias: methods * \code{simple} - generates the random points within a rectangle created using}{
-the minimum and maximum longitude and latitude of occurrence co-ordinates.
+\section{Spatial bias: methods}{
 \itemize{
+\item \code{simple} - generates the random points within a rectangle created using
+the minimum and maximum longitude and latitude of occurrence co-ordinates.
 \item \code{convex_hull} - generates the random points within the convex hull of occurrence record
 co-ordinates (i.e. the smallest convex set that contains all records).
 \item \code{core} - generates the random points within specified circular area generated from a centroid

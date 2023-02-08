@@ -61,16 +61,15 @@ Extract rasters for temporally dynamic explanatory variables at each projection 
 Earth Engine.
 }
 \details{
-For each projection date, this function downloads rasters at given spatial extent and
-resolution for specified temporally dynamic explanatory variables. For each cell in spatial
-extent, the GEE.math.fun is calculated for data extracted across the specified number of days
-prior or post the projection date. Rasters of such data are saved directly to Google Drive, with
-option to export to local directory too. These can be combined to create projection covariate
-data frames for projection dynamic species distribution and abundance at high spatiotemporal
-resolution.
+For each projection date, this function downloads rasters at a given spatial extent and
+resolution for temporally dynamic explanatory variables. For each cell within the spatial
+extent, the \code{GEE.math.fun} is calculated on the data extracted from across the specified number
+of days prior or post the projection date. Rasters can be saved to Google Drive or a local
+directory too. These rasters can be combined to create projection covariate data frames for
+projecting dynamic species distribution and abundance at high spatiotemporal resolution.
 }
 \section{Google Earth Engine}{
-\code{extract_dynamic_raster()} requires users to have installed R package \code{rgee} (Aybar et al.,
+\code{extract_dynamic_raster()} requires users to have installed the R package \code{rgee} (Aybar et al.,
 2020) and initialised Google Earth Engine with valid log-in credentials. Please follow
 instructions on the following website \url{https://cran.r-project.org/package=rgee}.
 \itemize{
@@ -93,7 +92,7 @@ path.
 
 Note: When running this function a folder labelled "dynamicSDM_download_bucket" will be created in
 your Google Drive. This will be emptied once the function has finished running and output rasters
-will be found in the save.drive.folder or save.directory specified.
+will be found in the \code{save.drive.folder} or \code{save.directory}.
 }
 
 \section{Mathematical function}{
