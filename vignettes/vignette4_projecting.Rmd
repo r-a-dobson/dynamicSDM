@@ -58,16 +58,21 @@ unique naming of files in the local directory or drive folder.
 ```{r create directories}
 variablenames <- c("eight_sum_prec", "year_sum_prec", "grass_crop_percentage")
 
-project_directory <- file.path(file.path(tempdir(), "dynamicSDM_vignette"))
+project_directory <- file.path(tempdir(), "dynamicSDM_vignette")
 # project_directory<-"your_path_here"
+dir.create(project_directory, showWarnings = FALSE)
 
-projection_directories <- file.path(file.path(project_directory, "projection"))
+projection_directories <- file.path(project_directory, "projection")
+dir.create(project_directory, showWarnings = FALSE)
 
-projectionrasters <- file.path(file.path(project_directory, "projectionrasters"))
- 
-projection_covariates <- file.path(file.path(project_directory, "projectioncovariates"))
-  
-projection_GIF <- file.path(file.path(project_directory, "projection_GIF"))
+projectionrasters <- file.path(project_directory, "projectionrasters")
+dir.create(project_directory, showWarnings = FALSE)
+
+projection_covariates <- file.path(project_directory, "projectioncovariates")
+dir.create(project_directory, showWarnings = FALSE)
+
+projection_GIF <- file.path(project_directory, "projection_GIF")
+dir.create(project_directory, showWarnings = FALSE)
 ```
 
 

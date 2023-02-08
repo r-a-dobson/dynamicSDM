@@ -102,19 +102,26 @@
 #'
 #'@export
 #'@examples
-#'
+#'# Read in data
 #'data("sample_explan_data")
+#'
+#'# Set variable names
 #'variablenames<-c("eight_sum_prec","year_sum_prec","grass_crop_percentage")
+#'
+#'# Set number of trees for BRT
+#'n.trees <- 1500
+#'
 #'\dontshow{
-#'sample_explan_data<-sample_explan_data[1:100,]
-#'variablenames<-c("eight_sum_prec","year_sum_prec")
+#'sample_explan_data<-sample_explan_data[1:200,]
+#'n.trees <- 10
 #'}
 #'
 #' model <- brt_fit(sample_explan_data,
 #'                  response.col = "presence.absence",
 #'                  varnames = variablenames,
 #'                  interaction.depth = 1,
-#'                  distribution = "bernoulli")
+#'                  distribution = "bernoulli",
+#'                  n.trees = n.trees)
 #'
 #'data(sample_cov_data)
 #'utils::write.csv(sample_cov_data,file=paste0(tempdir(),"/2018-04-01_covariates.csv"))
