@@ -57,3 +57,5 @@ Suggests:
     viridis
 Config/testthat/edition: 3
 VignetteBuilder: knitr
+URL: https://github.com/r-a-dobson/dynamicSDM
+BugReports: https://github.com/r-a-dobson/dynamicSDM/issues
