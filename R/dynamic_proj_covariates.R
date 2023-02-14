@@ -102,21 +102,19 @@
 #'                       datasetname = "UCSB-CHG/CHIRPS/DAILY",
 #'                       bandname="precipitation",
 #'                       user.email = user.email,
-#'                       save.drive.folder = "save.drive.folder",
 #'                       spatial.res.metres = spatial.res.metres,
 #'                       GEE.math.fun = "sum",
 #'                       temporal.direction = "prior",
 #'                       temporal.res = 56,
 #'                       spatial.ext = sample_extent_data,
 #'                       varname = variablenames[1],
-#'                       save.directory=projectionrasters)
+#'                       save.directory=temp.dir())
 #'
 #'
 #'extract_dynamic_raster(dates=projectiondates,
 #'                      datasetname = "UCSB-CHG/CHIRPS/DAILY",
 #'                      bandname="precipitation",
 #'                      user.email = user.email,
-#'                      save.drive.folder = "save.drive.folder",
 #'                      spatial.res.metres = spatial.res.metres,
 #'                      GEE.math.fun = "sum",
 #'                      temporal.direction = "prior",

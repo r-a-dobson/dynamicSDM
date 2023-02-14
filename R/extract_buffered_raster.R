@@ -33,6 +33,8 @@
 #'  rasters to. Folder must be uniquely named within Google Drive. Do not provide path.
 #'@param agg.factor optional;a postive integer, the aggregation factor expressed as number of cells
 #'  in each direction. See details.
+#'@param resume a logical indicating whether to search `save.directory` or `save.drive.folder` and
+#'  return to previous progress through projection dates.Default = T.
 #'@details For each projection date, this function downloads rasters at a given spatial extent and
 #'  resolution for spatially buffered and temporally dynamic explanatory variables. Rasters can be
 #'  saved directly to Google Drive or a local directory. These rasters can be
@@ -151,7 +153,6 @@
 #'                        spatial.res.metres = 500,
 #'                        GEE.math.fun = "sum",
 #'                        moving.window.matrix = matrix,
-#'                        save.drive.folder = "mydrivefolder",
 #'                        user.email = user.email,
 #'                        categories=c(6,7),
 #'                        agg.factor = 12,
@@ -176,7 +177,8 @@ extract_buffered_raster <- function(dates,
                                     categories,
                                     save.directory,
                                     agg.factor,
-                                    save.drive.folder) {
+                                    save.drive.folder,
+                                    resume = T) {
 
     # Check all arguments that are required have been given and are valid .
 
@@ -397,7 +399,34 @@ extract_buffered_raster <- function(dates,
     # Reduce ImageCollection using function specified in GEE.math.fun
     image_collection_reduced <- image_collection$reduce(GEE.FUNC[[match(GEE.math.fun, namelist)]])
 
-    }
+      }
+
+      #If resume=T check for the file in the save folder/directory. If present move to next date
+      if (resume) {
+
+        check_file <- paste0(varname, "_", date1, ".tif")
+
+        if (!missing(save.drive.folder)) {
+
+           # Initiate Google Drive
+          googledrive::drive_auth(email = user.email)
+          googledrive::drive_user()
+
+          save.folderpath <- googledrive::drive_find(pattern = save.drive.folder, type = 'folder')
+          file_list <- googledrive::drive_ls(path = googledrive::as_id(save.folderpath$id))$name
+        }
+
+        if (!missing(save.directory)) {
+          file_list <- list.files(save.directory)
+        }
+
+        file_list <- file_list[grep(check_file, file_list)]
+
+        if (!length(file_list) == 0) {
+          next()
+
+        }
+        }
 
       # Download raster of Reduced ImageCollection to users Google Drive folder
       tryCatch({

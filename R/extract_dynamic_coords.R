@@ -95,7 +95,7 @@
 #'  save.method = "split",
 #'  resume = TRUE,
 #'  varname = "total_annual_precipitation_prior",
-#'  save.directory= temp.dir)
+#'  save.directory= temp.dir())
 #'
 #'
 

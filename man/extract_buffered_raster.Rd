@@ -20,7 +20,8 @@ extract_buffered_raster(
   categories,
   save.directory,
   agg.factor,
-  save.drive.folder
+  save.drive.folder,
+  resume = T
 )
 }
 \arguments{
@@ -70,6 +71,9 @@ in each direction. See details.}
 
 \item{save.drive.folder}{optional; a character string, Google Drive folder to save extracted
 rasters to. Folder must be uniquely named within Google Drive. Do not provide path.}
+
+\item{resume}{a logical indicating whether to search \code{save.directory} or \code{save.drive.folder} and
+return to previous progress through projection dates.Default = T.}
 }
 \value{
 Returns details of successful explanatory variable raster extractions for each projection

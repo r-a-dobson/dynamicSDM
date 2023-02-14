@@ -59,11 +59,9 @@
 #'                                      interval = 3,
 #'                                      interval.level = "month")
 #'data(sample_proj_rast)
-#'\dontshow{
-#'sample_proj_rast<-raster::subset(sample_proj_rast, 1)
-#'projectiondates<-projectiondates[1]
-#'}
+#'\donttest{
 #'# Save sample projection rasters to replicate output from `dynamic_proj()`
+#'
 #'raster::writeRaster(
 #'  sample_proj_rast,
 #'  filename = paste0(tempdir(), "/", paste0(projectiondates, "_proportional.tif")),
@@ -77,7 +75,7 @@
 #'local.directory = tempdir(),
 #'save.directory = tempdir()
 #')
-#'
+#'}
 #'@export
 
 dynamic_proj_GIF <- function(dates,

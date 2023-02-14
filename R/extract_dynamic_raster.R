@@ -23,6 +23,8 @@
 #'  rasters to. Folder must be uniquely named within your Google Drive. Do not provide path.
 #'@param save.directory optional; a character string, path to local directory to save extracted
 #'  rasters to.
+#'@param resume a logical indicating whether to search `save.directory` or `save.drive.folder` and
+#'  return to previous progress through projection dates.Default = T.
 #'@details For each projection date, this function downloads rasters at a given spatial extent and
 #'  resolution for temporally dynamic explanatory variables. For each cell within the spatial
 #'  extent, the `GEE.math.fun` is calculated on the data extracted from across the specified number
@@ -95,7 +97,6 @@
 #'                       datasetname = "UCSB-CHG/CHIRPS/DAILY",
 #'                       bandname="precipitation",
 #'                       user.email = user.email,
-#'                       save.drive.folder = "mydrivefolder",
 #'                       spatial.res.metres = 5566,
 #'                       GEE.math.fun = "sum",
 #'                       temporal.direction = "prior",
@@ -119,7 +120,8 @@ extract_dynamic_raster <- function(dates,
                                    temporal.res,
                                    temporal.direction,
                                    save.directory,
-                                   save.drive.folder) {
+                                   save.drive.folder,
+                                   resume = T) {
 
 
     # Set default varname for saving raster
@@ -273,6 +275,31 @@ extract_dynamic_raster <- function(dates,
 
       # Reduce the ImageCollection using GEE Reducer function chosen by user
       image_collection_reduced <- image_collection$reduce(GEE.FUNC[[match(GEE.math.fun, namelist)]])
+
+      if (resume) {
+
+        check_file <- paste0(varname, "_", firstdate, ".tif")
+
+        if (!missing(save.drive.folder)) {
+
+          # Initiate Google Drive
+          googledrive::drive_auth(email = user.email)
+          googledrive::drive_user()
+
+          save.folderpath <- googledrive::drive_find(pattern = save.drive.folder, type = 'folder')
+          file_list <- googledrive::drive_ls(path = googledrive::as_id(save.folderpath$id))$name
+        }
+
+        if (!missing(save.directory)) {
+          file_list <- list.files(save.directory)
+        }
+
+        file_list <- file_list[grep(check_file, file_list)]
+
+        if (!length(file_list) == 0) {
+          next()
+        }
+        }
 
 
       tryCatch({

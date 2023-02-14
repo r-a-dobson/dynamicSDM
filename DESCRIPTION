@@ -15,7 +15,7 @@ Authors@R: c(
     person("Martin", "Dallimer", , "M.Dallimer@leeds.ac.uk", role = c("aut", "ctb"),
            comment = c(ORCID = "0000-0001-8120-3309"))) 
 Description: A collection of novel tools for generating species distribution and abundance models (SDM) that are dynamic through both space and time. These highly flexible functions incorporate spatial and temporal aspects across key SDM stages; including when cleaning and filtering species occurrence data, generating pseudo-absence records, assessing and correcting sampling biases and autocorrelation, extracting explanatory variables and projecting distribution patterns. Throughout, functions utilise Google Earth Engine and Google Drive to minimise the computing power and storage demands associated with species distribution modelling at high spatio-temporal resolution.
-License: GPL (>= 3) + file LICENSE
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

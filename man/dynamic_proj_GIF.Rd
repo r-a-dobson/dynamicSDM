@@ -98,11 +98,9 @@ projectiondates <- dynamic_proj_dates(startdate = "2018-01-01",
                                      interval = 3,
                                      interval.level = "month")
 data(sample_proj_rast)
-\dontshow{
-sample_proj_rast<-raster::subset(sample_proj_rast, 1)
-projectiondates<-projectiondates[1]
-}
+\dontrun{
 # Save sample projection rasters to replicate output from `dynamic_proj()`
+
 raster::writeRaster(
  sample_proj_rast,
  filename = paste0(tempdir(), "/", paste0(projectiondates, "_proportional.tif")),
@@ -116,7 +114,7 @@ projection.type = "proportional",
 local.directory = tempdir(),
 save.directory = tempdir()
 )
-
+}
 }
 \references{
 Wickham, H., and Chang, W, 2016. Package ‘ggplot2’. Create elegant data

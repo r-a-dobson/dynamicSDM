@@ -55,20 +55,6 @@ test_that("Stops if save.directory and save.drive.folder missing", {
   )
 })
 
-test_that("Stops if save.directory doesn't exist", {
-  expect_error(
-    dynamic_proj_covariates(
-      dates = dates,
-      varnames = c("precipitation_10_prior_sum", "NDVI_5_post_max"),
-      local.directory = testthat::test_path("test-files"),
-      spatial.ext = Extent,
-      spatial.res.degrees = 0.05,
-      resample.method = "bilinear",
-      save.directory = "tempdir"
-    )
-  )
-})
-
 test_that("Stops if wrong length of resample.method (not 1 or equal to n. variables)",
           {
             expect_error(

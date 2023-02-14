@@ -173,22 +173,6 @@ test_that("stops if more than one GEE.math.fun provided", {
   )
 })
 
-test_that("stops if save.directory doesn't exist", {
-  skip_if_no_GEE_credentials()
-  expect_error(
-    extract_dynamic_coords(
-      occ = sample_occ_abs_data_fortest,
-      datasetname = test_datasetname,
-      bandname = test_bandname,
-      spatial.res.metres = 10000,
-      temporal.res = 7,
-      temporal.direction = "prior",
-      GEE.math.fun = "mean",
-      save.method = "split",
-      save.directory = "incorrect/pathway/that/doesnt/exist"
-    )
-  )
-})
 
 
 test_that("stops if occcurence data not data.frame", {

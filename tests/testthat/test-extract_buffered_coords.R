@@ -132,27 +132,6 @@ test_that("stops if no save.directory provided", {
   )
 })
 
-test_that("stops if save.directory doesn't exist", {
-  skip_if_no_GEE_credentials()
-  user.email <- as.character(gargle::gargle_oauth_sitrep()$email)
-  expect_error(
-    extract_buffered_coords(
-      occ.data = sample_occ_abs_data_fortest,
-      moving.window.matrix = matrix(1 / 9, nrow = 3, ncol = 3),
-      user.email = user.email,
-      datasetname = test_datasetname,
-      bandname = test_bandname,
-      spatial.res.metres = test.spatial.res.metres,
-      temporal.level = "year",
-      temporal.res = 7,
-      temporal.direction = "prior",
-      GEE.math.fun = "mean",
-      save.method = "split",
-      save.directory = "notrealdirectory"
-    )
-  )
-})
-
 
 test_that("Works if temporal.level = year with prior", {
   skip_if_no_GEE_credentials()

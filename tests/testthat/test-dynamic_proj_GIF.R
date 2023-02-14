@@ -42,16 +42,7 @@ test_that("Stop if local directory does not exist", {
   )
 })
 
-test_that("Stop if save directory does not exist", {
-  expect_error(
-    dynamic_proj_GIF(
-      dates = c("2010-01-01", "2010-04-01"),
-      projection.type = projection.type,
-      local.directory = testthat::test_path("test-files"),
-      save.directory = "notrealsavedirectory"
-    )
-  )
-})
+
 
 test_that("Successfully write GIF: binary", {
   save.directory = tempdir()

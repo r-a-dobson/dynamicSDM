@@ -1,21 +1,41 @@
-load(paste0(testthat::test_path("test-files"), "/sample_model_data.rda"))
 
-sample_model_data_test <- dplyr::sample_n(sample_model_data, 10)
-sample_model_data_train <- dplyr::sample_n(sample_model_data, 10)
+data("sample_explan_data")
+sample_explan_data$fakeblock <-  sample(1:3, nrow(sample_explan_data), replace = T)
+sample_explan_data$fakeweights <-  sample(1:50, nrow(sample_explan_data), replace = T)
+sample_explan_data$fakeabundance <-  sample(1:50, nrow(sample_explan_data), replace = T)
+sample_explan_data_test <- dplyr::sample_n(sample_explan_data, 100)
+sample_explan_data_train <- dplyr::sample_n(sample_explan_data, 100)
 
-results1 <-  readRDS(paste0(testthat::test_path("test-files"), "/testsdm.rds"))
-results1 <- results1[c(1:2)]
+colnames(sample_explan_data_train)[14]<-"Precipitation8Wsum"
+
+results1 <- brt_fit(occ.data = sample_explan_data_train,
+                    test.data = sample_explan_data_test,
+                    weights.col = "fakeweights",
+                    response.col = "presence.absence",
+                    distribution = "bernoulli",
+                    n.trees = 1,
+                    shrinkage = 0.01,
+                    interaction.depth = 1,
+                    varnames = "Precipitation8Wsum",
+                    block.col = "fakeblock"
+)
+results1<-results1[1:2]
+
 results1_eval <- list(c(0.6, 0.7))
 
-samp_train_ab <- sample_model_data[sample_model_data$individualCount > 0 , ]
-samp_train_ab <- samp_train_ab[!is.na(samp_train_ab$individualCount), ]
-samp_train_ab$individualCount <- log10(1 + samp_train_ab$individualCount)
-samp_train_ab_test.data <- dplyr::sample_n(samp_train_ab, 415)
-samp_train_ab <- dplyr::sample_n(samp_train_ab, 415)
-
-results3 <-  readRDS(paste0(testthat::test_path("test-files"), "/testsam.rds"))
-results3 <- results3[c(1:2)]
+results3 <- brt_fit(occ.data = sample_explan_data_train,
+                        test.data = sample_explan_data_test,
+                        response.col = "fakeabundance",
+                        distribution = "gaussian",
+                        varnames = "Precipitation8Wsum",
+                        n.tree = 1,
+                        block.col = "fakeblock",
+)
+results3<-results3[1:2]
 results3_eval <- list(c(0.70, 0.56))
+
+
+
 
 test_that("Stops if no models provided", {
   expect_error(
