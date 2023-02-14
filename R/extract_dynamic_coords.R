@@ -95,7 +95,7 @@
 #'  save.method = "split",
 #'  resume = TRUE,
 #'  varname = "total_annual_precipitation_prior",
-#'  save.directory= temp.dir())
+#'  save.directory= tempdir())
 #'
 #'
 
@@ -109,7 +109,7 @@ extract_dynamic_coords <- function(occ.data,
                                    temporal.res,
                                    temporal.direction,
                                    varname,
-                                   resume=F,
+                                   resume=FALSE,
                                    save.directory
                                    ) {
 
@@ -237,7 +237,7 @@ extract_dynamic_coords <- function(occ.data,
 
       # Every 20 extractions, refresh connection with GEE prevents sticking
       if (x%%20 == 0) {
-        invisible(rgee::ee_Initialize(quiet = T))
+        invisible(rgee::ee_Initialize(quiet = TRUE))
       }
 
       date1 <- as.Date(with(occ.data[x, ], paste(year, month, day, sep = "-")),
@@ -287,7 +287,7 @@ extract_dynamic_coords <- function(occ.data,
                                            scale = spatial.res.metres)
       },
       error = function(e) {
-        cat("NA returned - rgee 'error': ", conditionMessage(e), "\n")
+        message("NA returned - rgee 'error': ", conditionMessage(e), "\n")
       })
 
       # NAs removed before the GEE.math.fun is calculated.
@@ -304,7 +304,7 @@ extract_dynamic_coords <- function(occ.data,
 
 
       # If no data were extracted return NA for this record.
-      if (is.null(extracted_data) == T) {
+      if (is.null(extracted_data) == TRUE) {
         value <- as.data.frame(NA)
         colnames(value) <- varname
         extracted_data <- as.data.frame(cbind(occ.data[x, ], value))
@@ -319,17 +319,7 @@ extract_dynamic_coords <- function(occ.data,
                                                                  varname,
                                                                  ".csv"))
 
-        print(paste0("Record number: ",
-                     x,
-                     " saved to ",
-                     save.directory,
-                     "/",
-                     occ.data[x, "unique.ID.DYN"],
-                     "_",
-                     varname,
-                     ".csv"
-          )
-        )
+
       }
 
       if (save.method == "combined") {
@@ -337,13 +327,13 @@ extract_dynamic_coords <- function(occ.data,
                                                  extracted_data))
       }
 
-
+      message(paste0("Completed record: ",x))
       rowscomplete <- c(rowscomplete, x) # Record row completion
     }
 
 
     if (save.method == "split") {
-      print("Data successfully extracted for:")
+
       return(rowscomplete)
     }
 
@@ -357,12 +347,7 @@ extract_dynamic_coords <- function(occ.data,
                               ".csv")
       )
 
-       print(paste0("Data successfully extracted for:",
-                    save.directory,
-                    "/all_records_combined",
-                    varname,
-                    ".csv")
-      )
+
 
       return(combined_data_set)
     }

@@ -21,7 +21,9 @@
 #'  scaling from 0 (least sampled) to 1 (most sampled).
 #'
 #'  Output could be used to calculate model weights to correct spatial and temporal biases in
-#'  occurrence record collections.
+#'  occurrence record collections (Stolar and Nielsen, 2015).
+#'@references Stolar, J. & Nielsen, S. E. 2015. Accounting For Spatially Biased Sampling Effort In
+#'    Presence-Only Species Distribution Modelling. Diversity And Distributions, 21, 595-608.
 #'@return Returns input occurrence record data frame with additional columns for sampling effort
 #'  "SAMP_EFFORT" and relative sampling effort "REL_SAMP_EFFORT".
 #' @examples
@@ -155,8 +157,8 @@ spatiotemp_weights <-  function(occ.data,
     for (x in 1:nrow(occ.data.split)) {
 
       if (occ.data.split[x, "row_numb"] %% 100 == 0) {
-        # Print on the screen some message
-        cat(paste0("Records completed: ", occ.data.split[x, "row_numb"], "\n"))
+
+        message(paste0("Records completed: ", occ.data.split[x, "row_numb"], "\n"))
       }
 
       # Select polygon of radius for this co-ordinate
@@ -179,7 +181,7 @@ spatiotemp_weights <-  function(occ.data,
   }
 
   # Calculate relative sampling effort. Add one so each record contributes at least a bit
-  REL_SAMP_EFFORT <- (SAMP_EFFORT+1) / (sum(SAMP_EFFORT, na.rm = T))
+  REL_SAMP_EFFORT <- (SAMP_EFFORT+1) / (sum(SAMP_EFFORT, na.rm = TRUE))
 
   return(cbind(occ.data.save, SAMP_EFFORT, REL_SAMP_EFFORT))
 }

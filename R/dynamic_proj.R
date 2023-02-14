@@ -43,7 +43,7 @@
 #'
 #'  * Data frames: if `cov.file.type = csv`, then projection covariates must be saved "csv" files
 #'  in the `drive.folder` or `local.directory` given. Here, they must be unique in containing the
-#'  relevant projection date in “YYYY-MM-DD” format. For instance, two or more “csv” files saved
+#'  relevant projection date in YYYY-MM-DD format. For instance, two or more csv files saved
 #'  within the Google Drive folder or local directory that contain the projection date will result
 #'  in function error. Additionally, column names of projection covariate data frames must match the
 #'  explanatory variable names that fitted models are trained on.
@@ -61,7 +61,7 @@
 #'  onto the projection covariates and takes the average value across all model projections. If
 #'  `sdm.weight` or `sam.weight` is specified, then the weighted average of model projections is
 #'  returned. For example, this could be used to down weigh projections by poorly performing models
-#'  in an ensemble.
+#'  in an ensemble (Ara?jo and New, 2007).
 #'
 #'  # Projection output
 #'
@@ -71,7 +71,8 @@
 #'
 #'  * binary: Projects `sdm.mod` onto projection covariates for each date, exporting rasters for
 #'  projected binary presence (1) or absence (0), derived from distribution suitability using
-#'  user-specified threshold (`sdm.thresh`) or default threshold of 0.5.
+#'  user-specified threshold (`sdm.thresh`) or default threshold of 0.5 (Jim?nez-Valverde And Lobo,
+#'  2007).
 #'
 #'  * abundance: Projects `sam.mod` onto projections covariates for each date, exporting rasters for
 #'  projected abundance in the units that `sam.mod` were fitted onto.
@@ -100,6 +101,12 @@
 #'@return Exports projection rasters for each projection date to user-specified Google Drive
 #'  folder or local directory.
 #'
+#'@references
+#'Araujo, M. B. & New, M. 2007. Ensemble Forecasting Of Species Distributions. Trends In Ecology &
+#'Evolution, 22, 42-47.
+#'
+#' Jimenez-Valverde, A. & Lobo, J. M. 2007. Threshold Criteria For Conversion Of Probability Of
+#' Species Presence To Either-Or Presence-Absence. Acta Oecologica, 31, 361-369.
 #'@export
 #'@examples
 #'\donttest{
@@ -243,7 +250,7 @@ dynamic_proj <-  function(dates,
     projection.method <- match.arg(projection.method, choices = c("proportional",
                                                                   "binary",
                                                                   "abundance",
-                                                                  "stacked"), several.ok = T)
+                                                                  "stacked"), several.ok = TRUE)
 
     cov.file.type <- match.arg(cov.file.type, choices = c("tif", "csv"))
 
@@ -256,7 +263,7 @@ dynamic_proj <-  function(dates,
       # Read in projection data from local directory
       if (!missing(local.directory)) {
 
-        filename <- list.files(local.directory, full.names = T) # List all files
+        filename <- list.files(local.directory, full.names = TRUE) # List all files
         filename <- filename[grep(date, filename)] # Get file name matching date
 
         if(cov.file.type == "csv") {
@@ -293,7 +300,7 @@ dynamic_proj <-  function(dates,
         pathforthisfile <- paste0(tempfile(), ".csv") # Temporary file name
         googledrive::drive_download(file = googledrive::as_id(fileid$id),
                                     path = pathforthisfile,
-                                    overwrite = T) # Download file to temp dir
+                                    overwrite = TRUE) # Download file to temp dir
         projection_df <- read.csv(pathforthisfile) }# Read in file
 
         if (cov.file.type == "tif") {
@@ -303,7 +310,7 @@ dynamic_proj <-  function(dates,
           pathforthisfile <- paste0(tempfile(), ".tif") # Temporary file name
           googledrive::drive_download(file = googledrive::as_id(fileid$id),
                                       path = pathforthisfile,
-                                      overwrite = T) # Download file to temp dir
+                                      overwrite = TRUE) # Download file to temp dir
 
           projection_df <- raster::brick(pathforthisfile)
 
@@ -364,13 +371,13 @@ dynamic_proj <-  function(dates,
             if(cov.file.type=="csv") {
               SDMpred <- matrixStats::rowWeightedMeans(proj_blocks,
                                                        w = rep(sdm.weight, length(sdm.mod)),
-                                                       na.rm = T)
+                                                       na.rm = TRUE)
             }
 
             if(cov.file.type=="tif") {
               SDMpred <- raster::weighted.mean(proj_stack,
                                                w = rep(sdm.weight, length(sdm.mod)),
-                                               na.rm = T)
+                                               na.rm = TRUE)
             }
 
           }
@@ -379,11 +386,11 @@ dynamic_proj <-  function(dates,
           if (length(sdm.weight) > 1) {
 
             if (cov.file.type == "csv") {
-              SDMpred <- matrixStats::rowWeightedMeans(proj_blocks, w = sdm.weight, na.rm = T)
+              SDMpred <- matrixStats::rowWeightedMeans(proj_blocks, w = sdm.weight, na.rm = TRUE)
             }
 
             if (cov.file.type == "tif") {
-              SDMpred <- raster::weighted.mean(proj_stack, w = sdm.weight, na.rm = T)
+              SDMpred <- raster::weighted.mean(proj_stack, w = sdm.weight, na.rm = TRUE)
             }
 
           }
@@ -445,21 +452,21 @@ dynamic_proj <-  function(dates,
 
               SAMpred <- matrixStats::rowWeightedMeans(proj_blocks,
                                                        w = rep(sam.weight, length(sam.mod)),
-                                                       na.rm = T)
+                                                       na.rm = TRUE)
             }
             if(cov.file.type=="tif") {
               SAMpred <- raster::weighted.mean(proj_stack,
                                                w = rep(sam.weight, length(sam.mod)),
-                                               na.rm = T)
+                                               na.rm = TRUE)
             }
               }
 
           if (length(sam.weight) > 1) {
             if (cov.file.type == "csv") {
-              SAMpred <- matrixStats::rowWeightedMeans(proj_blocks, w = sam.weight, na.rm = T)
+              SAMpred <- matrixStats::rowWeightedMeans(proj_blocks, w = sam.weight, na.rm = TRUE)
             }
             if (cov.file.type == "tif") {
-              SAMpred <- raster::weighted.mean(proj_stack, w = sam.weight, na.rm = T)
+              SAMpred <- raster::weighted.mean(proj_stack, w = sam.weight, na.rm = TRUE)
             }
 
           }
@@ -581,7 +588,7 @@ dynamic_proj <-  function(dates,
 
           raster::writeRaster(binaryrast,
                               file = paste0(save.directory, "/", date, "_binary.tif"),
-                              overwrite = T,
+                              overwrite = TRUE,
                               crs = proj.prj)
         }
 
@@ -589,14 +596,14 @@ dynamic_proj <-  function(dates,
 
           raster::writeRaster(abundancerast,
                               file = paste0(save.directory, "/", date, "_abundance.tif"),
-                              overwrite = T,
+                              overwrite = TRUE,
                               crs = proj.prj)
         }
         if (exists("proportionalrast")) {
 
           raster::writeRaster(proportionalrast,
                               file = paste0(save.directory, "/", date, "_proportional.tif"),
-                              overwrite = T,
+                              overwrite = TRUE,
                               crs = proj.prj
           )
         }
@@ -605,7 +612,7 @@ dynamic_proj <-  function(dates,
 
           raster::writeRaster(stackedrast,
                               file = paste0(save.directory, "/", date, "_stacked.tif"),
-                              overwrite = T,
+                              overwrite = TRUE,
                               crs = proj.prj)
         }
       }
@@ -641,42 +648,42 @@ dynamic_proj <-  function(dates,
 
         if (exists("binaryrast")) {
 
-          raster::writeRaster(binaryrast, filename, overwrite = T)
+          raster::writeRaster(binaryrast, filename, overwrite = TRUE)
           googledrive::drive_upload(
             media = filename,
             path = googledrive::as_id(save.folderpath$id),
             name = paste0(date, "_binary.tif"),
-            overwrite = T
+            overwrite = TRUE
           )
         }
 
         if (exists("abundancerast")) {
-          raster::writeRaster(abundancerast, filename, overwrite = T, crs = prj)
+          raster::writeRaster(abundancerast, filename, overwrite = TRUE, crs = prj)
           googledrive::drive_upload(
             media = filename,
             path = googledrive::as_id(save.folderpath$id),
             name = paste0(date, "_abundance.tif"),
-            overwrite = T
+            overwrite = TRUE
           )
         }
 
         if (exists("proportionalrast")) {
-          raster::writeRaster(proportionalrast, filename, overwrite = T, crs = prj)
+          raster::writeRaster(proportionalrast, filename, overwrite = TRUE, crs = prj)
           googledrive::drive_upload(
             media = filename,
             path = googledrive::as_id(save.folderpath$id),
             name = paste0(date, "_proportional.tif"),
-            overwrite = T
+            overwrite = TRUE
           )
         }
 
         if (exists("stackedrast")) {
-          raster::writeRaster(stackedrast, filename, overwrite = T, crs = prj)
+          raster::writeRaster(stackedrast, filename, overwrite = TRUE, crs = prj)
           googledrive::drive_upload(
             media = filename,
             path = googledrive::as_id(save.folderpath$id),
             name = paste0(date, "_stacked.tif"),
-            overwrite = T
+            overwrite = TRUE
           )
         }
       }

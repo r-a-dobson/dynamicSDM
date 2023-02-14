@@ -22,7 +22,7 @@ extract_buffered_coords(
   save.directory,
   agg.factor,
   prj = "+proj=longlat +datum=WGS84",
-  resume = T
+  resume = TRUE
 )
 }
 \arguments{
@@ -74,7 +74,7 @@ is "+proj=longlat +datum=WGS84".}
 
 \item{resume}{a logical indicating whether to search \code{save.directory} and return to previous
 progress. Only possible if save.method = \code{split} has previously and currently been employed.
-Default = T.}
+Default = TRUE.}
 }
 \value{
 Returns details of successful explanatory variable extractions.
@@ -218,7 +218,7 @@ extract_buffered_coords(occ.data = sample_filt_data,
                       categories = c(6,7),
                       agg.factor = 12,
                       varname = "total_grass_crop_lc",
-                      save.directory = temp.dir()
+                      save.directory = tempdir()
 )
 \dontshow{\}) # examplesIf}
 }

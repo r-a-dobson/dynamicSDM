@@ -58,6 +58,13 @@ Returns data frame of pseudo-absence coordinates and dates.
 Function generates specified number of pseudo-absence record co-ordinates and dates either
 randomly or buffered in space and time.
 }
+\details{
+Below we outline the various approaches to generating pseudo-absences through space and time
+available in the dynamicSDM package. To select the appropriate pseudo-absence generation
+approach and buffer size, there are many considerations. We recommend seeking the appropritae
+literature to inform your decision when species distribution modelling (Barbet-Massin et al.,
+2012, Phillips et al., 2009, Vanderwal et al., 2009).
+}
 \section{Spatial buffer}{
 If \code{spatial.method} is \code{buffer}, then the pseudo-absence record co-ordinates are randomly
 generated in a buffered area defined either by
@@ -87,7 +94,7 @@ input) or \code{SpatialPolygonsDataFrame}, then these shapes are used, instead o
 extent. Therefore, inputting one of these objects will allow for more specific pseudo-absence
 generation.
 
-For example, inputting a "SpatialPolygonsDataFrame" of specific countries will ensure co-ordinates
+For example, inputting a \code{SpatialPolygonsDataFrame} of specific countries will ensure co-ordinates
 are terrestrial, whereas an extent that encompasses these countries may result in the generation
 of pseudo-absence records in inappropriate areas, such as oceans or non-study-area countries.
 }
@@ -131,4 +138,16 @@ spatiotemp_pseudoabs(
  spatial.ext = c(20, 36, -35, -12),
  temporal.ext = c("2011-01-01", "2017-01-01")
 )
+}
+\references{
+Barbet-Massin, M., Jiguet, F., Albert, C. H., Thuiller, W. J. M. I. E. & Evolution 2012. Selecting
+Pseudo-Absences For Species Distribution Models: How, Where And How Many? 3, 327-338.
+
+Phillips, S. J., Dudik, M., Elith, J., Graham, C. H., Lehmann, A., Leathwick, J. & Ferrier, S.
+2009. Sample Selection Bias And Presence-Only Distribution Models: Implications For Background And
+Pseudo-Absence Data. 19, 181-197.
+
+Vanderwal, J., Shoo, L. P., Graham, C. & Williams, S. E. 2009. Selecting Pseudo-Absence Data For
+Presence-Only Distribution Modeling: How Far Should You Stray From What You Know? Ecological
+Modelling, 220, 589-594.
 }

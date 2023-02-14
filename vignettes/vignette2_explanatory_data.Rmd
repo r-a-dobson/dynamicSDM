@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, include = FALSE}
-save.drive.folder<-"rasters_proj"
+
 ```
 
 ```{r setup}
@@ -39,7 +39,6 @@ googledrive::drive_user()
 
 # Set your user email here
 #user.email<-"your_google_email_here"
-#save.drive.folder<-"your_google_folder_here"
 ```
 
 Note: You will need internet connection for this tutorial. Variable extraction may take some time
@@ -53,7 +52,7 @@ first create new folders within the project directory to export extracted variab
 
 ```{r create directories}
 project_directory <- file.path(file.path(tempdir(), "dynamicSDM_vignette"))
-# project_directory<-"your_path_here"
+
 dir.create(project_directory)
 
 variablenames<-c("eight_sum_prec","year_sum_prec","grass_crop_percentage")
@@ -144,7 +143,7 @@ dynamicSDM::extract_dynamic_coords(occ.data=sample_filt_data,
                                    temporal.res = 364,
                                    save.method="combined",
                                    varname = variablenames[2],
-                                   save.directory= save.drive.folder)
+                                   save.directory= extraction_directory_2)
 ```
 
 

@@ -62,7 +62,7 @@ autocorrelation <- spatiotemp_autocorr(sample_explan_data,
                                        temporal.level = c("year")) # can choose month or day too
 
 
-print(autocorrelation)
+autocorrelation
 ```
 
 

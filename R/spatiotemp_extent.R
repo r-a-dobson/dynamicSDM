@@ -140,7 +140,7 @@ spatiotemp_extent <- function(occ.data,
       r <- raster::mask(r, spatial.ext)
     }, error = function(error_message) {
       r <- r
-      print("spatial.mask could not be used. Check valid input type.")})
+      message("spatial.mask could not be used. Check valid input type.")})
 
 
     # Remove points that return NA as these do not overlap the spatial extent

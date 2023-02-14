@@ -236,29 +236,6 @@ test_that("Success if projection.method = tif and just sdm", {
 
 
 
-test_that("Success if projection.method = all + Google Drive used", {
-  skip_if_no_GEE_credentials()
-  user.email <- as.character(gargle::gargle_oauth_sitrep()$email)
-  dates = c("2010-01-01")
-  save.directory = tempdir()
-  filenames <- paste0(dates, "_stacked.tif")
-  dynamic_proj( dates = c("2010-01-01"),
-    drive.folder = "testfiles",
-    user.email = user.email,
-    projection.method = c("binary", "proportional", "abundance", "stacked"),
-    sdm.mod = results1[[1]],
-    sdm.thresh = 0.5,
-    sdm.weight = 1,
-    cov.file.type = "csv",
-    sam.mod = results3[[1]],
-    sam.weight = 1,
-    save.drive.folder = "temporarysavedrivefolder",
-    save.directory = tempdir()
-  )
-  expect_equal(file.exists(paste0(save.directory, "/", filenames[1])), TRUE)
-})
-
-
 data("sample_extent_data")
 
 test_that("Success if spatial mask used", {

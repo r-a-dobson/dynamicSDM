@@ -3,8 +3,8 @@
 #' allNonZero returns 1 if all of its inputs are non-zero, 0 otherwise.
 #' @param x a numeric vector
 #' @noRd
-allNonZero <- function(x, na.omit = T) {
-  if (na.omit == T) {
+allNonZero <- function(x, na.omit = TRUE) {
+  if (na.omit == TRUE) {
     x <- na.omit(x)
   }
   return(sum(x != 0))
@@ -13,8 +13,8 @@ allNonZero <- function(x, na.omit = T) {
 #' anynonzero returns 1 if any of its inputs are non-zero, 0 otherwise.
 #' @param x a numeric vector
 #' @noRd
-anyNonZero <- function(x, na.omit = T) {
-  if (na.omit == T) {
+anyNonZero <- function(x, na.omit = TRUE) {
+  if (na.omit == TRUE) {
     x <- na.omit(x)
   }
   if (any(x != 0)) {
@@ -29,8 +29,8 @@ anyNonZero <- function(x, na.omit = T) {
 #' @param x a numeric vector
 #' @param na.omit a logical
 #' @noRd
-count <- function(x, na.omit = T) {
-  if (na.omit == T) {
+count <- function(x, na.omit = TRUE) {
+  if (na.omit == TRUE) {
     x <- na.omit(x)
   }
   return(sum(!is.na(x)))
@@ -76,8 +76,8 @@ mode <- function(x) {
 #'stdDev Returns the standard deviation of its inputs.
 #' @param x a numeric vector
 #' @noRd
-stdDev <- function(x, na.omit = T) {
-  if (na.omit == T) {
+stdDev <- function(x, na.omit = TRUE) {
+  if (na.omit == TRUE) {
     x <- na.omit(x)
   }
   return(sqrt(mean((x - mean(
@@ -88,8 +88,8 @@ stdDev <- function(x, na.omit = T) {
 #'variance Returns the variance of its inputs.
 #' @param x a numeric vector
 #' @noRd
-variance <- function(x, na.omit = T) {
-  if (na.omit == T) {
+variance <- function(x, na.omit = TRUE) {
+  if (na.omit == TRUE) {
     x <- na.omit(x)
   }
   return(var(x) * ((length(x) - 1) / length(x)))

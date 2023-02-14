@@ -43,7 +43,8 @@ Thins species occurrence records that are within minimum spatial and temporal di
 \code{spatiotemp_thin()} calculates the temporal distance between occurrence records in given area
 and excludes records below minimum temporal distance apart. Then calculates the spatial distance
 between all occurrence records and filters records below the minimum spatial distance apart using
-the \code{spThin} package function for spatial thinning (Aiello-Lammens et al., 2015).
+the \code{spThin} package function for spatial thinning (Aiello-Lammens et al., 2015). This approach
+has been shown to improve species distribution model performance (Boria et al., 2014).
 }
 
 \section{Temporal thinning methods}{
@@ -108,4 +109,8 @@ spatiotemp_thin(
 Aiello-Lammens, M. E., Boria, R. A., Radosavljevic, A., Vilela, B. & Anderson, R. P.
 2015. spThin: an R package for spatial thinning of species occurrence records for use in
 ecological niche models. Ecography, 38, 541-545.
+
+Boria, R. A., Olson, L. E., Goodman, S. M. & Anderson, R. P. 2014. Spatial Filtering To Reduce
+Sampling Bias Can Improve The Performance Of Ecological Niche Models. Ecological Modelling, 275,
+73-77.
 }

@@ -12,8 +12,8 @@ dynamic_proj_GIF(
   local.directory,
   save.drive.folder,
   save.directory,
-  width = 480,
-  height = 480,
+  width = 10,
+  height = 10,
   legend.max,
   legend.min,
   legend.name,
@@ -41,9 +41,9 @@ must be uniquely named within Google Drive. Do not provide path.}
 
 \item{save.directory}{optional; a character string, path to local directory to save GIF to.}
 
-\item{width}{optional; a numeric value, the GIF width in pixels. Default = 480.}
+\item{width}{optional; a numeric value, the GIF width in inches Default = 480.}
 
-\item{height}{optional; a numeric value, the GIF height in pixels. Default = 480.}
+\item{height}{optional; a numeric value, the GIF height in inches Default = 480.}
 
 \item{legend.max}{optional; a numeric value, the maximum limit of legend values to standardise
 across projections.}
@@ -98,7 +98,7 @@ projectiondates <- dynamic_proj_dates(startdate = "2018-01-01",
                                      interval = 3,
                                      interval.level = "month")
 data(sample_proj_rast)
-\dontrun{
+\donttest{
 # Save sample projection rasters to replicate output from `dynamic_proj()`
 
 raster::writeRaster(

@@ -14,7 +14,7 @@ extract_dynamic_coords(
   temporal.res,
   temporal.direction,
   varname,
-  resume = F,
+  resume = FALSE,
   save.directory
 )
 }
@@ -126,7 +126,7 @@ extract_dynamic_coords(occ.data=sample_filt_data,
  save.method = "split",
  resume = TRUE,
  varname = "total_annual_precipitation_prior",
- save.directory= temp.dir)
+ save.directory= tempdir())
 
 \dontshow{\}) # examplesIf}
 }

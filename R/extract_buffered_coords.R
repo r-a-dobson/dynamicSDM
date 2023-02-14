@@ -35,7 +35,7 @@
 #'  is "+proj=longlat +datum=WGS84".
 #'@param resume a logical indicating whether to search `save.directory` and return to previous
 #'  progress. Only possible if save.method = `split` has previously and currently been employed.
-#'  Default = T.
+#'  Default = TRUE.
 #'@details For each individual species occurrence record co-ordinate and date, this function
 #'  extracts data for a given band within a Google Earth Engine dataset across a user-specified
 #'  spatial buffer and temporal period and calculates a mathematical function on such data.
@@ -182,9 +182,9 @@
 #'                       categories = c(6,7),
 #'                       agg.factor = 12,
 #'                       varname = "total_grass_crop_lc",
-#'                       save.directory = temp.dir()
+#'                       save.directory = tempdir()
 #' )
-#'
+
 extract_buffered_coords <-  function(occ.data,
                                      datasetname,
                                      bandname,
@@ -201,7 +201,7 @@ extract_buffered_coords <-  function(occ.data,
                                      save.directory,
                                      agg.factor,
                                      prj = "+proj=longlat +datum=WGS84",
-                                     resume = T) {
+                                     resume = TRUE) {
 
 
 
@@ -261,7 +261,7 @@ extract_buffered_coords <-  function(occ.data,
 
     # Load Google Earth Engine
     rgee::ee_check("rgee")
-    rgee::ee_Initialize(drive = T)
+    rgee::ee_Initialize(drive = TRUE)
 
 
     # Assign occurrence record a unique ID for saving files.
@@ -483,13 +483,13 @@ extract_buffered_coords <-  function(occ.data,
           image = image_collection_reduced,
           container = "dynamicSDM_download_bucket",
           scale = spatial.res.metres,
-          dsn = paste0(varname, "_", date1),
+          dsn = paste0(tempdir(),"/",varname, "_", date1),
           region = geometry,
           timePrefix = FALSE,
           via = "drive"
         )
       }, error = function(e) {
-        cat("ERROR :", conditionMessage(e), "\n")
+        message("ERROR :", conditionMessage(e), "\n")
       })
 
       # Get temp file name for downloading raster
@@ -511,7 +511,7 @@ extract_buffered_coords <-  function(occ.data,
       # Download raster from Google Drive to temp directory for processing
       googledrive::drive_download(googledrive::as_id(drivefiles$id),
                                   path = pathforthisfile,
-                                  overwrite = T)
+                                  overwrite = TRUE)
       raster <- raster::raster(pathforthisfile) # Read in raster from temp dir
 
 
@@ -590,7 +590,7 @@ extract_buffered_coords <-  function(occ.data,
         focalraster <- raster::focal(rast,
                                      moving.window.matrix,
                                      fun = math.fun,
-                                     na.rm = T)
+                                     na.rm = TRUE)
       }
 
 
@@ -630,16 +630,7 @@ extract_buffered_coords <-  function(occ.data,
                   row.names = FALSE
         )
 
-        print(paste0("Records for temporal.level: ",
-                     nameofsplitfile,
-                     " saved to ",
-                     save.directory,
-                     "/",
-                     nameofsplitfile,
-                     "_",
-                     varname,
-                     ".csv")
-        )
+
       }
 
       if (save.method == "combined") {
@@ -648,18 +639,18 @@ extract_buffered_coords <-  function(occ.data,
 
       # Record uniqueID of records explanatory data extracted for in this loop
       rowscomplete <- c(rowscomplete, nameofsplitfile)
-
+      message(paste0("Completed: ",nameofsplitfile))
 
     }
 
     # Print names of occurrence records data successfully extracted for
     if (save.method == "split") {
 
-      print("Clearing Google Drive download bucket - dynamicSDM_download_bucket")
+      message("Clearing Google Drive download bucket - dynamicSDM_download_bucket")
 
       rgee::ee_clean_container(name="dynamicSDM_download_bucket",type="drive")
 
-      print("Data successfully extracted for:")
+
       return(sort(rowscomplete))
     }
 
@@ -673,15 +664,9 @@ extract_buffered_coords <-  function(occ.data,
                               varname,
                               ".csv")
       )
-      print(paste0("Data successfully extracted to: ",
-                   save.directory,
-                   "/all_records_combined_",
-                   varname,
-                   ".csv"
-        )
-      )
 
-      print("Clearing Google Drive download bucket - dynamicSDM_download_bucket")
+
+      message("Clearing Google Drive download bucket - dynamicSDM_download_bucket")
       rgee::ee_clean_container(name="dynamicSDM_download_bucket",type="drive")
 
       return(combined_data_set)

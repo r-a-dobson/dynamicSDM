@@ -57,14 +57,23 @@
 #'  If `weights.col` is specified, records are weighted by their associated value in this column
 #'  when model fitting. For instance, the user may wish to down weigh the importance of records
 #'  collected at oversampled sites and times when fitting models, and vice versa, to account for
-#'  spatio-temporal biases in occurrence records.
+#'  spatio-temporal biases in occurrence records(Stolar and Nielsen, 2015) .
 #'
 #'@return Returns a `gbm` model object or list of `gbm` model objects.
-#'@references Bagchi, R., Crosby, M., Huntley, B., Hole, D. G., Butchart, S. H. M., Collingham, Y.,
+#'@references
+#'
+#'Bagchi, R., Crosby, M., Huntley, B., Hole, D. G., Butchart, S. H. M., Collingham, Y.,
 #'  Kalra, M., Rajkumar, J., Rahmani, A. & Pandey, M. 2013. Evaluating the effectiveness of
 #'  conservation site networks under climate change: accounting for uncertainty. Global Change
-#'  Biology, 19, 1236-1248. Greenwell, B., Boehmke, B., Cunningham, J., & GBM Developers. 2019.
+#'  Biology, 19, 1236-1248.
+#'
+#'  Greenwell, B., Boehmke, B., Cunningham, J., & GBM Developers. 2019.
 #'  Package ‘gbm’. R package version, 2.
+#'
+#'  Stolar, J. & Nielsen, S. E. 2015. Accounting For Spatially Biased Sampling Effort In
+#'  Presence-Only Species Distribution Modelling. Diversity And Distributions, 21, 595-608.
+#'
+#'
 #' @examples
 #'
 #'data("sample_explan_data")

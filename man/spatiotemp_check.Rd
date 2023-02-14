@@ -11,7 +11,7 @@ spatiotemp_check(
   coord.handle,
   date.handle,
   date.res = "day",
-  coordclean = F,
+  coordclean = FALSE,
   coordclean.species,
   coordclean.handle = "exclude",
   ...
@@ -77,7 +77,7 @@ between -90 and 90 to be considered valid.
 \code{CoordinateCleaner} (Zizka et al., 2019), which offers a diversity of functions for checking the
 co-ordinates of occurrence records.
 
-If \code{coordclean} = T, then \code{coordclean.species} must be provided to identify which species each
+If \code{coordclean} = TRUE, then \code{coordclean.species} must be provided to identify which species each
 record belonds to. If \code{coordclean.handle} = \code{exclude} then all \code{occ.data} records flagged by
 \code{CoordinateCleaner::clean_coordinates()} as potentially erroneous are removed in the returned
 data.

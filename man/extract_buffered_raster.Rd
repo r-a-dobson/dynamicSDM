@@ -21,7 +21,7 @@ extract_buffered_raster(
   save.directory,
   agg.factor,
   save.drive.folder,
-  resume = T
+  resume = TRUE
 )
 }
 \arguments{
@@ -73,7 +73,7 @@ in each direction. See details.}
 rasters to. Folder must be uniquely named within Google Drive. Do not provide path.}
 
 \item{resume}{a logical indicating whether to search \code{save.directory} or \code{save.drive.folder} and
-return to previous progress through projection dates.Default = T.}
+return to previous progress through projection dates.Default = TRUE.}
 }
 \value{
 Returns details of successful explanatory variable raster extractions for each projection
@@ -188,13 +188,12 @@ extract_buffered_raster(dates = dates,
                        spatial.res.metres = 500,
                        GEE.math.fun = "sum",
                        moving.window.matrix = matrix,
-                       save.drive.folder = "mydrivefolder",
                        user.email = user.email,
                        categories=c(6,7),
                        agg.factor = 12,
                        spatial.ext = sample_extent_data,
                        varname = "total_grass_crop_lc",
-                       save.directory = temp.dir())
+                       save.directory = tempdir())
 \dontshow{\}) # examplesIf}
 }
 \references{

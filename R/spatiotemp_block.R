@@ -110,7 +110,7 @@ spatiotemp_block <- function(occ.data,
     if (!missing(temporal.block)) {
       temporal.block.2 <- match.arg(temporal.block,
                                     choices = c("day", "month", "year", "quarter"),
-                                    several.ok = T)
+                                    several.ok = TRUE)
 
       # Split data into quarters fo the year by month
       if (any(temporal.block.2 == "quarter")) {
@@ -261,7 +261,7 @@ spatiotemp_block <- function(occ.data,
 
 
     # Select grouping with minimum variance in mean and range across variables.
-    optimal.blocking <- groupings[[which.min(rowSums(results,na.rm=T))]]
+    optimal.blocking <- groupings[[which.min(rowSums(results,na.rm=TRUE))]]
 
     # Extract sample units within each block of optimal grouping
     blocks <- lapply(optimal.blocking, function(x) {x[, "ID_BL"]})

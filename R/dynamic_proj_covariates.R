@@ -259,7 +259,7 @@ dynamic_proj_covariates <- function(dates,
     # If local.directory list files in the folder(s)
 
     if (!missing(local.directory)) {
-      directoryfiles <- list.files(local.directory, full.names = T)
+      directoryfiles <- list.files(local.directory, full.names = TRUE)
     }
 
     # Iterate through each projection date and variable.
@@ -286,7 +286,7 @@ dynamic_proj_covariates <- function(dates,
 
           googledrive::drive_download(file = googledrive::as_id(fileid$id),
                                       path = pathforthisfile,
-                                      overwrite = T) # Download from Drive
+                                      overwrite = TRUE) # Download from Drive
 
           raster <- raster::raster(pathforthisfile)# Read raster from temp dir
 
@@ -315,7 +315,7 @@ dynamic_proj_covariates <- function(dates,
               r <- raster::mask(r, spatial.ext)
             }, error = function(error_message) {
               r <- r
-              print("spatial.mask could not be used. Check valid input type.")
+              message("spatial.mask could not be used. Check valid input type.")
               })}
 
           # Resample raster using single method given
@@ -386,7 +386,7 @@ dynamic_proj_covariates <- function(dates,
           media = csvfile,
           path = googledrive::as_id(save.folderpath$id),
           name = paste0(date, "_projection_dataframe.csv"),
-          overwrite = T)}
+          overwrite = TRUE)}
 
         if (cov.file.type == "tif") {
 
@@ -402,7 +402,7 @@ dynamic_proj_covariates <- function(dates,
           googledrive::drive_upload(media = rasterfile,
                                     path = googledrive::as_id(save.folderpath$id),
                                     name = paste0(date, "_projection_rasterstack.tif"),
-                                    overwrite = T)}
+                                    overwrite = TRUE)}
       }
 
       # Alternatively save covariate data.frame to local directory
@@ -427,13 +427,6 @@ dynamic_proj_covariates <- function(dates,
       listofdone <- c(listofdone, dates[x]) # Record that this date has been completed
     }
 
-    if (!missing(save.directory)) {
-      print(paste0("Data extracted and saved to :",save.directory))
-    }
-
-    if (!missing(save.drive.folder)) {
-      print(paste0("Data extracted and saved to:",save.drive.folder))
-    }
 
     return(listofdone[2:length(listofdone)])
   }

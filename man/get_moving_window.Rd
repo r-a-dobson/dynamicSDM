@@ -80,10 +80,4 @@ odd number of sides.
 \examples{
 get_moving_window(radial.distance = 100000, spatial.res.metres = 111320)
 
-data(sample_extent_data)
-get_moving_window(
-radial.distance = 100000,
- spatial.res.degrees = 0.5,
- spatial.ext = sample_extent_data
-)
 }

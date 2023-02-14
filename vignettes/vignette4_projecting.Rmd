@@ -8,7 +8,7 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
-save.drive.folder<-"rasters_proj"
+
 ```
 
 ```{r, include = FALSE}
@@ -42,7 +42,6 @@ rgee::ee_check()
 library(googledrive)
 googledrive::drive_user()
 #user.email<-"your_google_email_here"
-#save.drive.folder<-"your_google_folder_here"
 ```
 
 Note: You will need internet connection for this tutorial. Raster extraction may take some time
@@ -122,7 +121,6 @@ extract_dynamic_raster(dates=projectiondates,
                        datasetname = "UCSB-CHG/CHIRPS/DAILY",
                        bandname="precipitation",
                        user.email = user.email,
-                       save.drive.folder = save.drive.folder,
                        spatial.res.metres = 5566,
                        GEE.math.fun = "sum",
                        temporal.direction = "prior",
@@ -135,7 +133,6 @@ extract_dynamic_raster(dates=projectiondates,
                        datasetname = "UCSB-CHG/CHIRPS/DAILY",
                        bandname="precipitation",
                        user.email = user.email,
-                       save.drive.folder = save.drive.folder,
                        spatial.res.metres = 5566,
                        GEE.math.fun = "sum",
                        temporal.direction = "prior",
@@ -153,8 +150,7 @@ extract_buffered_raster(dates=projectiondates,
                         bandname="LC_Type5",
                         spatial.res.metres = 500,
                         GEE.math.fun = "sum",
-                        moving.window.matrix=matrix,
-                        save.drive.folder = save.drive.folder,
+                        moving.window.matrix=matrix,,
                         user.email=user.email,
                         categories=c(6,7),
                         agg.factor = 12,

@@ -49,12 +49,6 @@
 #' @examples
 #'get_moving_window(radial.distance = 100000, spatial.res.metres = 111320)
 #'
-#'data(sample_extent_data)
-#'get_moving_window(
-#'radial.distance = 100000,
-#'  spatial.res.degrees = 0.5,
-#'  spatial.ext = sample_extent_data
-#')
 #'@export
 
 get_moving_window <-  function(radial.distance,
@@ -98,7 +92,7 @@ get_moving_window <-  function(radial.distance,
               resolution = spatial.res.degrees)))
 
       # Convert mean km2 to m2
-      meancellarea <- (mean(rast_area[, 3], na.rm = T)) * 1000000
+      meancellarea <- (mean(rast_area[, 3], na.rm = TRUE)) * 1000000
 
     }
 
@@ -121,7 +115,7 @@ get_moving_window <-  function(radial.distance,
     cells <- round(sqrt(accessiblearea / meancellarea))
 
     # If matrix is  even number, add one as matrix size must be odd for focal function in raster
-    if ((round(cells / 2) == cells / 2) == T) {
+    if ((round(cells / 2) == cells / 2) == TRUE) {
       cells <- cells + 1
     }
 

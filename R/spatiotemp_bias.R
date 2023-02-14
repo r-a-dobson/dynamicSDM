@@ -27,18 +27,26 @@
 #'
 #'To assess temporal sampling bias, the function returns a histogram plot
 #'of the frequency distribution of records across the given time step specified by `temporal.level`
-#'(if `plot = T`). The observed frequency of sampling across the categorical time steps are compared
-#'to the distribution expected from random sampling, using a chi-squared test.
+#'(if `plot = TRUE`). The observed frequency of sampling across the categorical time steps are
+#'compared to the distribution expected from random sampling, using a chi-squared test (Greenwood
+#'and Nikulin, 1996) .
 #'
 #'# Spatial bias
 #'
 #' To assess spatial sampling bias, the function returns a scatterplot of the spatial
-#'distribution of occurrence records to illustrate any spatial clustering (if `plot = T`). The
+#'distribution of occurrence records to illustrate any spatial clustering (if `plot = TRUE`). The
 #'average nearest neighbour distance of record co-ordinates is then compared to that of records
-#'randomly generated at same density using a t-test.
+#'randomly generated at same density using a t-test, following the nearest neighbour index
+#'established by Clark and Evans (1954).
 #'
-#'# Spatial bias: methods
+#'# Bias: methods
 #'
+#'Below we outline the methods for which these tests for biases can be applied. `dynamicSDM` offers
+#'the additional functionality of the `core` approach. This enables users to explore sampling biases
+#'in set areas of a species range. This may be valuable if periphery-core relationships could lead
+#'to inaccurate inferences of sampling bias. For instance, if species are expanding or shifting
+#'their ranges through space and time.
+#'#'
 #'* `simple` - generates the random points within a rectangle created using
 #'the minimum and maximum longitude and latitude of occurrence co-ordinates.
 #'
@@ -50,15 +58,19 @@
 #'is calculated by averaging co-ordinates of all occurrence records, and `radius` is the mean
 #'distance away of all records from the centroid.
 #'
-#'The `core` approach enables users to explore sampling bias in set areas of a species range. This
-#'may be valuable if species periphery-core relationships could lead to inaccurate inferences of
-#'sampling bias.
+#'For each method, only occurrence records within the specified area are tested for spatial and
+#'temporal sampling biases.
 #'
 #'# Computation time
 #'
 #'As the spatial bias test involves the calculation of a distance matrix. To reduce computation
 #'time, it is recommended that only a representative sample of large occurrence datasets are input.
 #'
+#'@references
+#'Clark, P. J. & Evans, F. C. J. E. 1954. Distance To Nearest Neighbor As A Measure Of Spatial
+#'Relationships In Populations. 35, 445-453.
+#'
+#'Greenwood, P. E. & Nikulin, M. S. 1996. A Guide To Chi-Squared Testing, John Wiley & Sons.
 #'
 #'@return Returns list containing chi-squared and t-test results, and plots if specified.
 #' @examples
@@ -80,7 +92,7 @@
 
 spatiotemp_bias <-  function(occ.data,
                              temporal.level,
-                             plot = F,
+                             plot = FALSE,
                              spatial.method = "simple",
                              centroid,
                              radius,
@@ -93,7 +105,7 @@ spatiotemp_bias <-  function(occ.data,
   # Match temporal.level to available options
   temporal.level <- match.arg(arg = temporal.level,
                               choices = c("day", "month","year"),
-                              several.ok = T)
+                              several.ok = TRUE)
 
   # Create list to contain all variables results
   res.list <- vector("list", length(temporal.level) + 1)
@@ -167,7 +179,7 @@ spatiotemp_bias <-  function(occ.data,
 
     # Average distance in metres of all points from centroid
     if (missing(radius)) {
-      radius <- mean(raster::pointDistance(occ.data[, c("x", "y")], centroid, lonlat = F))
+      radius <- mean(raster::pointDistance(occ.data[, c("x", "y")], centroid, lonlat = FALSE))
     }
 
     # Create spatial buffer of radius from centroid
@@ -196,7 +208,7 @@ spatiotemp_bias <-  function(occ.data,
   dist <- geosphere::distm(data.frame(clipped.occ$x, clipped.occ$y))
 
   # Calculate which column contain the minimum distance from another record
-  min.d <- apply(dist, 1, function(x)   order(x, decreasing = F)[2])
+  min.d <- apply(dist, 1, function(x)   order(x, decreasing = FALSE)[2])
 
   # Add column numbers for each occurrence record
   min.d <- cbind(min.d, rep(1:ncol(dist), 1))
@@ -215,7 +227,7 @@ spatiotemp_bias <-  function(occ.data,
 
   # Calculate minimum distance between simulated set of co-ordinates
   min.d <- apply(dist, 1, function(x)
-    order(x, decreasing = F)[2])
+    order(x, decreasing = FALSE)[2])
 
   # Add column numbers for each simulated set of co-ordinates
   min.d <- cbind(min.d, rep(1:ncol(dist), 1))
@@ -244,10 +256,13 @@ spatiotemp_bias <-  function(occ.data,
       ggplot2::scale_color_manual(values = c("Occurrence" = "black", "Randomly simulated" = "red"))
 
   #Function to allow users to click through each plot individually
+  oldpar<- par(no.readonly=TRUE)
+  on.exit(par(oldpar))
+
   op <- graphics::par(ask=TRUE)
 
   for (i in 1:length(plot.list)){
-    print(plot.list[[i]])
+    plot.list[[i]]
   }
 
   graphics::par(op)

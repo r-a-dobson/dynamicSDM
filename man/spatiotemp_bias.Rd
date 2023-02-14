@@ -7,7 +7,7 @@
 spatiotemp_bias(
   occ.data,
   temporal.level,
-  plot = F,
+  plot = FALSE,
   spatial.method = "simple",
   centroid,
   radius,
@@ -50,18 +50,26 @@ distribution from random sampling.
 \section{Temporal bias}{
 To assess temporal sampling bias, the function returns a histogram plot
 of the frequency distribution of records across the given time step specified by \code{temporal.level}
-(if \code{plot = T}). The observed frequency of sampling across the categorical time steps are compared
-to the distribution expected from random sampling, using a chi-squared test.
+(if \code{plot = TRUE}). The observed frequency of sampling across the categorical time steps are
+compared to the distribution expected from random sampling, using a chi-squared test (Greenwood
+and Nikulin, 1996) .
 }
 
 \section{Spatial bias}{
 To assess spatial sampling bias, the function returns a scatterplot of the spatial
-distribution of occurrence records to illustrate any spatial clustering (if \code{plot = T}). The
+distribution of occurrence records to illustrate any spatial clustering (if \code{plot = TRUE}). The
 average nearest neighbour distance of record co-ordinates is then compared to that of records
-randomly generated at same density using a t-test.
+randomly generated at same density using a t-test, following the nearest neighbour index
+established by Clark and Evans (1954).
 }
 
-\section{Spatial bias: methods}{
+\section{Bias: methods}{
+Below we outline the methods for which these tests for biases can be applied. \code{dynamicSDM} offers
+the additional functionality of the \code{core} approach. This enables users to explore sampling biases
+in set areas of a species range. This may be valuable if periphery-core relationships could lead
+to inaccurate inferences of sampling bias. For instance, if species are expanding or shifting
+their ranges through space and time.
+#'
 \itemize{
 \item \code{simple} - generates the random points within a rectangle created using
 the minimum and maximum longitude and latitude of occurrence co-ordinates.
@@ -73,9 +81,8 @@ is calculated by averaging co-ordinates of all occurrence records, and \code{rad
 distance away of all records from the centroid.
 }
 
-The \code{core} approach enables users to explore sampling bias in set areas of a species range. This
-may be valuable if species periphery-core relationships could lead to inaccurate inferences of
-sampling bias.
+For each method, only occurrence records within the specified area are tested for spatial and
+temporal sampling biases.
 }
 
 \section{Computation time}{
@@ -97,4 +104,10 @@ temporal.level = c("day", "month", "year"),
 spatial.method = "core",
 plot = FALSE
 )
+}
+\references{
+Clark, P. J. & Evans, F. C. J. E. 1954. Distance To Nearest Neighbor As A Measure Of Spatial
+Relationships In Populations. 35, 445-453.
+
+Greenwood, P. E. & Nikulin, M. S. 1996. A Guide To Chi-Squared Testing, John Wiley & Sons.
 }

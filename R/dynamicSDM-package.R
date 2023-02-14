@@ -2,6 +2,7 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @importFrom graphics par
 #' @importFrom grDevices dev.off
 #' @importFrom grDevices png
 #' @importFrom methods as

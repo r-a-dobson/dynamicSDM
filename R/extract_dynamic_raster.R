@@ -24,7 +24,7 @@
 #'@param save.directory optional; a character string, path to local directory to save extracted
 #'  rasters to.
 #'@param resume a logical indicating whether to search `save.directory` or `save.drive.folder` and
-#'  return to previous progress through projection dates.Default = T.
+#'  return to previous progress through projection dates.Default = TRUE.
 #'@details For each projection date, this function downloads rasters at a given spatial extent and
 #'  resolution for temporally dynamic explanatory variables. For each cell within the spatial
 #'  extent, the `GEE.math.fun` is calculated on the data extracted from across the specified number
@@ -103,7 +103,7 @@
 #'                       temporal.res = 56,
 #'                       spatial.ext = sample_extent_data,
 #'                       varname = "total_annual_precipitation_prior",
-#'                       save.directory = temp.dir())
+#'                       save.directory = tempdir())
 #'
 #'
 #'
@@ -121,7 +121,7 @@ extract_dynamic_raster <- function(dates,
                                    temporal.direction,
                                    save.directory,
                                    save.drive.folder,
-                                   resume = T) {
+                                   resume = TRUE) {
 
 
     # Set default varname for saving raster
@@ -154,8 +154,26 @@ extract_dynamic_raster <- function(dates,
 
     # Initiate Google Earth Engine
     rgee::ee_check("rgee")
-    rgee::ee_Initialize(drive = T)
+    rgee::ee_Initialize(drive = TRUE)
 
+
+    # If resume, create list of all files currently in save directory / folder
+    if (resume) {
+
+      if (!missing(save.drive.folder)) {
+
+        # Initiate Google Drive
+        googledrive::drive_auth(email = user.email)
+        googledrive::drive_user()
+
+        save.folderpath <- googledrive::drive_find(pattern = save.drive.folder, type = 'folder')
+        file_list <- googledrive::drive_ls(path = googledrive::as_id(save.folderpath$id))$name
+      }
+
+      if (!missing(save.directory)) {
+        file_list <- list.files(save.directory)
+      }
+    }
     # Check arguments match available options/inputs
     temporal.direction <- match.arg(arg = temporal.direction,
                                     choices = c("prior", "post"))
@@ -276,23 +294,11 @@ extract_dynamic_raster <- function(dates,
       # Reduce the ImageCollection using GEE Reducer function chosen by user
       image_collection_reduced <- image_collection$reduce(GEE.FUNC[[match(GEE.math.fun, namelist)]])
 
+
+      #If resume=TRUE check for the file in the save folder/directory. If present move to next date
       if (resume) {
 
         check_file <- paste0(varname, "_", firstdate, ".tif")
-
-        if (!missing(save.drive.folder)) {
-
-          # Initiate Google Drive
-          googledrive::drive_auth(email = user.email)
-          googledrive::drive_user()
-
-          save.folderpath <- googledrive::drive_find(pattern = save.drive.folder, type = 'folder')
-          file_list <- googledrive::drive_ls(path = googledrive::as_id(save.folderpath$id))$name
-        }
-
-        if (!missing(save.directory)) {
-          file_list <- list.files(save.directory)
-        }
 
         file_list <- file_list[grep(check_file, file_list)]
 
@@ -307,14 +313,14 @@ extract_dynamic_raster <- function(dates,
           image = image_collection_reduced,
           container = "dynamicSDM_download_bucket",# Drive folder to save raster to
           scale = spatial.res.metres, # Specifies spatial resolution of raster
-          dsn = paste0(varname, "_", firstdate,"_unprocessed"),# Names raster file
+          dsn = paste0(tempdir(),"/",varname, "_", firstdate,"_unprocessed"),# Names raster file
           region = geometry,# Crops to spatial.extent
           timePrefix = FALSE,
           via = "drive"
         )
       },
       error = function(e) {
-        cat("ERROR :", conditionMessage(e), "\n")
+        message("ERROR :", conditionMessage(e), "\n")
       })
 
       # Initiate Google Drive
@@ -328,7 +334,7 @@ extract_dynamic_raster <- function(dates,
       googledrive::drive_download(
         paste0(varname, "_", firstdate,"_unprocessed.tif"),
         path = pathforthisfile,
-        overwrite = T
+        overwrite = TRUE
       )
 
       if(!missing(save.drive.folder)){
@@ -356,36 +362,21 @@ extract_dynamic_raster <- function(dates,
         media = pathforthisfile,
         path = googledrive::as_id(save.folderpath$id),
         name =   paste0(varname, "_", firstdate, ".tif"),
-        overwrite = T
+        overwrite = TRUE
       )
 
       }
 
       # Record that this date has been processed
+      message(paste0("Completed: ",varname, "_", firstdate))
       completed.list <-rbind(completed.list, paste0(varname, "_", firstdate))
     }
 
-    if (missing(save.directory)) {
-      print(paste0("Data extracted to Google Drive folder:", save.drive.folder))
-    }
-
-    if (missing(save.drive.folder)) {
-      print(paste0("Data extracted to local directory:",
-                   save.directory
-        )
-      )
-    }
-
-    if(!missing(save.directory) && !missing(save.drive.folder)){
-
-      print(paste0("Data extracted to Google Drive folder:",
-                   save.drive.folder,
-                   "and local directory:",
-                   save.directory))
-    }
 
 
-    print("Clearing Google Drive download bucket - dynamicSDM_download_bucket")
+
+
+    message("Clearing Google Drive download bucket - dynamicSDM_download_bucket")
     googledrive::drive_auth(email = user.email)
     rgee::ee_clean_container(name="dynamicSDM_download_bucket",type="drive")
 

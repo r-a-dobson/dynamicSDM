@@ -89,7 +89,7 @@ frames for each projection date given.
 \itemize{
 \item Data frames: if \code{cov.file.type = csv}, then projection covariates must be saved "csv" files
 in the \code{drive.folder} or \code{local.directory} given. Here, they must be unique in containing the
-relevant projection date in “YYYY-MM-DD” format. For instance, two or more “csv” files saved
+relevant projection date in YYYY-MM-DD format. For instance, two or more csv files saved
 within the Google Drive folder or local directory that contain the projection date will result
 in function error. Additionally, column names of projection covariate data frames must match the
 explanatory variable names that fitted models are trained on.
@@ -107,7 +107,7 @@ When multiple models are provided in \code{sdm.mod} or \code{sam.mod}, the funct
 onto the projection covariates and takes the average value across all model projections. If
 \code{sdm.weight} or \code{sam.weight} is specified, then the weighted average of model projections is
 returned. For example, this could be used to down weigh projections by poorly performing models
-in an ensemble.
+in an ensemble (Ara?jo and New, 2007).
 }
 
 \section{Projection output}{
@@ -117,7 +117,8 @@ exporting rasters for projected distribution suitability, a continuous measure b
 suitable) and 1 (most suitable).
 \item binary: Projects \code{sdm.mod} onto projection covariates for each date, exporting rasters for
 projected binary presence (1) or absence (0), derived from distribution suitability using
-user-specified threshold (\code{sdm.thresh}) or default threshold of 0.5.
+user-specified threshold (\code{sdm.thresh}) or default threshold of 0.5 (Jim?nez-Valverde And Lobo,
+2007).
 \item abundance: Projects \code{sam.mod} onto projections covariates for each date, exporting rasters for
 projected abundance in the units that \code{sam.mod} were fitted onto.
 \item stacked: Follows the binary projection method and then projects abundance onto only binary
@@ -142,7 +143,7 @@ instructions on \url{https://googledrive.tidyverse.org/}.
 }
 
 \examples{
-\dontrun{
+\donttest{
 # Read in data
 data("sample_explan_data")
 
@@ -166,4 +167,11 @@ dynamic_proj(dates = "2018-04-01",
             sdm.mod = model,
             save.directory = tempdir())
 }
+}
+\references{
+Araujo, M. B. & New, M. 2007. Ensemble Forecasting Of Species Distributions. Trends In Ecology &
+Evolution, 22, 42-47.
+
+Jimenez-Valverde, A. & Lobo, J. M. 2007. Threshold Criteria For Conversion Of Probability Of
+Species Presence To Either-Or Presence-Absence. Acta Oecologica, 31, 361-369.
 }

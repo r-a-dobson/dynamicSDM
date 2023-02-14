@@ -30,6 +30,12 @@
 #'  Default is "+proj=longlat +datum=WGS84".
 #'@details
 #'
+#'Below we outline the various approaches to generating pseudo-absences through space and time
+#'available in the dynamicSDM package. To select the appropriate pseudo-absence generation
+#'approach and buffer size, there are many considerations. We recommend seeking the appropritae
+#'literature to inform your decision when species distribution modelling (Barbet-Massin et al.,
+#'2012, Phillips et al., 2009, Vanderwal et al., 2009).
+#'
 #'# Spatial buffer
 #'
 #'If `spatial.method` is `buffer`, then the pseudo-absence record co-ordinates are randomly
@@ -60,7 +66,7 @@
 #'extent. Therefore, inputting one of these objects will allow for more specific pseudo-absence
 #'generation.
 #'
-#'For example, inputting a "SpatialPolygonsDataFrame" of specific countries will ensure co-ordinates
+#'For example, inputting a `SpatialPolygonsDataFrame` of specific countries will ensure co-ordinates
 #'are terrestrial, whereas an extent that encompasses these countries may result in the generation
 #'of pseudo-absence records in inappropriate areas, such as oceans or non-study-area countries.
 #'
@@ -90,6 +96,19 @@
 #'If `temporal.method` is `random`, then pseudo-absence record dates are randomly
 #'generated within the two `temporal.ext` dates given.
 #'
+#'
+#'@references
+#'Barbet-Massin, M., Jiguet, F., Albert, C. H., Thuiller, W. J. M. I. E. & Evolution 2012. Selecting
+#'Pseudo-Absences For Species Distribution Models: How, Where And How Many? 3, 327-338.
+#'
+#'Phillips, S. J., Dudik, M., Elith, J., Graham, C. H., Lehmann, A., Leathwick, J. & Ferrier, S.
+#'2009. Sample Selection Bias And Presence-Only Distribution Models: Implications For Background And
+#'Pseudo-Absence Data. 19, 181-197.
+#'
+#'Vanderwal, J., Shoo, L. P., Graham, C. & Williams, S. E. 2009. Selecting Pseudo-Absence Data For
+#'Presence-Only Distribution Modeling: How Far Should You Stray From What You Know? Ecological
+#'Modelling, 220, 589-594.
+
 #'@return Returns data frame of pseudo-absence coordinates and dates.
 #' @examples
 #'data("sample_filt_data")
@@ -199,7 +218,7 @@ spatiotemp_pseudoabs <-  function(spatial.method,
     # Randomly generate dates within given extent
     PA_dates <- firstdate + sample(1:(seconddate - firstdate),
                                    size = n.pseudoabs,
-                                   replace = T)
+                                   replace = TRUE)
 
     # Split dates into year, month and day columns for returned dataframe
     PA_dates <- tidyr::separate(as.data.frame(PA_dates),
@@ -401,7 +420,7 @@ spatiotemp_pseudoabs <-  function(spatial.method,
                               dynamic_proj_dates(as.character(date4[x]),
                                                  as.character(date2[x]),
                                                  interval = 1,
-                                                 interval.level = "day")), value, replace = T)
+                                                 interval.level = "day")), value, replace = TRUE)
 
       PA_dates <- c(PA_dates, as.Date(random_date))
 

@@ -47,7 +47,7 @@
 #'`CoordinateCleaner` (Zizka et al., 2019), which offers a diversity of functions for checking the
 #'co-ordinates of occurrence records.
 #'
-#'If `coordclean` = T, then `coordclean.species` must be provided to identify which species each
+#'If `coordclean` = TRUE, then `coordclean.species` must be provided to identify which species each
 #'record belonds to. If `coordclean.handle` = `exclude` then all `occ.data` records flagged by
 #'`CoordinateCleaner::clean_coordinates()` as potentially erroneous are removed in the returned
 #'data.
@@ -101,7 +101,7 @@ spatiotemp_check <- function(occ.data,
                              coord.handle,
                              date.handle,
                              date.res = "day",
-                             coordclean = F,
+                             coordclean = FALSE,
                              coordclean.species,
                              coordclean.handle="exclude",
                              ...) {

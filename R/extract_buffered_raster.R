@@ -34,7 +34,7 @@
 #'@param agg.factor optional;a postive integer, the aggregation factor expressed as number of cells
 #'  in each direction. See details.
 #'@param resume a logical indicating whether to search `save.directory` or `save.drive.folder` and
-#'  return to previous progress through projection dates.Default = T.
+#'  return to previous progress through projection dates.Default = TRUE.
 #'@details For each projection date, this function downloads rasters at a given spatial extent and
 #'  resolution for spatially buffered and temporally dynamic explanatory variables. Rasters can be
 #'  saved directly to Google Drive or a local directory. These rasters can be
@@ -158,7 +158,7 @@
 #'                        agg.factor = 12,
 #'                        spatial.ext = sample_extent_data,
 #'                        varname = "total_grass_crop_lc",
-#'                        save.directory = temp.dir())
+#'                        save.directory = tempdir())
 #'
 
 
@@ -178,7 +178,7 @@ extract_buffered_raster <- function(dates,
                                     save.directory,
                                     agg.factor,
                                     save.drive.folder,
-                                    resume = T) {
+                                    resume = TRUE) {
 
     # Check all arguments that are required have been given and are valid .
 
@@ -239,17 +239,37 @@ extract_buffered_raster <- function(dates,
 
     # Initiate Google Earth Engine
     rgee::ee_check("rgee")
-    rgee::ee_Initialize(drive = T)
+    rgee::ee_Initialize(drive = TRUE)
+
+    # If resume, create list of all files currently in save directory / folder
+    if (resume) {
+
+      if (!missing(save.drive.folder)) {
+
+        # Initiate Google Drive
+        googledrive::drive_auth(email = user.email)
+        googledrive::drive_user()
+
+        save.folderpath <- googledrive::drive_find(pattern = save.drive.folder, type = 'folder')
+        file_list <- googledrive::drive_ls(path = googledrive::as_id(save.folderpath$id))$name
+      }
+
+      if (!missing(save.directory)) {
+        file_list <- list.files(save.directory)
+      }
+    }
+
+
 
     completed.list <- NULL
 
       dates_df<-tidyr::separate(as.data.frame(dates), "dates", c("year", "month", "day"), sep = "-")
 
-      if(temporal.level=="day"){uniquedates<-unique(dates_df[,c("day","month","year"),drop=F])}
+      if(temporal.level=="day"){uniquedates<-unique(dates_df[,c("day","month","year"),drop=FALSE])}
 
-    if(temporal.level=="month"){uniquedates<-unique(dates_df[,c("month","year"),drop=F])}
+    if(temporal.level=="month"){uniquedates<-unique(dates_df[,c("month","year"),drop=FALSE])}
 
-    if(temporal.level=="year"){uniquedates<-unique(dates_df[,c("year"),drop=F])}
+    if(temporal.level=="year"){uniquedates<-unique(dates_df[,c("year"),drop=FALSE])}
 
     for (x in 1:nrow(uniquedates)){
 
@@ -291,6 +311,7 @@ extract_buffered_raster <- function(dates,
         }
 
       date1<-as.Date(paste(year, month, day,sep="-"), "%Y-%m-%d")
+
 
       extraction_date<-as.Date(paste(year2, month2, day2,sep="-"), "%Y-%m-%d")
 
@@ -401,30 +422,15 @@ extract_buffered_raster <- function(dates,
 
       }
 
-      #If resume=T check for the file in the save folder/directory. If present move to next date
+      #If resume=TRUE check for the file in the save folder/directory. If present move to next date
       if (resume) {
 
-        check_file <- paste0(varname, "_", date1, ".tif")
-
-        if (!missing(save.drive.folder)) {
-
-           # Initiate Google Drive
-          googledrive::drive_auth(email = user.email)
-          googledrive::drive_user()
-
-          save.folderpath <- googledrive::drive_find(pattern = save.drive.folder, type = 'folder')
-          file_list <- googledrive::drive_ls(path = googledrive::as_id(save.folderpath$id))$name
-        }
-
-        if (!missing(save.directory)) {
-          file_list <- list.files(save.directory)
-        }
+       check_file <- paste0(varname, "_", date1, ".tif")
 
         file_list <- file_list[grep(check_file, file_list)]
 
         if (!length(file_list) == 0) {
           next()
-
         }
         }
 
@@ -434,13 +440,13 @@ extract_buffered_raster <- function(dates,
           image = image_collection_reduced,
           container = "dynamicSDM_download_bucket",
           scale = spatial.res.metres,
-          dsn = paste0(varname, "_", date1, "_unprocessed"),
+          dsn = paste0(tempdir(),"/", varname, "_", date1, "_unprocessed"),
           region = geometry,
           timePrefix = FALSE,
           via = "drive"
         )
       }, error = function(e) {
-        cat("ERROR :", conditionMessage(e), "\n")
+        message("ERROR :", conditionMessage(e), "\n")
       })
 
       # Authenticate Google Drive
@@ -453,7 +459,7 @@ extract_buffered_raster <- function(dates,
       googledrive::drive_download(
         paste0(varname, "_", date1, "_unprocessed.tif"),
         path = pathforthisfile,
-        overwrite = T
+        overwrite = TRUE
       )
       raster <- raster::raster(pathforthisfile) # Import raster from temp
 
@@ -532,7 +538,7 @@ extract_buffered_raster <- function(dates,
         focalraster <- raster::focal(rast,
                                      moving.window.matrix,
                                      fun = math.fun,
-                                     na.rm = T)
+                                     na.rm = TRUE)
       }
 
       # Process a continuous data raster
@@ -551,7 +557,7 @@ extract_buffered_raster <- function(dates,
       }
 
       # Write spatially buffered raster to temp dir or save dir
-      raster::writeRaster(focalraster, pathforthisfile, overwrite = T)
+      raster::writeRaster(focalraster, pathforthisfile, overwrite = TRUE)
 
 
       if(!missing(save.drive.folder)){
@@ -577,23 +583,23 @@ extract_buffered_raster <- function(dates,
         media = pathforthisfile,
         path = googledrive::as_id(save.folderpath$id),
         name = paste0(varname, "_", date1, ".tif"),
-        overwrite = T
+        overwrite = TRUE
       )
    }
       if (temporal.level == "month") {
-        dates.in.period <- merge(uniquedates[x, , drop = F],
+        dates.in.period <- merge(uniquedates[x, , drop = FALSE],
                                  dates_df,
                                  by = c("year", "month"),
-                                 all.x = T)
+                                 all.x = TRUE)
         dates.in.period <-as.Date(with(dates.in.period,paste(year, month, day,sep="-")), "%Y-%m-%d")
 
       }
 
       if (temporal.level == "year") {
-        dates.in.period <- merge(uniquedates[x, , drop = F],
+        dates.in.period <- merge(uniquedates[x, , drop = FALSE],
                                  dates_df,
                                  by = c("year"),
-                                 all.x = T)
+                                 all.x = TRUE)
         dates.in.period <-as.Date(with(dates.in.period,paste(year, month, day,sep="-")), "%Y-%m-%d")
       }
 
@@ -611,7 +617,7 @@ extract_buffered_raster <- function(dates,
               media = pathforthisfile,
               path = googledrive::as_id(save.folderpath$id),
               name = paste0(varname, "_", savefile, ".tif"),
-              overwrite = T
+              overwrite = TRUE
             )
         )}
 
@@ -620,7 +626,7 @@ extract_buffered_raster <- function(dates,
         lapply(dates.in.period[2:length(dates.in.period)], FUN = function(savefile)
           raster::writeRaster(focalraster,
                               paste0(save.directory, "/", varname, "_", savefile, ".tif"),
-                              overwrite = T
+                              overwrite = TRUE
             )
         )}}
 
@@ -629,23 +635,10 @@ extract_buffered_raster <- function(dates,
 
       # Record successful download and iterate onto next date
       completed.list <- rbind(completed.list, paste0(varname, "_", dates.in.period))
+      message(paste0("Completed: ",varname, "_", dates.in.period))
     }
 
-    if (missing(save.directory)) {
-      print(paste0("Data extracted to Google Drive folder:", save.drive.folder))
-    }
 
-    if (missing(save.drive.folder)) {
-      print(paste0("Data extracted to local directory:",
-                   save.directory))
-    }
-
-    if(!missing(save.directory) && !missing(save.drive.folder)){
-      print(paste0("Data extracted to Google Drive folder:",
-                   save.drive.folder,
-                   " and local directory:",
-                   save.directory))
-    }
 
     return(completed.list)
   }

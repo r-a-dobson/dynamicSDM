@@ -17,7 +17,7 @@ extract_dynamic_raster(
   temporal.direction,
   save.directory,
   save.drive.folder,
-  resume = T
+  resume = TRUE
 )
 }
 \arguments{
@@ -55,7 +55,7 @@ rasters to.}
 rasters to. Folder must be uniquely named within your Google Drive. Do not provide path.}
 
 \item{resume}{a logical indicating whether to search \code{save.directory} or \code{save.drive.folder} and
-return to previous progress through projection dates.Default = T.}
+return to previous progress through projection dates.Default = TRUE.}
 }
 \value{
 Returns details of successful explanatory variable extractions for each projection date.
@@ -131,14 +131,13 @@ extract_dynamic_raster(dates = dates,
                       datasetname = "UCSB-CHG/CHIRPS/DAILY",
                       bandname="precipitation",
                       user.email = user.email,
-                      save.drive.folder = "mydrivefolder",
                       spatial.res.metres = 5566,
                       GEE.math.fun = "sum",
                       temporal.direction = "prior",
                       temporal.res = 56,
                       spatial.ext = sample_extent_data,
                       varname = "total_annual_precipitation_prior",
-                      save.directory = temp.dir())
+                      save.directory = tempdir())
 
 
 

@@ -64,7 +64,7 @@ As we continue through the species distribution modelling framework, functions w
 
 ```{r create directory}
 project_directory <- file.path(file.path(tempdir(), "dynamicSDM_vignette"))
-# project_directory<-"your_path_here"
+
 dir.create(project_directory)
 ```
 
@@ -126,7 +126,7 @@ sample_occ_filtered <- spatiotemp_check(occ.data = sample_occ,
                                                date.res = "day",
                                                coord.handle = "exclude",
                                                duplicate.handle = "exclude")
-print(nrow(sample_occ_filtered))
+nrow(sample_occ_filtered)
 ```
 
 Additionally, users can opt to take advantage of the CoordinateCleaner package function to exclude
@@ -211,7 +211,7 @@ bias_results <- spatiotemp_bias(occ.data = sample_occ_cropped,
                                 plot = FALSE,
                                 spatial.method = "simple",
                                 prj = "+proj=longlat +datum=WGS84")
-print(bias_results)
+bias_results
 ```
 
 Whereas, this code will test for bias across only the core of the species range. 
@@ -222,7 +222,7 @@ bias_results <- spatiotemp_bias(occ.data = sample_occ_cropped,
                                 plot = FALSE,
                                 spatial.method = "core",
                                 prj = "+proj=longlat +datum=WGS84")
-print(bias_results)
+bias_results
 ```
 
 Both approaches can generate important results. The latter may be a more reliable indicator if the

@@ -46,7 +46,7 @@ In addition to total sampling events, the function also calculates relative samp
 scaling from 0 (least sampled) to 1 (most sampled).
 
 Output could be used to calculate model weights to correct spatial and temporal biases in
-occurrence record collections.
+occurrence record collections (Stolar and Nielsen, 2015).
 }
 \examples{
 data("sample_explan_data")
@@ -62,4 +62,8 @@ spatiotemp_weights(
  temporal.dist = 20
 )
 
+}
+\references{
+Stolar, J. & Nielsen, S. E. 2015. Accounting For Spatially Biased Sampling Effort In
+Presence-Only Species Distribution Modelling. Diversity And Distributions, 21, 595-608.
 }

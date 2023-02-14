@@ -70,7 +70,7 @@ extract_coords_combine <- function(varnames,
 
   for (v in 1:length(varnames)) {
 
-    list <- list.files(local.directory,full.names = T,pattern = "*.csv")
+    list <- list.files(local.directory,full.names = TRUE,pattern = "*.csv")
 
     if (length(list) == 0) {stop("no files found in local.directory")}
 
@@ -89,7 +89,7 @@ extract_coords_combine <- function(varnames,
 
   # Merge all data frames within the list into single data frame
   merged.data.frame = Reduce(function(...)
-    merge(..., by = mergeby, all = T), df_list)
+    merge(..., by = mergeby, all = TRUE), df_list)
 
   return(merged.data.frame)
 }

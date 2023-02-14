@@ -19,7 +19,8 @@
 #'`spatiotemp_thin()` calculates the temporal distance between occurrence records in given area
 #'and excludes records below minimum temporal distance apart. Then calculates the spatial distance
 #'between all occurrence records and filters records below the minimum spatial distance apart using
-#'the `spThin` package function for spatial thinning (Aiello-Lammens et al., 2015).
+#'the `spThin` package function for spatial thinning (Aiello-Lammens et al., 2015). This approach
+#'has been shown to improve species distribution model performance (Boria et al., 2014).
 #'
 #'
 #'# Temporal thinning methods
@@ -58,6 +59,11 @@
 #'@references Aiello-Lammens, M. E., Boria, R. A., Radosavljevic, A., Vilela, B. & Anderson, R. P.
 #'2015. spThin: an R package for spatial thinning of species occurrence records for use in
 #'ecological niche models. Ecography, 38, 541-545.
+#'
+#'Boria, R. A., Olson, L. E., Goodman, S. M. & Anderson, R. P. 2014. Spatial Filtering To Reduce
+#'Sampling Bias Can Improve The Performance Of Ecological Niche Models. Ecological Modelling, 275,
+#'73-77.
+#'
 #'@return Returns data frame of occurrence records thinned by specified temporal and spatial
 #'  distance.
 #' @examples
@@ -106,11 +112,11 @@ spatiotemp_thin <-  function(occ.data,
   }
 
   # Round min coords down to nearest 10 to ensure all points included in a cell
-  xmin <- floor(min(occ.data$x, na.rm = T) / 10) * 10
-  ymin <- floor(min(occ.data$y, na.rm = T) / 10) * 10
+  xmin <- floor(min(occ.data$x, na.rm = TRUE) / 10) * 10
+  ymin <- floor(min(occ.data$y, na.rm = TRUE) / 10) * 10
   # Round max coords up to nearest 10 to ensure all points included in a cell
-  xmax <- ceiling(max(occ.data$x, na.rm = T) / 10) * 10
-  ymax <- ceiling(max(occ.data$y, na.rm = T) / 10) * 10
+  xmax <- ceiling(max(occ.data$x, na.rm = TRUE) / 10) * 10
+  ymax <- ceiling(max(occ.data$y, na.rm = TRUE) / 10) * 10
 
   # Create a grid using the rounded minimum and maximum longitude and latitude
   split_grid <- raster::raster(raster::extent(c(xmin, xmax, ymin, ymax)))
@@ -128,8 +134,7 @@ spatiotemp_thin <-  function(occ.data,
                                                                occ.data$y))
   }, error = function(e) {
 
-    stop(print(e),
-         "Error making SpatialPointsDataFrame from co-ordinates filter occ.data spatiotemp_check()")
+    stop("Error making SpatialPointsDataFrame from co-ordinates filter occ.data spatiotemp_check()")
     })
 
   # Extract grid cell number each record belongs to, to group before thinning
@@ -204,7 +209,7 @@ spatiotemp_thin <-  function(occ.data,
 
       # Work out how many records each record is under the temporal thinning
       # distance from (when one is removed, others may not longer need removing)
-      level.of.overlap <- rowSums(matrix.original, na.rm = T)
+      level.of.overlap <- rowSums(matrix.original, na.rm = TRUE)
 
       # Create vector of TRUE to record which row gets removed in the iteration
       record.of.removal <- rep(TRUE, length(level.of.overlap))
@@ -221,7 +226,7 @@ spatiotemp_thin <-  function(occ.data,
       while (any(matrix)) {
 
         # Identify rows with highest overlap as we want to exclude these first
-        rows.to.remove <- as.numeric(which(overlap == max(overlap, na.rm = T)))
+        rows.to.remove <- as.numeric(which(overlap == max(overlap, na.rm = TRUE)))
 
         # Randomly select one of the rows with highest overlap to exclude first
         rows.to.remove <- sample(rows.to.remove, 1)
@@ -261,9 +266,9 @@ spatiotemp_thin <-  function(occ.data,
                             spec.col = "species",
                             thin.par = spatial.dist/1000, # in km but dynSDM uses metres
                             reps = 1,
-                            write.files = F,
-                            write.log.file = F,
-                            locs.thinned.list.return = T)
+                            write.files = FALSE,
+                            write.log.file = FALSE,
+                            locs.thinned.list.return = TRUE)
 
 
     results <- results[as.numeric(rownames(as.data.frame(thin_res))), ]
