@@ -14,12 +14,6 @@
 #' data(sample_occ_data)
 #' converted <- convert_gbif(sample_occ_data)
 #'
-#'\dontrun{
-#'
-#' gbif.df <- data.frame(rgbif::occ_search(scientificName = "Quelea_quelea")$data)
-#'
-#' occ.data <- convert_gbif(gbif.df)
-#'}
 #'@export
 
 convert_gbif <- function(gbif.df) {

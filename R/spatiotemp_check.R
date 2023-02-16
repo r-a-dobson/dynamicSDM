@@ -79,7 +79,7 @@
 #')
 #'nrow(filtered)
 #'
-#'\dontrun{
+#'\donttest{
 #'filtered_CC<-spatiotemp_check(
 #'  occ.data = sample_occ_data,
 #'  coord.handle = "exclude",

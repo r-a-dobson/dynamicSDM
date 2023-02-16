@@ -71,3 +71,14 @@ e.g.: R/spatiotemp_autocorr.R ; R/spatiotemp_bias.R If you're not familiar with 
 5) Thank you for pointing this out. We have now incorportated on.exit() so that none of our functions alter the user's options permanently. We understand how important this is, so thank you for pointing this out.
 
 Thank you for your feedback so far. Please let us know if there are any further changes that you would like us to make to the package.
+
+
+# Cran response
+
+You still have 2 \dontrun{} examples in convert_gbif.Rd and spatiotemp_check.Rd.
+Please either change them to \donttest{} or let us know why you think \dontrun{} is the right choice so we can publish.
+
+
+# Changes made to address
+
+1) These were unfortunately missed on previous edits. Apologies - fixed now. 
