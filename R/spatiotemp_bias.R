@@ -254,16 +254,17 @@ spatiotemp_bias <-  function(occ.data,
 
   #Function to allow users to click through each plot individually
   oldpar<- par(no.readonly=TRUE)
-
+  on.exit(par(oldpar))
 
   op <- graphics::par(ask=TRUE)
+  graphics::par(op)
 
   for (i in 1:length(plot.list)){
-    plot.list[[i]]
+    plot(plot.list[[i]])
   }
 
-  graphics::par(op)
-  on.exit(par(oldpar))
+
+
   names(plot.list) <- c(paste0("Temporal_bias_plot_",temporal.level),"Spatial_bias_plot")
 
   res.list.plots <- list(Statistical_tests = res.list, Plots = plot.list)
