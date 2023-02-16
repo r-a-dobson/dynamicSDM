@@ -91,19 +91,16 @@ time, it is recommended that only a representative sample of large occurrence da
 }
 
 \examples{
+\donttest{
 data(sample_explan_data)
+
 bias_simple <- spatiotemp_bias(
 occ.data = sample_explan_data,
-temporal.level = c("day", "month", "year"),
+temporal.level = c("year"),
 spatial.method = "simple",
 plot = FALSE
 )
-bias_core <-spatiotemp_bias(
-occ.data = sample_explan_data,
-temporal.level = c("day", "month", "year"),
-spatial.method = "core",
-plot = FALSE
-)
+}
 }
 \references{
 Clark, P. J. & Evans, F. C. J. E. 1954. Distance To Nearest Neighbor As A Measure Of Spatial

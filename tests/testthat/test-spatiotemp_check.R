@@ -1,5 +1,4 @@
 
-
 data(sample_occ_data)
 sample_occ_data <- convert_gbif(sample_occ_data)
 
@@ -183,6 +182,7 @@ test_that("Returns all columns", {
 
 testthat::test_that("CoordinateCleaner works (correct ncol)", {
   testthat::skip_on_cran()
+  testthat::skip_if_offline()
   expect_equal(ncol(
     spatiotemp_check(
       occ.data = sample_occ_data,
@@ -200,6 +200,7 @@ testthat::test_that("CoordinateCleaner works (correct ncol)", {
 
 test_that("CoordinateCleaner works (correct nrow)", {
   testthat::skip_on_cran()
+  testthat::skip_if_offline()
   expect_equal(nrow(
     spatiotemp_check(
       occ.data = sample_occ_data,
@@ -217,6 +218,7 @@ test_that("CoordinateCleaner works (correct nrow)", {
 
 test_that("CoordinateCleaner works return report", {
   testthat::skip_on_cran()
+  testthat::skip_if_offline()
   expect_equal(length(
     spatiotemp_check(
       occ.data = sample_occ_data,

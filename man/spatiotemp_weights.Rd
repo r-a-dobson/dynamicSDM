@@ -52,7 +52,7 @@ occurrence record collections (Stolar and Nielsen, 2015).
 data("sample_explan_data")
 data("sample_events_data")
 \dontshow{
-sample_explan_data<-sample_explan_data[1:5,]
+sample_explan_data<-sample_explan_data[1:2,]
 }
 
 spatiotemp_weights(

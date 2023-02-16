@@ -147,7 +147,7 @@ spatiotemp_autocorr <- function(occ.data,
     names(plot.list) <- c(varname)
 
     oldpar<- par(no.readonly=TRUE)
-    on.exit(par(oldpar))
+
 
     #Function to allow users to click through each plot individually
     op <- graphics::par(ask=TRUE)
@@ -160,6 +160,7 @@ spatiotemp_autocorr <- function(occ.data,
 
     graphics::par(op)
 
+    on.exit(par(oldpar))
     res.list.plots <- list(Statistical_tests = list.of.results, Plots = plot.list)
 
     return(res.list.plots)

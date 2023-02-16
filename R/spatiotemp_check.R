@@ -265,21 +265,21 @@ if (n > 0) {
           month <- rep(1, nrow(occ.data))
           day <- rep(1, nrow(occ.data))
 
-          occ.data <- occ.data[!is.na(as.character(lubridate::as_date(
-            paste(occ.data$year, month, day, sep = "-"), "%Y-%m-%d", tz = NULL))), ]
+          occ.data <- occ.data[!is.na(as.character(suppressWarnings(lubridate::as_date(
+            paste(occ.data$year, month, day, sep = "-"), "%Y-%m-%d", tz = NULL)))), ]
         }
 
         if (n == 2) {
           day <- rep(1, nrow(occ.data))
-          occ.data <- occ.data[!is.na(as.character(lubridate::as_date(
-            paste(occ.data$year, occ.data$month, day, sep = "-"), "%Y-%m-%d", tz = NULL))), ]
+          occ.data <- occ.data[!is.na(as.character(suppressWarnings(lubridate::as_date(
+            paste(occ.data$year, occ.data$month, day, sep = "-"), "%Y-%m-%d", tz = NULL)))), ]
         }
 
 
         if (n == 3) {
-          occ.data <-
-            occ.data[!is.na(as.character(lubridate::as_date(
-              with(occ.data, paste(year, month, day, sep = "-")), "%Y-%m-%d", tz = NULL))), ]
+
+          occ.data <- occ.data[!is.na(as.character(suppressWarnings(lubridate::as_date(
+              with(occ.data, paste(year, month, day, sep = "-")), "%Y-%m-%d", tz = NULL)))), ]
         }
 
 

@@ -72,7 +72,7 @@
 #'
 #' n.iterations <- 500
 #'\dontshow{
-#'sample_filt_data<-sample_filt_data[1:50,]
+#'sample_filt_data<-sample_filt_data[1:25,]
 #'n.iterations <- 1
 #'}
 #'spatiotemp_thin(

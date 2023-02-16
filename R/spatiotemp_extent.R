@@ -39,7 +39,7 @@
 #'data(sample_filt_data)
 #'data(sample_extent_data)
 #'\dontshow{
-#'sample_filt_data<-sample_filt_data[1:10,]
+#'sample_filt_data<-sample_filt_data[1:2,]
 #'}
 #'results <- spatiotemp_extent(occ.data = sample_filt_data,
 #'                             spatial.ext = sample_extent_data,
@@ -112,7 +112,7 @@ spatiotemp_extent <- function(occ.data,
 
     # Convert sf object to Spatial object that can be tranformed into raster
     if("sf" %in% class(spatial.ext)){
-      spatial.ext <- as(spatial.ext,"Spatial")}
+      spatial.ext <- sf::as_Spatial(spatial.ext)}
 
 
     # Convert polygon object to Extent object that can be transformed into raster

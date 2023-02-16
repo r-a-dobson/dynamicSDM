@@ -113,7 +113,7 @@
 #' @examples
 #'data("sample_filt_data")
 #'\dontshow{
-#'sample_filt_data<-sample_filt_data[1:10,]
+#'sample_filt_data<-sample_filt_data[1:2,]
 #'}
 #'
 #'spatiotemp_pseudoabs(

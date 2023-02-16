@@ -74,19 +74,16 @@
 #'
 #'@return Returns list containing chi-squared and t-test results, and plots if specified.
 #' @examples
+#' \donttest{
 #'data(sample_explan_data)
+#'
 #'bias_simple <- spatiotemp_bias(
 #'occ.data = sample_explan_data,
-#'temporal.level = c("day", "month", "year"),
+#'temporal.level = c("year"),
 #'spatial.method = "simple",
 #'plot = FALSE
 #')
-#'bias_core <-spatiotemp_bias(
-#'occ.data = sample_explan_data,
-#'temporal.level = c("day", "month", "year"),
-#'spatial.method = "core",
-#'plot = FALSE
-#')
+#'}
 #'@export
 
 
@@ -257,7 +254,7 @@ spatiotemp_bias <-  function(occ.data,
 
   #Function to allow users to click through each plot individually
   oldpar<- par(no.readonly=TRUE)
-  on.exit(par(oldpar))
+
 
   op <- graphics::par(ask=TRUE)
 
@@ -266,7 +263,7 @@ spatiotemp_bias <-  function(occ.data,
   }
 
   graphics::par(op)
-
+  on.exit(par(oldpar))
   names(plot.list) <- c(paste0("Temporal_bias_plot_",temporal.level),"Spatial_bias_plot")
 
   res.list.plots <- list(Statistical_tests = res.list, Plots = plot.list)

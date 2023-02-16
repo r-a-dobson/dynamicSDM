@@ -56,7 +56,7 @@ of this extent.
 data(sample_filt_data)
 data(sample_extent_data)
 \dontshow{
-sample_filt_data<-sample_filt_data[1:10,]
+sample_filt_data<-sample_filt_data[1:2,]
 }
 results <- spatiotemp_extent(occ.data = sample_filt_data,
                             spatial.ext = sample_extent_data,
