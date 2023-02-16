@@ -181,7 +181,7 @@ spatiotemp_block <- function(occ.data,
     # Aggregate to count records per unique ID.
     blockdata <- cbind(blockdata, aggregate(count ~ ID_BL, data = occ.data, FUN = 'sum')[, 2])
 
-
+    colnames(blockdata)<-c("ID_BL","count")
     vars.to.block.by<-c(vars.to.block.by)
 
     # For each variable specified, take the mean of each ID group
@@ -189,8 +189,8 @@ spatiotemp_block <- function(occ.data,
     for (n in 1:length(vars.to.block.by)) {
 
     formula <- as.formula(paste(paste(c(vars.to.block.by[n], "ID_BL"), collapse = "~"), sep = ""))
-
-    blockdata <- cbind(blockdata, aggregate(formula, data = occ.data, FUN = 'mean')[, 2])
+    vardata<-aggregate(formula, data = occ.data, FUN = 'mean')
+    blockdata <-merge(blockdata,vardata,by="ID_BL",all.x=T)
 
     }
 
@@ -237,12 +237,13 @@ spatiotemp_block <- function(occ.data,
 
         # Calculates the mean for each block
 
-        mean.var <- lapply(groups, function(df_inlist) {base::mean((df_inlist[, y]))})
+        mean.var <- lapply(groups, function(df_inlist) {base::mean((df_inlist[, y]),na.rm=T)})
 
         # Variance in means across blocks (want to minimise this when blocking)
         variance.mean <- var(unlist(mean.var))
 
-        range <- lapply(groups, function(df_inlist) {(max(df_inlist[, y]) - min(df_inlist[, y]))})
+        range <- lapply(groups, function(df_inlist) {
+                          (max(df_inlist[, y],na.rm=T) - min(df_inlist[, y],na.rm=T))})
 
         variance.range <- var(unlist(range))
 
