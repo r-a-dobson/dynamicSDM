@@ -49,11 +49,9 @@ Output could be used to calculate model weights to correct spatial and temporal 
 occurrence record collections (Stolar and Nielsen, 2015).
 }
 \examples{
+\donttest{
 data("sample_explan_data")
 data("sample_events_data")
-\dontshow{
-sample_explan_data<-sample_explan_data[1:2,]
-}
 
 spatiotemp_weights(
  occ.data = sample_explan_data,
@@ -61,7 +59,7 @@ spatiotemp_weights(
  spatial.dist = 200000,
  temporal.dist = 20
 )
-
+}
 }
 \references{
 Stolar, J. & Nielsen, S. E. 2015. Accounting For Spatially Biased Sampling Effort In

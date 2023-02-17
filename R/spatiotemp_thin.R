@@ -71,10 +71,7 @@
 #' data("sample_filt_data")
 #'
 #' n.iterations <- 500
-#'\dontshow{
-#'sample_filt_data<-sample_filt_data[1:25,]
-#'n.iterations <- 1
-#'}
+#' \donttest{
 #'spatiotemp_thin(
 #'  occ.data = sample_filt_data,
 #'  temporal.method = "day",
@@ -83,6 +80,7 @@
 #'  spatial.dist = 100000,
 #'  iterations = n.iterations
 #')
+#'}
 #'@export
 
 spatiotemp_thin <-  function(occ.data,

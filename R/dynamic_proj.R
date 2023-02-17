@@ -328,7 +328,8 @@ dynamic_proj <-  function(dates,
           if (cov.file.type == "tif") {
 
             SDMpred <- raster::predict(model = sdm.mod,
-                                       object = projection_df)
+                                       object = projection_df,
+                                       type = "response")
 
             SDMbinary <- SDMpred > sdm.thresh} # Probability to binary
 
@@ -356,7 +357,8 @@ dynamic_proj <-  function(dates,
 
               proj_stack <- raster::stack(proj_stack,
                                                  raster::predict(model=sdm.mod[[model]],
-                                                                 object = projection_df))}
+                                                                 object = projection_df,
+                                                                 type = "response"))}
 
             if(cov.file.type=="csv"){
 
@@ -414,7 +416,8 @@ dynamic_proj <-  function(dates,
 
           if (cov.file.type == "tif") {
             SAMpred <- raster::predict(model = sam.mod,
-                                       object = projection_df)
+                                       object = projection_df,
+                                       type = "response")
           }
 
           if (cov.file.type == "csv") {
@@ -435,7 +438,8 @@ dynamic_proj <-  function(dates,
 
             if (cov.file.type == "tif") {
               proj_stack <- raster::stack(proj_stack, raster::predict(model = sam.mod[[model]],
-                                                                      object = projection_df))
+                                                                      object = projection_df,
+                                                                      type = "response"))
             }
 
 

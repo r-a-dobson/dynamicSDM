@@ -27,11 +27,9 @@
 #'@return Returns input occurrence record data frame with additional columns for sampling effort
 #'  "SAMP_EFFORT" and relative sampling effort "REL_SAMP_EFFORT".
 #' @examples
+#' \donttest{
 #' data("sample_explan_data")
 #' data("sample_events_data")
-#' \dontshow{
-#' sample_explan_data<-sample_explan_data[1:2,]
-#' }
 #'
 #' spatiotemp_weights(
 #'  occ.data = sample_explan_data,
@@ -39,7 +37,7 @@
 #'  spatial.dist = 200000,
 #'  temporal.dist = 20
 #')
-#'
+#'}
 #'@export
 #'
 

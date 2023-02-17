@@ -69,11 +69,9 @@
 #'@return Returns occurrence data frame with column "BLOCK.CATS", assigning each record to a
 #'  spatiotemporal block.
 #' @examples
+#' \donttest{
 #' data("sample_explan_data")
 #' data("sample_biome_data")
-#'\dontshow{
-#' sample_explan_data<-sample_explan_data[1:50,]
-#' }
 #' spatiotemp_block(
 #'  occ.data = sample_explan_data,
 #'  spatial.layer = sample_biome_data,
@@ -83,6 +81,7 @@
 #'  n.blocks = 3,
 #'  iterations = 30
 #')
+#'}
 #'@export
 
 spatiotemp_block <- function(occ.data,

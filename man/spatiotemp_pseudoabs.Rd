@@ -127,9 +127,7 @@ generated within the two \code{temporal.ext} dates given.
 
 \examples{
 data("sample_filt_data")
-\dontshow{
-sample_filt_data<-sample_filt_data[1:2,]
-}
+\donttest{
 
 spatiotemp_pseudoabs(
  sample_filt_data,
@@ -138,6 +136,7 @@ spatiotemp_pseudoabs(
  spatial.ext = c(20, 36, -35, -12),
  temporal.ext = c("2011-01-01", "2017-01-01")
 )
+}
 }
 \references{
 Barbet-Massin, M., Jiguet, F., Albert, C. H., Thuiller, W. J. M. I. E. & Evolution 2012. Selecting

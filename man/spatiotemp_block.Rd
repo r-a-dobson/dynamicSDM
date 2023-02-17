@@ -86,11 +86,9 @@ variables (\code{vars.to.block.by}) and total sample size are similar across eac
 }
 
 \examples{
+\donttest{
 data("sample_explan_data")
 data("sample_biome_data")
-\dontshow{
-sample_explan_data<-sample_explan_data[1:50,]
-}
 spatiotemp_block(
  occ.data = sample_explan_data,
  spatial.layer = sample_biome_data,
@@ -100,6 +98,7 @@ spatiotemp_block(
  n.blocks = 3,
  iterations = 30
 )
+}
 }
 \references{
 Bagchi, R., Crosby, M., Huntley, B., Hole, D. G., Butchart, S. H. M., Collingham, Y.,

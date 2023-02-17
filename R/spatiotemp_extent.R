@@ -38,12 +38,11 @@
 #' @examples
 #'data(sample_filt_data)
 #'data(sample_extent_data)
-#'\dontshow{
-#'sample_filt_data<-sample_filt_data[1:2,]
-#'}
+#'\donttest{
 #'results <- spatiotemp_extent(occ.data = sample_filt_data,
 #'                             spatial.ext = sample_extent_data,
 #'                             temporal.ext = c("2012-01-01", "2017-01-01"))
+#'}
 #'@export
 
 spatiotemp_extent <- function(occ.data,
