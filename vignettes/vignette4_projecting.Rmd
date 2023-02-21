@@ -1,8 +1,8 @@
 ---
-title: "dynamicSDM: dynamic distribution projections"
+title: "dynamicSDM: Dynamic distribution projections"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{dynamicSDM: dynamic distribution projections}
+  %\VignetteIndexEntry{dynamicSDM: Dynamic distribution projections}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

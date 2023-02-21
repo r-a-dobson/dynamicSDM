@@ -1,8 +1,8 @@
 ---
-title: "dynamicSDM: model fitting and autocorrelation"
+title: "dynamicSDM: Model fitting and autocorrelation"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{dynamicSDM: model fitting and autocorrelation}
+  %\VignetteIndexEntry{dynamicSDM: Model fitting and autocorrelation}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
