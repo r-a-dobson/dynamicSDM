@@ -10,6 +10,8 @@
 coverage](https://codecov.io/gh/r-a-dobson/dynamicSDM/branch/main/graph/badge.svg)](https://app.codecov.io/gh/r-a-dobson/dynamicSDM?branch=main)
 [![R-CMD-check](https://github.com/r-a-dobson/dynamicSDM/workflows/R-CMD-check/badge.svg)](https://github.com/r-a-dobson/dynamicSDM/actions)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7405906.svg)](https://doi.org/10.5281/zenodo.7405906)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/dynamicSDM)](https://CRAN.R-project.org/package=dynamicSDM)
 <!-- badges: end -->
 
 # Summary
