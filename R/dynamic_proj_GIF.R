@@ -93,8 +93,8 @@ dynamic_proj_GIF <- function(dates,
                              legend.min,
                              legend.name,
                              file.name,
-                             colour.palette,
-                             colour.palette.viridis) {
+                             colour.palette.custom,
+                             colour.palette) {
 
     # Check neccessary arguments have been provided
     if (missing(drive.folder) && missing(local.directory)) {
