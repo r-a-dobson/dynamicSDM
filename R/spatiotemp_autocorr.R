@@ -11,7 +11,7 @@
 #'@param varname a character string or vector, the name(s) of the columns within `occ.data`
 #'  containing data to test for autocorrelation.
 #'@param plot a logical indicating whether to generate plot of temporal autocorrelation. See details
-#'  for plot description. Default = FALSE.
+#'  for plot description. Default = `FALSE`.
 #'@details To test for temporal autocorrelation, the function first calculates the average value
 #'  across records for each time step (`temporal.level`). The correlation between the average value
 #'  at one time point (t) and the value at the previous time point (t-1) is calculated and plotted

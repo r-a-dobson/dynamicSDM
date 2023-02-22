@@ -10,7 +10,7 @@
 #'@param temporal.level a character string or vector, the time step(s) to test for temporal bias at.
 #'  One or multiple of `day` or `month`, `year.` Can be abbreviated.
 #'@param plot a logical indicating whether to generate plots of spatial and temporal bias. See
-#'  details for plot descriptions.
+#'  details for plot descriptions. Default = `FALSE`.
 #'@param spatial.method a character string, the method to calculate the spatial bias statistic. One
 #'  of; `simple`, `convex_hull` or `core`. See details.
 #'@param prj a character string, the coordinate reference system of occ.data co-ordinates. Default

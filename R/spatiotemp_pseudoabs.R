@@ -61,7 +61,7 @@
 #'If `spatial.method` is `random`, then the pseudo-absence record co-ordinates are randomly
 #'generated across `spatial.ext` object given.
 #'
-#'If `spatial.ext` is an `sf` polygon or multipolygon object, `RasterLayer` (mask if possible before
+#'If `spatial.ext` is a `sf` polygon or multipolygon object, `RasterLayer` (mask if possible before
 #'input) or `SpatialPolygonsDataFrame`, then these shapes are used, instead of a simple rectangular
 #'extent. Therefore, inputting one of these objects will allow for more specific pseudo-absence
 #'generation.
