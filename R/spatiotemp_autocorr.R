@@ -147,7 +147,7 @@ spatiotemp_autocorr <- function(occ.data,
     names(plot.list) <- c(varname)
 
     oldpar<- par(no.readonly=TRUE)
-    on.exit(par(oldpar))
+    suppressWarnings(on.exit(graphics::par(oldpar),add=T))
 
     #Function to allow users to click through each plot individually
     graphics::par(ask=TRUE)

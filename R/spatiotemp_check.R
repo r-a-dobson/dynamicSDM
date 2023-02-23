@@ -16,7 +16,7 @@
 #'@param date.handle a character string, method for handling invalid dates in record data. One of
 #'  `exclude` or `ignore`: can be abbreviated. Default; `exclude`.
 #'@param date.res a character string, stating the temporal resolution to complete checks on. One of
-#'  `year`, `month` or `day`. Default `day`.
+#'  `year`, `month` or `day`. If not given, dates are not checked.
 #' @param coordclean a logical indicating whether to run function
 #'  `clean_coordinates` from package `CoordinateCleaner` on `occ.data`. Default = FALSE.
 #'@param coordclean.species a character string or vector, specifying the name of the species that
@@ -100,7 +100,7 @@ spatiotemp_check <- function(occ.data,
                              duplicate.handle,
                              coord.handle,
                              date.handle,
-                             date.res = "day",
+                             date.res,
                              coordclean = FALSE,
                              coordclean.species,
                              coordclean.handle="exclude",
@@ -112,16 +112,15 @@ spatiotemp_check <- function(occ.data,
     }
 
 
-    if(!missing(date.res)){
+  if(missing(date.res)){n <- 0}
 
+  if(!missing(date.res)){
     # Check column names correct for dynamicSDM functions
     date.res <- match.arg(date.res, choices = c("day", "month", "year"))
 
     # Depending on date.res only need to check for certain columns
     n <- match(date.res, c("year", "month", "day"))}
 
-
-   if(missing(date.res)){n <- 0}
 
    if (n > 0) {
     if (!"year" %in% colnames(occ.data)) {
