@@ -63,35 +63,35 @@ test_that("Filters by temporal.ext: some not within dates", {
 data(sample_extent_data)
 
 test_that("Filters by spatial.ext but all within extent, numeric ", {
-  numeric <- c(min(sample_explan_data$x),
-               max(sample_explan_data$x),
-               min(sample_explan_data$y),
-               max(sample_explan_data$y)
+  numeric <- c(min(sample_explan_data$x)+1,
+               max(sample_explan_data$x)-1,
+               min(sample_explan_data$y)+1,
+               max(sample_explan_data$y)-1
     )
   results <- spatiotemp_extent(occ.data = sample_explan_data, spatial.ext = numeric)
-  expect_equal(nrow(results), 327)
+  expect_equal(nrow(results), 316)
 })
 
 test_that("Filters by spatial.ext but all within extent, Extent ", {
   Extent <- raster::extent(c(
-      min(sample_explan_data$x),
-      max(sample_explan_data$x),
-      min(sample_explan_data$y),
-      max(sample_explan_data$y)
+      min(sample_explan_data$x)+1,
+      max(sample_explan_data$x)-1,
+      min(sample_explan_data$y)+1,
+      max(sample_explan_data$y)-1
     ))
   results <- spatiotemp_extent(occ.data = sample_explan_data, spatial.ext = Extent)
-  expect_equal(nrow(results), 327)
+  expect_equal(nrow(results), 316)
 })
 
 test_that("Filters by spatial.ext but all within extent, raster ", {
-  numeric <- c(min(sample_explan_data$x),
-      max(sample_explan_data$x),
-      min(sample_explan_data$y),
-      max(sample_explan_data$y)
+  numeric <- c(min(sample_explan_data$x)+1,
+      max(sample_explan_data$x)-1,
+      min(sample_explan_data$y)+1,
+      max(sample_explan_data$y)-1
     )
   raster <- raster::raster(raster::extent(numeric))
   results <- spatiotemp_extent(occ.data = sample_explan_data, spatial.ext = raster)
-  expect_equal(nrow(results), 327)
+  expect_equal(nrow(results), 316)
 })
 
 test_that("Filters by spatial.ext polygon ", {

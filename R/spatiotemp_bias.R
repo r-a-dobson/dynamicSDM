@@ -255,7 +255,7 @@ spatiotemp_bias <-  function(occ.data,
   oldpar<- par(no.readonly=TRUE)
   on.exit(suppressWarnings(graphics::par(oldpar)),add=T)
 
-  graphics::par(ask=TRUE)
+  graphics::par(ask=TRUE, new = FALSE)
 
   for (i in 1:length(plot.list)){
     plot(plot.list[[i]])
