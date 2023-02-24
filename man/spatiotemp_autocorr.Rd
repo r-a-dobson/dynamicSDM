@@ -18,7 +18,7 @@ containing data to test for autocorrelation.}
 autocorrelation at. One or multiple of \code{day} or \code{month}, \code{year}. Can be abbreviated.}
 
 \item{plot}{a logical indicating whether to generate plot of temporal autocorrelation. See details
-for plot description. Default = FALSE.}
+for plot description. Default = \code{FALSE}.}
 }
 \value{
 Returns a list of temporal and spatial autocorrelation test results for each variable.

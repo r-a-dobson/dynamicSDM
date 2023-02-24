@@ -77,6 +77,36 @@
 #'  functions for such data. For instance, "first" or "last" may be more relevant that "sum" of land
 #'  cover classification numbers.
 #'
+#'  # Occasional rgee errors
+#'
+#' As this function uses the `rgee` package to extract rasters from Google Earth Engine, below we
+#' outline occasional `rgee` errors that may occur when extracting rasters:
+#'
+#' * _To avoid memory excess problems, ee_as_raster will not build Raster objects for large images_
+#'
+#' This can be a sporadic error. It may be related to GEE server usage or internet
+#' connection at the time you tested the function. Try restarting your R session or try again at
+#' another time.
+#'
+#' Note: This error could also be due to an issue with your input `spatial.res.metres`. This
+#' function will extract rasters at all typical spatial resolutions of remote-sensing data and at
+#' global extents. If this error persists, please ensure you have not accidentally given an
+#' unrealistically high spatial resolution (e.g. `spatial.res.metres = 0.01` when you may be
+#' confusing the spatial resolution in degrees with metres).
+#'
+#' * _Pixel type not supported: Type<Long>. Convert the image to a floating point type or a smaller
+#' integer type, for example, using ee.Image.toDouble()_
+#'
+#' This error appears when `rgee` has been given an input that cannot be extracted. Some common
+#' causes include:
+#'
+#' + Inappropriate `GEE.math.fun` for extracting categorical data.
+#'
+#' + Dates or spatial extents that are not covered by the chosen GEE dataset. Remember to check
+#' whether the first projection date minus `temporal.res` is still within the temporal extent of the
+#' dataset.
+#'
+#'
 #'@references Aybar, C., Wu, Q., Bautista, L., Yali, R. and Barja, A., 2020. rgee: An R package for
 #'interacting with Google Earth Engine. Journal of Open Source Software, 5(51), p.2272.
 #'

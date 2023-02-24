@@ -23,7 +23,7 @@ column names as follows; record longitude as "x", latitude as "y", year as "year
 One or multiple of \code{day} or \code{month}, \code{year.} Can be abbreviated.}
 
 \item{plot}{a logical indicating whether to generate plots of spatial and temporal bias. See
-details for plot descriptions.}
+details for plot descriptions. Default = \code{FALSE}.}
 
 \item{spatial.method}{a character string, the method to calculate the spatial bias statistic. One
 of; \code{simple}, \code{convex_hull} or \code{core}. See details.}

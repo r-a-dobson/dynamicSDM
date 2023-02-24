@@ -10,7 +10,7 @@ spatiotemp_check(
   duplicate.handle,
   coord.handle,
   date.handle,
-  date.res = "day",
+  date.res,
   coordclean = FALSE,
   coordclean.species,
   coordclean.handle = "exclude",
@@ -35,7 +35,7 @@ One of \code{exclude} or \code{ignore}: can be abbreviated. Default; \code{exclu
 \code{exclude} or \code{ignore}: can be abbreviated. Default; \code{exclude}.}
 
 \item{date.res}{a character string, stating the temporal resolution to complete checks on. One of
-\code{year}, \code{month} or \code{day}. Default \code{day}.}
+\code{year}, \code{month} or \code{day}. If not given, dates are not checked.}
 
 \item{coordclean}{a logical indicating whether to run function
 \code{clean_coordinates} from package \code{CoordinateCleaner} on \code{occ.data}. Default = FALSE.}

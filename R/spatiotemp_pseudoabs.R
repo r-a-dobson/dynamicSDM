@@ -67,8 +67,9 @@
 #'generation.
 #'
 #'For example, inputting a `SpatialPolygonsDataFrame` of specific countries will ensure co-ordinates
-#'are terrestrial, whereas an extent that encompasses these countries may result in the generation
-#'of pseudo-absence records in inappropriate areas, such as oceans or non-study-area countries.
+#'are terrestrial, whereas an extent (xmin, xmax, ymin, ymax) that encompasses these countries may
+#'result in the generation of pseudo-absence records in inappropriate areas, such as oceans or
+#'non-study-area countries.
 #'
 #'# Temporal buffer
 #'

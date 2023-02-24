@@ -212,7 +212,7 @@ if(!missing(colour.palette)){
       ggplot2::ggplot(data = projraster) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value)) +
         ggplot2::ggtitle(as.character(date)) +
-        scale_fill_gradientn( limits = c(legend.min, legend.max),
+      ggplot2::scale_fill_gradientn( limits = c(legend.min, legend.max),
                               colours = colour.palette.custom,
                               name = legend.name)+
         ggplot2::theme(panel.background =  ggplot2::element_rect(fill = "white", color = "white"),

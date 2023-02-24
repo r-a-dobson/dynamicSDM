@@ -89,14 +89,15 @@ want to clip buffers to only terrestrial regions using a country polygon given i
 If \code{spatial.method} is \code{random}, then the pseudo-absence record co-ordinates are randomly
 generated across \code{spatial.ext} object given.
 
-If \code{spatial.ext} is an \code{sf} polygon or multipolygon object, \code{RasterLayer} (mask if possible before
+If \code{spatial.ext} is a \code{sf} polygon or multipolygon object, \code{RasterLayer} (mask if possible before
 input) or \code{SpatialPolygonsDataFrame}, then these shapes are used, instead of a simple rectangular
 extent. Therefore, inputting one of these objects will allow for more specific pseudo-absence
 generation.
 
 For example, inputting a \code{SpatialPolygonsDataFrame} of specific countries will ensure co-ordinates
-are terrestrial, whereas an extent that encompasses these countries may result in the generation
-of pseudo-absence records in inappropriate areas, such as oceans or non-study-area countries.
+are terrestrial, whereas an extent (xmin, xmax, ymin, ymax) that encompasses these countries may
+result in the generation of pseudo-absence records in inappropriate areas, such as oceans or
+non-study-area countries.
 }
 
 \section{Temporal buffer}{
