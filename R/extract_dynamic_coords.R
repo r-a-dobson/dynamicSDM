@@ -295,7 +295,7 @@ extract_dynamic_coords <- function(occ.data,
         extracted_data <- na.omit(t(extracted_data))
 
         # Calculate GEE.math.fun on extracted data.
-        if (nrow(extracted_data) > 0) {
+        if (ncol(extracted_data) > 0) {
 
           value <- as.data.frame(apply(extracted_data, 2, GEE.math.fun))
           colnames(value) <- varname
@@ -304,7 +304,7 @@ extract_dynamic_coords <- function(occ.data,
 
 
       # If no data were extracted return NA for this record.
-      if (is.null(extracted_data) == TRUE) {
+      if (!ncol(extracted_data) > 0) {
         value <- as.data.frame(NA)
         colnames(value) <- varname
         extracted_data <- as.data.frame(cbind(occ.data[x, ], value))
