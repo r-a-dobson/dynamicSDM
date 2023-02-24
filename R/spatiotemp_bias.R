@@ -205,7 +205,7 @@ spatiotemp_bias <-  function(occ.data,
   dist <- geosphere::distm(data.frame(clipped.occ$x, clipped.occ$y))
 
   # Calculate which column contain the minimum distance from another record
-  min.d <- apply(dist, 1, function(x)   order(x, decreasing = FALSE)[2])
+  min.d <- apply(dist, 1, function(x){order(x, decreasing = FALSE)[2]})
 
   # Add column numbers for each occurrence record
   min.d <- cbind(min.d, rep(1:ncol(dist), 1))
@@ -223,8 +223,7 @@ spatiotemp_bias <-  function(occ.data,
   dist <- geosphere::distm(data.frame(df$x, df$y))
 
   # Calculate minimum distance between simulated set of co-ordinates
-  min.d <- apply(dist, 1, function(x)
-    order(x, decreasing = FALSE)[2])
+  min.d <- apply(dist, 1, function(x){order(x, decreasing = FALSE)[2]})
 
   # Add column numbers for each simulated set of co-ordinates
   min.d <- cbind(min.d, rep(1:ncol(dist), 1))
@@ -254,7 +253,7 @@ spatiotemp_bias <-  function(occ.data,
 
   #Function to allow users to click through each plot individually
   oldpar<- par(no.readonly=TRUE)
-  suppressWarnings(on.exit(graphics::par(oldpar),add=T))
+  on.exit(suppressWarnings(graphics::par(oldpar)),add=T)
 
   graphics::par(ask=TRUE)
 
