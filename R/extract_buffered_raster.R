@@ -131,9 +131,10 @@
 #'
 #' This can be a sporadic error. It may be related to GEE server usage or internet
 #' connection at the time you tested the function. Try restarting your R session or try again at
-#' another time.
+#' another time. Also, try clearing the files from the "dynamicSDM_download_bucket" in your Google
+#' Drive.
 #'
-#' Note: This error could also be due to an issue with your input `spatial.res.metres`. This
+#' This error could also be due to an issue with your input `spatial.res.metres`. This
 #' function will extract rasters at all typical spatial resolutions of remote-sensing data and at
 #' global extents. If this error persists, please ensure you have not accidentally given an
 #' unrealistically high spatial resolution (e.g. `spatial.res.metres = 0.01` when you may be
