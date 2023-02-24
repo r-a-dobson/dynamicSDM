@@ -130,7 +130,7 @@ spatiotemp_extent <- function(occ.data,
     # Convert spatial.ext to raster in same projection
     r <- raster::raster(r)
     raster::crs(r) <- prj
-    raster::res(r) <- 0.01 # High resolution for precise clipping
+    raster::res(r) <- 0.05 # High resolution for precise clipping
     r <- raster::setValues(r, values = 1:raster::ncell(r)) # Set fake raster values - not important
 
 
