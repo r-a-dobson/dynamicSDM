@@ -108,7 +108,7 @@
 #'                       temporal.res = 56,
 #'                       spatial.ext = sample_extent_data,
 #'                       varname = variablenames[1],
-#'                       save.directory=temp.dir())
+#'                       save.directory = tempdir())
 #'
 #'
 #'extract_dynamic_raster(dates=projectiondates,
@@ -121,18 +121,18 @@
 #'                      temporal.res = 364,
 #'                      spatial.ext = sample_extent_data,
 #'                      varname = variablenames[2],
-#'                      save.directory=temp.dir())
+#'                      save.directory = tempdir())
 #'
 #'dynamic_proj_covariates(dates = projectiondates,
 #'                        varnames = variablenames,
-#'                        local.directory = temp.dir(),
+#'                        local.directory = tempdir(),
 #'                        spatial.ext = sample_extent_data,
 #'                        spatial.mask = sample_extent_data,
 #'                        spatial.res.degrees = cov_resolution,
 #'                        resample.method = c("bilinear","bilinear"),
 #'                        cov.file.type = "csv",
 #'                        prj="+proj=longlat +datum=WGS84",
-#'                        save.directory = temp.dir())
+#'                        save.directory = tempdir())
 #'
 
 
@@ -372,7 +372,7 @@ dynamic_proj_covariates <- function(dates,
 
         if (cov.file.type == "csv") {
 
-        stack <- as.data.frame(raster::rasterToPoints(stack)) # Create data frame
+        stack_df <- as.data.frame(raster::rasterToPoints(stack)) # Create data frame
 
         csvfile <- paste0(tempfile(), ".csv")
 
@@ -380,7 +380,7 @@ dynamic_proj_covariates <- function(dates,
           csvfile <- paste0(save.directory, "/", date, "_projection_dataframe.csv")
         }
 
-        utils::write.csv(stack, file = csvfile, row.names = FALSE) # Save to temporary location
+        utils::write.csv(stack_df, file = csvfile, row.names = FALSE) # Save to temporary location
 
         googledrive::drive_upload( # Upload to Google Drive
           media = csvfile,
@@ -393,10 +393,10 @@ dynamic_proj_covariates <- function(dates,
           # Save to temporary location before Google Drive upload
           rasterfile <- paste0(tempfile(), ".tif")
 
-          stack <- stars::st_as_stars(stack)
+          stack_rast <- stars::st_as_stars(stack)
 
           # By writing with the stars package we keep band layer names for projections
-          stars::write_stars(stack, rasterfile)
+          stars::write_stars(stack_rast, rasterfile)
 
           # Upload to Google Drive
           googledrive::drive_upload(media = rasterfile,
@@ -412,14 +412,28 @@ dynamic_proj_covariates <- function(dates,
           stop("save.directory does not exist")
         }
 
+        if (cov.file.type == "csv") {
 
+          stack_df <- as.data.frame(raster::rasterToPoints(stack)) # Create data frame
+
+          csvfile <- paste0(tempfile(), ".csv")
+
+          if (!missing(save.directory)) {
+            csvfile <- paste0(save.directory, "/", date, "_projection_dataframe.csv")
+          }
+
+          utils::write.csv(stack_df, file = csvfile, row.names = FALSE) # Save to temporary location
+        }
 
 
         if (cov.file.type == "tif") {
 
-        stack <- stars::st_as_stars(stack)
+        stack_rast <- stars::st_as_stars(stack)
 
-        stars::write_stars(stack, paste0(save.directory, "/", date, "_projection_rasterstack.tif"))
+        stars::write_stars(stack_rast, paste0(save.directory,
+                                              "/",
+                                              date,
+                                              "_projection_rasterstack.tif"))
 
 
         }}
