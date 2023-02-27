@@ -52,9 +52,9 @@
 #'`CoordinateCleaner::clean_coordinates()` as potentially erroneous are removed in the returned
 #'data.
 #'
-#'If  `coordclean.handle` = `report`, then the in-built report output by
-#'`CoordinateCleaner::clean_coordinates()`is returned. This report contains logicals specifying the
-#'potentially erroneous records.
+#'If  `coordclean.handle` = `report`, then the occurrence data frame is returned with an additional
+#'`CC_REPORT` column. This column contains the logicals from
+#'`CoordinateCleaner::clean_coordinates()` which indicates the potentially erroneous records.
 #'
 #'
 #'@references Zizka A, Silvestro D, Andermann T, Azevedo J, Duarte Ritter C, Edler D, Farooq H,
@@ -318,7 +318,8 @@ if (n > 0) {
       }
 
       if (coordclean.handle == "report") {
-        return(report)
+        occ.data$CC_REPORT <- report
+        return(occ.data)
       }
     }
 
