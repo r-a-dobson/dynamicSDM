@@ -29,8 +29,8 @@
 #'@param file.name optional, a character string, the name for the output GIF file. Default =
 #'  `projection.type`.
 #'@param borders a logical indicating whether to add country borders to map. Default = `FALSE`.
-#'@param border.countries optional; a character vector, the countries for which to add map borders.
-#'  Required if `borders = TRUE`.
+#'@param border.regions optional; a character string or vector, the region or regionss for which to
+#'  add map borders. Required if `borders = TRUE`.
 #'@param border.colour optional; a character vector, the colour for plotted map borders. Default =
 #'  `black.`
 #'@details Function reads in projection rasters for each date. These are plotted using `ggplot2` and
@@ -99,7 +99,7 @@ dynamic_proj_GIF <- function(dates,
                              legend.name,
                              file.name,
                              borders = FALSE,
-                             border.countries,
+                             border.regions,
                              border.colour = "black",
                              colour.palette.custom,
                              colour.palette) {
@@ -237,7 +237,7 @@ if(!missing(colour.palette)){
                      legend.text =  ggplot2::element_text(size = 24),
                      legend.title =  ggplot2::element_text(size = 30, face = "bold"))+
       ggplot2::borders(database = "world",
-              regions = border.countries ,
+              regions = border.regions ,
               fill = NA,
               colour = border.colour,
               xlim = c(min(projraster$x,na.rm=T), max(projraster$x,na.rm=T)),
@@ -283,7 +283,7 @@ if(!missing(colour.palette)){
                        legend.text =  ggplot2::element_text(size = 24),
                        legend.title =  ggplot2::element_text(size = 30, face = "bold"))+
         ggplot2::borders(database = "world",
-                regions = border.countries ,
+                regions = border.regions ,
                 fill = NA,
                 colour = border.colour,
                 xlim = c(min(projraster$x,na.rm=T), max(projraster$x,na.rm=T)),

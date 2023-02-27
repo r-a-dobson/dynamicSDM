@@ -18,6 +18,9 @@ dynamic_proj_GIF(
   legend.min,
   legend.name,
   file.name,
+  borders = FALSE,
+  border.regions,
+  border.colour = "black",
   colour.palette.custom,
   colour.palette
 )
@@ -57,6 +60,14 @@ projection.type.}
 
 \item{file.name}{optional, a character string, the name for the output GIF file. Default =
 \code{projection.type}.}
+
+\item{borders}{a logical indicating whether to add country borders to map. Default = \code{FALSE}.}
+
+\item{border.regions}{optional; a character string or vector, the region or regionss for which to
+add map borders. Required if \code{borders = TRUE}.}
+
+\item{border.colour}{optional; a character vector, the colour for plotted map borders. Default =
+\code{black.}}
 
 \item{colour.palette.custom}{optional; a character string or vector, the colours to use as plot
 colour palette.}
