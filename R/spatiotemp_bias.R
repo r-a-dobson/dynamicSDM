@@ -244,7 +244,7 @@ spatiotemp_bias <-  function(occ.data,
     plot.list[[length(temporal.level)+1]]<- ggplot2::ggplot(clipped.occ, ggplot2::aes(x, y)) +
       ggplot2::geom_point(ggplot2::aes(colour="Occurrence"))+
       ggplot2::coord_fixed(ratio = 1)+
-      ggplot2::labs( title = "Spatial cluster of occurrence records",
+      ggplot2::labs( title = "Spatial clustering of occurrence records",
                      x = "Longitude",
                      y = "Latitude",color="Type")+
       ggplot2::geom_point(df,mapping =ggplot2::aes(x=x,y=y,colour="Randomly simulated"),alpha=0.2)+
