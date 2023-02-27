@@ -82,9 +82,9 @@ record belonds to. If \code{coordclean.handle} = \code{exclude} then all \code{o
 \code{CoordinateCleaner::clean_coordinates()} as potentially erroneous are removed in the returned
 data.
 
-If  \code{coordclean.handle} = \code{report}, then the in-built report output by
-\code{CoordinateCleaner::clean_coordinates()}is returned. This report contains logicals specifying the
-potentially erroneous records.
+If  \code{coordclean.handle} = \code{report}, then the occurrence data frame is returned with an additional
+\code{CC_REPORT} column. This column contains the logicals from
+\code{CoordinateCleaner::clean_coordinates()} which indicates the potentially erroneous records.
 }
 
 \examples{

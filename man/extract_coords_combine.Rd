@@ -4,13 +4,23 @@
 \alias{extract_coords_combine}
 \title{Combine extracted explanatory variable data for occurrence records into single data frame.}
 \usage{
-extract_coords_combine(varnames, local.directory)
+extract_coords_combine(
+  varnames,
+  local.directory,
+  set_class = FALSE,
+  col_classes
+)
 }
 \arguments{
 \item{varnames}{a character string, the unique names for each explanatory variable.}
 
 \item{local.directory}{a character string or vector, the path to local directory or directories to
 read extracted explanatory data frames from.}
+
+\item{set_class}{a logical indicating whether to set the classes of each column in the data
+before merging to avoid error. See details for more information.}
+
+\item{col_classes}{optional; a named vector specifying the classes for columns within occ.data.}
 }
 \value{
 Returns a data frame containing all occurrence records with associated explanatory
@@ -34,6 +44,25 @@ exact character match for the varnames provided. All “csv” files matching th
 have the same number and names of columns. This is the default output
 of\code{extract_dynamic_coords()} and \code{extract_buffered_coords()}.
 }
+\section{Column classes}{
+When co-ordinate data have been extracted using the \code{split} method in \code{extract_dynamic_coords()}
+and \code{extract_buffered_coords()}, sometimes the classes of columns in the separate exported data
+frames can vary. For instance, one split row may contain an NA value in one column, whilst
+another split contains a numerical value. When \code{extract_coords_combine()} attempts to read these
+in and bind them together, an error can occur due to the class mismatch (logical compared to
+numeric).
+
+There are two arguments that can help to resolve this error:
+\itemize{
+\item If \code{set_class = TRUE} and \code{col_classes} is given, then the column classes for each split data
+frame will be set as the classes in \code{col_classes}.
+\item If \code{set_class = TRUE} and \code{col_classes} is not given, then the column classes for each split
+data frame will be set by the classes of columns in the first read in csv. Be aware that this
+approach may be inaccurate and lead to parsing warnings, as it depends on the first split
+containing the correct classes (e.g. numeric not a logical in the example above).
+}
+}
+
 \examples{
 \dontshow{if (googledrive::drive_has_token()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 data(sample_filt_data)
@@ -66,7 +95,11 @@ dynamicSDM::extract_dynamic_coords(
  save.directory = tempdir()
 )
 
-extract_coords_combine(varnames = c("eightweekprec", "annualweekprec"), local.directory =
-tempdir())
+extract_coords_combine(varnames = c("eightweekprec", "annualweekprec"),
+                      local.directory = tempdir(),
+                      set_class = TRUE,
+                      col_classes = c(sapply(sample_filt_data,class),
+                                    eightweekprec = "numeric",
+                                    annualweekprec="numeric"))
 \dontshow{\}) # examplesIf}
 }

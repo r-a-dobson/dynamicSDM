@@ -148,7 +148,7 @@ extract_dynamic_raster(dates=projectiondates,
                       temporal.res = 56,
                       spatial.ext = sample_extent_data,
                       varname = variablenames[1],
-                      save.directory=temp.dir())
+                      save.directory = tempdir())
 
 
 extract_dynamic_raster(dates=projectiondates,
@@ -161,17 +161,17 @@ extract_dynamic_raster(dates=projectiondates,
                      temporal.res = 364,
                      spatial.ext = sample_extent_data,
                      varname = variablenames[2],
-                     save.directory=temp.dir())
+                     save.directory = tempdir())
 
 dynamic_proj_covariates(dates = projectiondates,
                        varnames = variablenames,
-                       local.directory = temp.dir(),
+                       local.directory = tempdir(),
                        spatial.ext = sample_extent_data,
                        spatial.mask = sample_extent_data,
                        spatial.res.degrees = cov_resolution,
                        resample.method = c("bilinear","bilinear"),
                        cov.file.type = "csv",
                        prj="+proj=longlat +datum=WGS84",
-                       save.directory = temp.dir())
+                       save.directory = tempdir())
 \dontshow{\}) # examplesIf}
 }
