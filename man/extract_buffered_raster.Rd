@@ -171,7 +171,7 @@ path.
 As this function uses the \code{rgee} package to extract rasters from Google Earth Engine, below we
 outline occasional \code{rgee} errors that may occur when extracting rasters:
 \itemize{
-\item \emph{To avoid memory excess problems, ee_as_raster will not build Raster objects for large images}
+\item To avoid memory excess problems, ee_as_raster will not build Raster objects for large images
 }
 
 This can be a sporadic error. It may be related to GEE server usage or internet
@@ -185,8 +185,8 @@ global extents. If this error persists, please ensure you have not accidentally 
 unrealistically high spatial resolution (e.g. \code{spatial.res.metres = 0.01} when you may be
 confusing the spatial resolution in degrees with metres).
 \itemize{
-\item \emph{Pixel type not supported: Type\if{html}{\out{<Long>}}. Convert the image to a floating point type or a smaller
-integer type, for example, using ee.Image.toDouble()}
+\item Pixel type not supported: Type\if{html}{\out{<Long>}}. Convert the image to a floating point type or a smaller
+integer type, for example, using ee.Image.toDouble()
 }
 
 This error appears when \code{rgee} has been given an input that cannot be extracted. Some common

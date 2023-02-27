@@ -127,7 +127,7 @@
 #' As this function uses the `rgee` package to extract rasters from Google Earth Engine, below we
 #' outline occasional `rgee` errors that may occur when extracting rasters:
 #'
-#' * _To avoid memory excess problems, ee_as_raster will not build Raster objects for large images_
+#' * To avoid memory excess problems, ee_as_raster will not build Raster objects for large images
 #'
 #' This can be a sporadic error. It may be related to GEE server usage or internet
 #' connection at the time you tested the function. Try restarting your R session or try again at
@@ -140,8 +140,8 @@
 #' unrealistically high spatial resolution (e.g. `spatial.res.metres = 0.01` when you may be
 #' confusing the spatial resolution in degrees with metres).
 #'
-#' * _Pixel type not supported: Type<Long>. Convert the image to a floating point type or a smaller
-#' integer type, for example, using ee.Image.toDouble()_
+#' * Pixel type not supported: Type<Long>. Convert the image to a floating point type or a smaller
+#' integer type, for example, using ee.Image.toDouble()
 #'
 #' This error appears when `rgee` has been given an input that cannot be extracted. Some common
 #' causes include:

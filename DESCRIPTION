@@ -38,7 +38,8 @@ Imports:
     graphics,
     methods,
     utils,
-    sf
+    sf,
+    readr
 Depends: 
     R (>= 3.5.0)
 Suggests: 

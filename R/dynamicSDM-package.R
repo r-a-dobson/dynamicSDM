@@ -6,6 +6,7 @@
 #' @importFrom grDevices dev.off
 #' @importFrom grDevices png
 #' @importFrom methods as
+#' @importFrom readr read_csv
 #' @importFrom stats aggregate
 #' @importFrom stats as.formula
 #' @importFrom stats chisq.test
