@@ -28,6 +28,11 @@
 #'  details for colour palette options.
 #'@param file.name optional, a character string, the name for the output GIF file. Default =
 #'  `projection.type`.
+#'@param borders a logical indicating whether to add country borders to map. Default = `FALSE`.
+#'@param border.countries optional; a character vector, the countries for which to add map borders.
+#'  Required if `borders = TRUE`.
+#'@param border.colour optional; a character vector, the colour for plotted map borders. Default =
+#'  `black.`
 #'@details Function reads in projection rasters for each date. These are plotted using `ggplot2` and
 #'  combined into a Graphics Interchange Format (GIF).
 #'
@@ -93,6 +98,9 @@ dynamic_proj_GIF <- function(dates,
                              legend.min,
                              legend.name,
                              file.name,
+                             borders = FALSE,
+                             border.countries,
+                             border.colour = "black",
                              colour.palette.custom,
                              colour.palette) {
 
@@ -193,7 +201,9 @@ dynamic_proj_GIF <- function(dates,
       # Plot projection with ggplot2
 
 if(!missing(colour.palette)){
-      ggplot2::ggplot(data = projraster) +
+
+  if(!borders){
+  ggplot2::ggplot(data = projraster) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value)) +
         ggplot2::ggtitle(as.character(date)) +
         viridis::scale_fill_viridis(
@@ -208,7 +218,39 @@ if(!missing(colour.palette)){
           legend.text =  ggplot2::element_text(size = 24),
           legend.title =  ggplot2::element_text(size = 30, face = "bold"))}
 
+
+
+  if(borders){
+
+    ggplot2::ggplot(data = projraster) +
+      ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value)) +
+      ggplot2::ggtitle(as.character(date)) +
+      viridis::scale_fill_viridis(
+        option=colour.palette,
+        name = legend.name,
+        limits = c(legend.min, legend.max)) +
+      ggplot2::theme(panel.background =  ggplot2::element_rect(fill = "white", color = "white"),
+                     plot.title =  ggplot2::element_text(size = 25, face = "bold", hjust = 0.5),
+                     axis.line = ggplot2::element_blank(),
+                     axis.ticks = ggplot2::element_blank(),
+                     axis.text = ggplot2::element_blank(),
+                     legend.text =  ggplot2::element_text(size = 24),
+                     legend.title =  ggplot2::element_text(size = 30, face = "bold"))+
+      ggplot2::borders(database = "world",
+              regions = border.countries ,
+              fill = NA,
+              colour = border.colour,
+              xlim = c(min(projraster$x,na.rm=T), max(projraster$x,na.rm=T)),
+              ylim = c(min(projraster$y,na.rm=T), max(projraster$y,na.rm=T)))}
+
+
+
+  }
+
+
   if(!missing(colour.palette.custom)){
+
+    if(!borders){
       ggplot2::ggplot(data = projraster) +
         ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value)) +
         ggplot2::ggtitle(as.character(date)) +
@@ -222,6 +264,33 @@ if(!missing(colour.palette)){
                        axis.text = ggplot2::element_blank(),
                        legend.text =  ggplot2::element_text(size = 24),
                        legend.title =  ggplot2::element_text(size = 30, face = "bold"))}
+
+
+
+    if(borders){
+
+      ggplot2::ggplot(data = projraster) +
+        ggplot2::geom_raster(ggplot2::aes(x = x, y = y, fill = value)) +
+        ggplot2::ggtitle(as.character(date)) +
+        ggplot2::scale_fill_gradientn( limits = c(legend.min, legend.max),
+                                       colours = colour.palette.custom,
+                                       name = legend.name)+
+        ggplot2::theme(panel.background =  ggplot2::element_rect(fill = "white", color = "white"),
+                       plot.title =  ggplot2::element_text(size = 25, face = "bold", hjust = 0.5),
+                       axis.line = ggplot2::element_blank(),
+                       axis.ticks = ggplot2::element_blank(),
+                       axis.text = ggplot2::element_blank(),
+                       legend.text =  ggplot2::element_text(size = 24),
+                       legend.title =  ggplot2::element_text(size = 30, face = "bold"))+
+        ggplot2::borders(database = "world",
+                regions = border.countries ,
+                fill = NA,
+                colour = border.colour,
+                xlim = c(min(projraster$x,na.rm=T), max(projraster$x,na.rm=T)),
+                ylim = c(min(projraster$y,na.rm=T), max(projraster$y,na.rm=T)))
+    }
+
+    }
 
 
       # Save temporary  png file of plot
