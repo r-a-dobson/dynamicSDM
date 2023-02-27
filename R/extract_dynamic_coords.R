@@ -219,6 +219,7 @@ extract_dynamic_coords <- function(occ.data,
     # Assign each record a unique number for naming individual .csv files
     occ.data$unique.ID.DYN <- rep(1:nrow(occ.data))
 
+
     for (x in 1:nrow(occ.data)) {
 
       # If the extraction lost connection, this resumes the loop to where it had previously reached
@@ -312,6 +313,7 @@ extract_dynamic_coords <- function(occ.data,
 
 
       if (save.method == "split") {
+
         write.csv(extracted_data,row.names = FALSE,file = paste0(save.directory,
                                                                  "/",
                                                                  occ.data[x, "unique.ID.DYN"],
