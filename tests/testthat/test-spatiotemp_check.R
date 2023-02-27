@@ -219,7 +219,7 @@ test_that("CoordinateCleaner works (correct nrow)", {
 test_that("CoordinateCleaner works return report", {
   testthat::skip_on_cran()
   testthat::skip_if_offline()
-  expect_equal(length(
+  expect_equal(ncol(
     spatiotemp_check(
       occ.data = sample_occ_data,
       coord.handle = "exclude",
@@ -231,5 +231,5 @@ test_that("CoordinateCleaner works return report", {
       coordclean.species = "quelea",
       coordclean.handle = "report"
     )
-  ), 311)
+  ), ncol(sample_occ_data)+2)
 })
