@@ -78,7 +78,7 @@ jobs:
 
       - name: Install spatial dependencies
         if: runner.os == 'Linux'
-        run: sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev netcdf-bin libmagick++-dev r-cran-sp r-cran-rgee
+        run: sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev netcdf-bin libmagick++-dev r-sp r-rgee
 
 
       - name: Install dependencies
