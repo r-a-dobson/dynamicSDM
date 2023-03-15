@@ -53,7 +53,7 @@
 #'data.
 #'
 #'If  `coordclean.handle` = `report`, then the occurrence data frame is returned with an additional
-#'`CC_REPORT` column. This column contains the logicals from
+#'`CC_REPORT` column. This column contains the output from
 #'`CoordinateCleaner::clean_coordinates()` which indicates the potentially erroneous records.
 #'
 #'

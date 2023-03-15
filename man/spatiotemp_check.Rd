@@ -83,7 +83,7 @@ record belonds to. If \code{coordclean.handle} = \code{exclude} then all \code{o
 data.
 
 If  \code{coordclean.handle} = \code{report}, then the occurrence data frame is returned with an additional
-\code{CC_REPORT} column. This column contains the logicals from
+\code{CC_REPORT} column. This column contains the output from
 \code{CoordinateCleaner::clean_coordinates()} which indicates the potentially erroneous records.
 }
 
