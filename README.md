@@ -35,7 +35,7 @@ and time. Our functions are:
 dynamicSDM functions are split into four key modelling stages: response
 data, explanatory variables, modelling relationships and dynamic
 projections. See the package manual
-[here](https://github.com/r-a-dobson/dynamicSDM/blob/main/man/figures/dynamicSDM_1.0.pdf)
+[here](https://github.com/r-a-dobson/dynamicSDM/blob/main/man/figures/dynamicSDM_1.2.pdf)
 for more details on each
 function.
 
