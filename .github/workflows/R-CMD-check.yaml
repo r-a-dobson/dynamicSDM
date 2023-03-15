@@ -78,7 +78,7 @@ jobs:
 
       - name: Install spatial dependencies
         if: runner.os == 'Linux'
-        run: sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev netcdf-bin libmagick++-dev r-sp r-rgee
+        run: sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev netcdf-bin libmagick++-dev
 
 
       - name: Install dependencies
@@ -103,7 +103,7 @@ jobs:
       - name: Install dependencies
         if: runner.os == 'Linux'
         run: |
-          install.packages(c("remotes", "rcmdcheck"))
+          install.packages(c("remotes", "rcmdcheck","rgee","sp","leaflet"))
           remotes::install_deps(dependencies = TRUE)
         shell: Rscript {0}
 
