@@ -12,7 +12,6 @@ A collection of novel tools for generating species distribution and abundance mo
 Useful links:
 \itemize{
   \item \url{https://github.com/r-a-dobson/dynamicSDM}
-  \item \url{https://r-a-dobson.github.io/dynamicSDM/}
   \item Report bugs at \url{https://github.com/r-a-dobson/dynamicSDM/issues}
 }
 
