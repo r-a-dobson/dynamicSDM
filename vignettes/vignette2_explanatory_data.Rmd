@@ -24,7 +24,7 @@ library(dynamicSDM)
 
 ## Stage 2: Explanatory variable data
 
-In this tutorial, we will be extracting spatiotemporally buffered explanatory variables for each
+In this tutorial, we will be extracting spatio-temporally buffered explanatory variables for each
 occurrence and pseudo-absence record. The *dynamicSDM* functions for extracting such variables
 require Google Earth Engine and Google Drive to be initialised. Fill in the code below with your
 Google account email, and run the code to check that *rgee* and *googledrive* have been correctly
@@ -109,41 +109,40 @@ data (CHIRPS) dataset at
 
 For the 8-week precipitation extraction, we will use the split method to save extracted data. Notice
 how each record’s data are extracted and exported individually. If you specify `resume = T`, then if
-internet connection is lost you can resume extraction to where the code stopped.
+internet connection is lost, progress can be resumed.
 
 ```{r example-extract_dynamic_coords week, eval=F}
 # 8-week total precipitation
-dynamicSDM::extract_dynamic_coords(occ.data=sample_filt_data,
-                                   datasetname = "UCSB-CHG/CHIRPS/DAILY",
-                                   bandname="precipitation",
-                                   spatial.res.metres = 5566 ,
-                                   GEE.math.fun = "sum",
-                                   temporal.direction = "prior",
-                                   temporal.res = 56,
-                                   save.method="split",
-                                   varname = variablenames[1],
-                                   save.directory=extraction_directory_1)
+extract_dynamic_coords(occ.data=sample_filt_data,
+                       datasetname = "UCSB-CHG/CHIRPS/DAILY",
+                       bandname="precipitation",
+                       spatial.res.metres = 5566 ,
+                       GEE.math.fun = "sum",
+                       temporal.direction = "prior",
+                       temporal.res = 56,
+                       save.method = "split",
+                       varname = variablenames[1],
+                       save.directory = extraction_directory_1)
 
 ```
 
-
 For the 52-week precipitation extraction, we will use the combined method to save extracted data.
 Here, all data are extracted and then exported as a single data frame. This approach writes fewer
-files but may be more vulnerable to internet connection outage as all progress is lost and cannot be
-resumed.
+files but may be more vulnerable to internet connection outage because all progress will be lost and
+cannot be resumed.
 
 ```{r example-extract_dynamic_coords annual,eval=F}
 # 52-week total precipitation
-dynamicSDM::extract_dynamic_coords(occ.data=sample_filt_data,
-                                   datasetname = "UCSB-CHG/CHIRPS/DAILY",
-                                   bandname="precipitation",
-                                   spatial.res.metres = 5566 ,
-                                   GEE.math.fun = "sum",
-                                   temporal.direction = "prior",
-                                   temporal.res = 364,
-                                   save.method="combined",
-                                   varname = variablenames[2],
-                                   save.directory= extraction_directory_2)
+extract_dynamic_coords(occ.data=sample_filt_data,
+                       datasetname = "UCSB-CHG/CHIRPS/DAILY",
+                       bandname = "precipitation",
+                       spatial.res.metres = 5566 ,
+                       GEE.math.fun = "sum",
+                       temporal.direction = "prior",
+                       temporal.res = 364,
+                       save.method = "combined",
+                       varname = variablenames[2],
+                       save.directory = extraction_directory_2)
 ```
 
 
@@ -156,7 +155,6 @@ that specifies the neighbourhood of cells (spatial buffer area) surrounding each
 cell that will also be included in the calculation. `get_moving_window()` generates the optimal
 “moving window matrix” sizes based upon a given spatial radius and resolution of remote-sensing
 data.
-
 
 #### Case study
 
@@ -177,11 +175,6 @@ matrix
 ```
 
 
-### c) Combine explanatory variable data
-
-Data for each explanatory variable have been saved across multiple directories and files.
-`extract_coord_combine()` combine the extracted explanatory variable data into a single data frame.
-
 ```{r example-extract_buffered_coords,eval=F}
 # Total grassland and cereal cropland cells in surrounding area
 extract_buffered_coords(occ.data=sample_filt_data,
@@ -196,10 +189,21 @@ extract_buffered_coords(occ.data=sample_filt_data,
                         categories=c(6,7),
                         agg.factor = 12,
                         varname = variablenames[3],
-                        save.directory=extraction_directory_3
-)
+                        save.directory=extraction_directory_3)
 ```
 
+
+### c) Combine explanatory variable data
+
+Data for each explanatory variable have been saved across multiple directories and files.
+`extract_coord_combine()` combine the extracted explanatory variable data into a single data frame.
+
+```{r combine extracted data,eval=F}
+complete.dataset <- extract_coords_combine(varnames = variablenames,
+                                           local.directory = c(extraction_directory_1,
+                                                               extraction_directory_2,
+                                                               extraction_directory_3))
+```
 
 ## Summary
 
@@ -207,13 +211,9 @@ At the end of this vignette, we now have a complete data frame of filtered speci
 pseudo-absence records with associated extracted dynamic variables. Let’s save this to our project
 directory for use in the next tutorial!
 
-```{r save extracted data,eval=F}
-complete.dataset <- extract_coords_combine(varnames = variablenames,
-                                           local.directory = c(extraction_directory_1,
-                                                               extraction_directory_2,
-                                                               extraction_directory_3))
-# Set NA values as zero 
 
+```{r save extracted data,eval=F}
+# Set NA values as zero 
 complete.dataset[is.na(complete.dataset$grass_crop_percentage),"grass_crop_percentage"]<-0
 
 write.csv(complete.dataset, file = paste0(project_directory, "/extracted_quelea_occ.csv"))

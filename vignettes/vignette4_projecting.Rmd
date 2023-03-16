@@ -8,10 +8,6 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
-
-```
-
-```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -26,7 +22,7 @@ library(dynamicSDM)
 ## Stage 4: Dynamic projections of species distribution
 
 In this tutorial, we will learn about functions within the *dynamicSDM* package for projecting
-intra- and inter- annual geographical distributions and abundances at high spatiotemporal
+intra- and inter-annual geographical distributions and abundances at high spatiotemporal
 resolution. This will involve extracting rasters for each explanatory variable across southern
 Africa at various intervals. Then we can project our dynamic SDMs onto these data to visualise
 species distribution patterns through space and time.
@@ -35,7 +31,7 @@ The *dynamicSDM* functions for extracting dynamic rasters require Google Earth E
 Drive to be initialised. Fill in the code below with your Google account email, and run the code to
 check that *rgee* and *googledrive* have been correctly installed and authorised.
 
-```{r check Google, eval=FALSE}
+```{r check Google, eval = FALSE}
 library(rgee)
 rgee::ee_check()
 
@@ -62,16 +58,16 @@ project_directory <- file.path(tempdir(), "dynamicSDM_vignette")
 dir.create(project_directory, showWarnings = FALSE)
 
 projection_directories <- file.path(project_directory, "projection")
-dir.create(project_directory, showWarnings = FALSE)
+dir.create(projection_directories, showWarnings = FALSE)
 
 projectionrasters <- file.path(project_directory, "projectionrasters")
-dir.create(project_directory, showWarnings = FALSE)
+dir.create(projectionrasters, showWarnings = FALSE)
 
 projection_covariates <- file.path(project_directory, "projectioncovariates")
-dir.create(project_directory, showWarnings = FALSE)
+dir.create(projection_covariates, showWarnings = FALSE)
 
 projection_GIF <- file.path(project_directory, "projection_GIF")
-dir.create(project_directory, showWarnings = FALSE)
+dir.create(projection_GIF, showWarnings = FALSE)
 ```
 
 
@@ -114,12 +110,12 @@ arguments to specify the temporal (projection dates) and spatial extents for the
 
 Run the following code to extract rasters for each explanatory variable and projection date.
 
-```{r example-extract_dynamic_raster , eval=F}
+```{r example-extract_dynamic_raster, eval = FALSE}
 data("sample_extent_data")
 
-extract_dynamic_raster(dates=projectiondates,
+extract_dynamic_raster(dates = projectiondates,
                        datasetname = "UCSB-CHG/CHIRPS/DAILY",
-                       bandname="precipitation",
+                       bandname = "precipitation",
                        user.email = user.email,
                        spatial.res.metres = 5566,
                        GEE.math.fun = "sum",
@@ -127,11 +123,11 @@ extract_dynamic_raster(dates=projectiondates,
                        temporal.res = 56,
                        spatial.ext = sample_extent_data,
                        varname = variablenames[1],
-                       save.directory=projectionrasters)
+                       save.directory = projectionrasters)
 
-extract_dynamic_raster(dates=projectiondates,
+extract_dynamic_raster(dates = projectiondates,
                        datasetname = "UCSB-CHG/CHIRPS/DAILY",
-                       bandname="precipitation",
+                       bandname = "precipitation",
                        user.email = user.email,
                        spatial.res.metres = 5566,
                        GEE.math.fun = "sum",
@@ -139,7 +135,7 @@ extract_dynamic_raster(dates=projectiondates,
                        temporal.res = 364,
                        spatial.ext = sample_extent_data,
                        varname = variablenames[2],
-                       save.directory=projectionrasters)
+                       save.directory = projectionrasters)
 
 matrix<-dynamicSDM::get_moving_window(radial.distance = 10000,
                                       spatial.res.degrees = 0.05,
@@ -147,16 +143,16 @@ matrix<-dynamicSDM::get_moving_window(radial.distance = 10000,
 
 extract_buffered_raster(dates=projectiondates,
                         datasetname = "MODIS/006/MCD12Q1",
-                        bandname="LC_Type5",
+                        bandname = "LC_Type5",
                         spatial.res.metres = 500,
                         GEE.math.fun = "sum",
-                        moving.window.matrix=matrix,,
-                        user.email=user.email,
-                        categories=c(6,7),
+                        moving.window.matrix = matrix,
+                        user.email = user.email,
+                        categories = c(6,7),
                         agg.factor = 12,
                         spatial.ext = sample_extent_data,
                         varname = variablenames[3],
-                        save.directory=projectionrasters)
+                        save.directory = projectionrasters)
 ```
 
 ### c)	Combine dynamic projection covariates
@@ -164,17 +160,17 @@ extract_buffered_raster(dates=projectiondates,
 Now we need to combine the rasters for each variable into single projection covariate data frames
 for each projection date.
 
-```{r example-dynamic_proj_covariates, eval=F}
-dynamic_proj_covariates(dates=projectiondates,
-           varnames=variablenames,
-           local.directory=projectionrasters,
-           spatial.ext=sample_extent_data,
-           spatial.mask=sample_extent_data,
-           spatial.res.degrees = 0.05,
-           resample.method = c("bilinear","bilinear","ngb"),
-           cov.file.type = "csv",
-           prj="+proj=longlat +datum=WGS84",
-           save.directory = projection_covariates)
+```{r example-dynamic_proj_covariates, eval = FALSE}
+dynamic_proj_covariates(dates = projectiondates,
+                        varnames = variablenames,
+                        local.directory = projectionrasters,
+                        spatial.ext = sample_extent_data,
+                        spatial.mask = sample_extent_data,
+                        spatial.res.degrees = 0.05,
+                        resample.method = c("bilinear","bilinear","ngb"),
+                        cov.file.type = "csv",
+                        prj="+proj=longlat +datum=WGS84",
+                        save.directory = projection_covariates)
 ```
 
 
@@ -188,17 +184,17 @@ We choose to project distribution suitability (`projection.method = proportional
 can also generate binary projections if given threshold (`sdm.thresh`) or abundance if given fitted
 species abundance models (`sam.mod`).
 
-```{r example-dynamic_proj, eval=F}
+```{r example-dynamic_proj, eval = FALSE}
 #sample_brt_models<- readRDS(paste0(project_directory, "/fitted_quelea_SDMs.rds"))
 data("sample_explan_data")
 sample_explan_data$weights <- (1 - sample_explan_data$REL_SAMP_EFFORT)
 
 sample_brt_models <- brt_fit(sample_explan_data,
-                  response.col = "presence.absence",
-                  varnames = variablenames,
-                  block.col = "BLOCK.CATS",
-                  weights.col = "weights",
-                  distribution = "bernoulli")
+                             response.col = "presence.absence",
+                             varnames = variablenames,
+                             block.col = "BLOCK.CATS",
+                             weights.col = "weights",
+                             distribution = "bernoulli")
 
 dynamic_proj(dates = projectiondates,
              projection.method = c("proportional"),
@@ -212,7 +208,7 @@ dynamic_proj(dates = projectiondates,
 
 Let’s read in and plot our projections!
 
-```{r plot projections, eval=F}
+```{r plot projections, eval = FALSE}
 sp::plot(raster::raster(list.files(projection_directories)[1]))
 sp::plot(raster::raster(list.files(projection_directories)[2]))
 sp::plot(raster::raster(list.files(projection_directories)[3]))
@@ -225,15 +221,30 @@ sp::plot(raster::raster(list.files(projection_directories)[4]))
 To better visualise our dynamic distribution projections through time, `dynamic_proj_GIF()` can
 generate animated GIFs from the projection rasters.
 
-```{r example-dynamic_proj_GIF, eval=F}
-dynamic_proj_GIF(dates = projectiondates,
-                 projection.type = "proportional",
-                 local.directory = projection_directories,
-                 save.directory = projection_GIF,
-                 legend.max = 1,
-                 legend.min = 0,
-                 width = 650,
-                 legend.name = "Distribution\n suitability")
+We will set our own colour scheme and add borders for the southern African countries. 
+
+```{r example-dynamic_proj_GIF, eval = FALSE}
+
+cols1<- c("#F0F0F0","#40863A","#FBF357","#ED8E07","#cc0000","#660000")
+border.countries<- c('South Africa', 'Botswana','Lesotho', 'Swaziland','Mozambique','Namibia'
+                     ,'Zimbabwe','Angola','Zambia','Malawi')
+
+dynamic_proj_GIF(
+  dates = projectiondates,
+  projection.type = "proportional",
+  local.directory = projection_directories,
+  save.directory = projection_GIF,
+  width = 7,
+  height = 5,
+  colour.palette.custom = cols1,
+  borders = TRUE,
+  border.regions = border.countries,
+  border.colour = "grey50",
+  legend.max = 1,
+  legend.min = 0,
+  legend.name =  "Distribution\n suitability",
+  file.name = "RBQ_proportional_GIF")
+
 ```
 
 ## Summary
@@ -244,7 +255,7 @@ apply these functions to your own study species!
 + We have demonstrated a variety of options across our functions, but even more are available with
 the diverse and flexible arguments. Please see our package manual for full details of each
 *dynamicSDM* function [manual](
-https://github.com/r-a-dobson/dynamicSDM/blob/main/man/figures/dynamicSDM_1.0.pdf).
+https://github.com/r-a-dobson/dynamicSDM/blob/main/man/figures/dynamicSDM_1.2.pdf).
 
 + Also, please visit the GitHub discussion page for *dynamicSDM* if you have any questions or are
 facing errors with any of our functions

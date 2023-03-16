@@ -1,6 +1,6 @@
 Package: dynamicSDM
 Title: Species Distribution and Abundance Modelling at High Spatio-Temporal Resolution
-Version: 1.1
+Version: 1.2
 Authors@R: c(
     person("Rachel", "Dobson", , "eerdo@leeds.ac.uk", role = c("aut", "cre", "ctb"),
            comment = c(ORCID = "0000-0003-3990-267X")),
@@ -58,5 +58,6 @@ Suggests:
     viridis
 Config/testthat/edition: 3
 VignetteBuilder: knitr
-URL: https://github.com/r-a-dobson/dynamicSDM
+URL: https://github.com/r-a-dobson/dynamicSDM,
+    https://r-a-dobson.github.io/dynamicSDM/
 BugReports: https://github.com/r-a-dobson/dynamicSDM/issues

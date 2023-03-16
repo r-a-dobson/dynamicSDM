@@ -16,36 +16,38 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-dynamicSDM offers novel tools for developing species geographical distribution and abundance
+*dynamicSDM* offers novel tools for developing species geographical distribution and abundance
 modelling (SDM) at high spatiotemporal resolution. Across the dynamicSDM vignettes, we demonstrate
 package functions on a case study species and guide users through the four key species distribution
 modelling stages:
 
 + Stage 1: Organising response variable data including species occurrence and pseudo-absence records
-+ Stage 2: Extracting spatiotemporally-buffered explanatory variables 
-+ Stage 3: Fitting SDMs whilst
-accounting for spatial and temporal autocorrelation 
-+ Stage 4: Projecting intra- and inter- annual geographical distributions and abundances at high
++ Stage 2: Extracting spatio-temporally buffered explanatory variables 
++ Stage 3: Fitting SDMs whilst accounting for spatial and temporal autocorrelation 
++ Stage 4: Projecting intra- and inter-annual geographical distributions and abundances at high
 spatiotemporal resolution.
 
 
 ## Installation
 
-Before starting this tutorial, the dynamicSDM package needs to be installed. You can install the
+Before starting this tutorial, the *dynamicSDM* package needs to be installed. You can install the
 latest version from [GitHub](https://github.com/r-a-dobson/dynamicSDM) with:
 
-```{r install package}
+```{r install package GitHub}
 # devtools::install_github('r-a-dobson/dynamicSDM')
-library(dynamicSDM)
-library(sp)
-
 ```
 
+or from [CRAN](https://CRAN.R-project.org/package=dynamicSDM) with
 
-Due to the utilisation of Google Earth Engine and Google Drive across dynamicSDM functions, you must
+```{r install package CRAN}
+#install.packages("dynamicSDM")
+library(dynamicSDM)
+```
+
+Due to the utilisation of Google Earth Engine and Google Drive across *dynamicSDM* functions, you must
 also set up a free Google account at [Google]( https://www.google.com/account/about/). Once you have
-your Google log-in details, these can be used to authorise Google Earth Engine in the rgee package
-and Google Drive in the googledrive package.
+your Google log-in details, these can be used to authorise Google Earth Engine in the `rgee` package
+and Google Drive in the `googledrive` package.
 
 ```{r check Google, eval=FALSE }
 library(rgee)
@@ -57,6 +59,14 @@ library(googledrive)
 googledrive::drive_user()
 ```
 
+We will also use the package `sp` to visualise function output throughout the vignette. Install this
+package using the code below:
+
+```{r install sp}
+#install.packages("sp")
+library(sp)
+```
+
 
 ## Directory organisation
 
@@ -64,7 +74,6 @@ As we continue through the species distribution modelling framework, functions w
 
 ```{r create directory}
 project_directory <- file.path(file.path(tempdir(), "dynamicSDM_vignette"))
-
 dir.create(project_directory)
 ```
 
@@ -80,7 +89,7 @@ accurately model quelea’s distribution through space and time.
 
 In this tutorial, we will be processing a sample of species occurrence records for the red-billed
 quelea (Quelea quelea) to generate an SDM response variable data frame. This will involve filtering
-records by spatiotemporal quality, extent and resolution; testing and accounting for spatiotemporal
+records by spatio-temporal quality, extent and resolution; testing and accounting for spatio-temporal
 biases in records, and generating pseudo-absences through space and time.
 
 ### a) Import occurrence records
@@ -90,12 +99,10 @@ code below.
 
 ```{r import occurrence}
 data("sample_occ_data")
-
 ```
 
-
 These records are formatted as exported from the Global Biodiversity Information Facility, with
-columns labelled “decimalLongitude” and “decimalLatitude”. For dynamicSDM functions, occurrence data
+columns labelled “decimalLongitude” and “decimalLatitude”. For *dynamicSDM* functions, occurrence data
 must be in a specific format; containing numeric data in columns labelled “x” and “y” for the record
 co-ordinates longitude and latitude, and “day”, “month” and “year” for the record’s date.
 
@@ -129,29 +136,28 @@ sample_occ_filtered <- spatiotemp_check(occ.data = sample_occ,
 nrow(sample_occ_filtered)
 ```
 
-Additionally, users can opt to take advantage of the CoordinateCleaner package function to exclude
+Additionally, users can opt to take advantage of the `CoordinateCleaner` package functions to exclude
 records flagged as containing potentially anomalous co-ordinates, based on a wider variety of
-spatial tests than dynamicSDM alone offers.
+spatial tests than *dynamicSDM* alone offers.
 
 ```{r example-spatiotemp_check with Coordinate Cleaner,eval=F}
 sample_occ_filtered <- spatiotemp_check(occ.data = sample_occ,
-                                               na.handle = "exclude",
-                                               date.handle = "exclude",
-                                               date.res = "day",
-                                               coord.handle = "exclude",
-                                               duplicate.handle = "exclude",
-                                               coordclean = T,
-                                               coordclean.species = "quelea",
-                                               coordclean.handle = "exclude")
-
+                                        na.handle = "exclude",
+                                        date.handle = "exclude",
+                                        date.res = "day",
+                                        coord.handle = "exclude",
+                                        duplicate.handle = "exclude",
+                                        coordclean = TRUE,
+                                        coordclean.species = "quelea",
+                                        coordclean.handle = "exclude")
 ```
 
 
 #### Spatiotemporal extent
 
 When generating dynamic species distribution models, it is important that occurrence records match
-the spatiotemporal extent of the study and any remote-sensing datasets to be utilised as explanatory
-variables. `spatiotemporal_extent()` removes any records outside of the set spatiotemporal extents.
+the spatio-temporal extent of the study and any remote-sensing datasets to be utilised as explanatory
+variables. `spatiotemporal_extent()` removes any records outside of the set extents.
 
 In this case study, we want to model the subspecies Q. q. lathamii which is typically limited to
 southern Africa and we will incorporate remote sensing datasets available for the years 2001 to
@@ -228,14 +234,14 @@ bias_results
 Both approaches can generate important results. The latter may be a more reliable indicator if the
 species range is expanding or shifting in response to global change. This is because records at the
 range periphery that have been collected randomly may still not be evenly distributed through space
-and time due to underlying ecological processes. Therefore, testing for biased on the species range
+and time due to underlying ecological processes. Therefore, testing for biases on the species range
 core may be more representative of true spatial and temporal sampling biases.
 
 ### d) Account for spatial and temporal sampling biases
 
 #### Occurrence record thinning
 
-One approach to correct spatiotemporal sampling biases are to “thin” records, which involves
+One approach to correct spatio-temporal sampling biases are to “thin” records, which involves
 excluding records that have been collected too closely in space or time. `spatiotemp_thin()` allows
 users to specify the spatial and temporal distance to thin records by. An important argument of
 `spatiotemp_thin()` is `spatial.split.degrees` which specifies the size of grid cells to split
@@ -267,17 +273,16 @@ sp::plot(sp::SpatialPointsDataFrame(coords = occ_thin[, c("x", "y")],
 
 #### Weight records by sampling effort
 
-Another approach to account for spatiotemporal sampling biases is to weight records by sampling
-effort when fitting SDMs.This results in the down weighing of the importance of records from
+Another approach to account for spatio-temporal sampling biases is to weight records by sampling
+effort when fitting SDMs.This results in the downweighting of the importance of records from
 over-sampled regions and vice versa. 
 
 Here, we will read in a sample of e-Bird avian sampling records
-in southern Africa to use as a sampling effort proxy, and sum these across a spatial and temporal
+in southern Africa to use as a proxy for sampling effort, and sum these across a spatial and temporal
 buffer from each occurrence record using `spatiotemp_weights()`.
 
 ```{r example-spatiotemp_weights}
 data("sample_events_data")
-
 sample_occ_cropped <- spatiotemp_weights(occ.data = sample_occ_cropped,
                                        samp.events = sample_events_data,
                                        spatial.dist = 100000,
@@ -301,6 +306,7 @@ within.
 pseudo_abs_buff <- spatiotemp_pseudoabs(occ.data = sample_occ_cropped,
                                         spatial.method = "buffer",
                                         temporal.method = "buffer",
+                                        spatial.ext = sample_extent_data,
                                         spatial.buffer = c(250000, 500000),
                                         temporal.buffer = c(42, 84),
                                         n.pseudoabs = nrow(sample_occ_cropped))
@@ -352,7 +358,7 @@ complete.dataset <- as.data.frame(rbind(sample_occ_cropped, pseudo_abs_buff))
 
 ## Summary
 At the end of this vignette, we now have a complete data frame of filtered species occurrence and
-pseudo-absence records of appropriate spatiotemporal quality, extent and resolution. Let’s save this
+pseudo-absence records of appropriate spatio-temporal quality, extent and resolution. Let’s save this
 to our project directory for use in the next tutorial!
 
 ```{r export_dataset,eval=F}

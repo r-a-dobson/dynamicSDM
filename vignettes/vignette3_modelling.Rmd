@@ -47,7 +47,7 @@ data("sample_explan_data")
 
 Autocorrelation is when explanatory variable data for species records taken closer in space and time
 are more similar to each other than to those of records more distantly sampled. When species
-distribution modelling with spatiotemporally dynamic explanatory variables, spatial and temporal
+distribution modelling with spatio-temporally dynamic explanatory variables, spatial and temporal
 autocorrelation can impact model performance.
 
 Run the code below to test for spatial and temporal autocorrelation in the extracted explanatory
@@ -59,8 +59,8 @@ variablenames<-c("eight_sum_prec","year_sum_prec","grass_crop_percentage")
 
 autocorrelation <- spatiotemp_autocorr(sample_explan_data,
                                        varname = variablenames,
+                                       plot = TRUE,
                                        temporal.level = c("year")) # can choose month or day too
-
 
 autocorrelation
 ```
@@ -76,11 +76,11 @@ test dataset.
 
 `spatiotemp_block()` splits occurrence records into sampling units by spatial categories (e.g.
 ecoregions or biome) and temporal units (e.g. month or year of record), before blocking the data. As
-some spatial categories can be very large, the argument spatial.split.degrees can be used to split
+some spatial categories can be very large, the argument `spatial.split.degrees` can be used to split
 large contiguous regions into smaller units.
 
 In our case study, we use a raster of various biomes in southern Africa and split large biomes by 3
-degree cells. The function has returned the original data frame with an additional column containing
+degree cells. The function returns the original data frame with an additional column containing
 the block numbers that each record belongs to.
 
 ```{r example-spatiotemp_block}
@@ -101,7 +101,7 @@ There are many SDM approaches to modelling the relationships between species occ
 associated explanatory variables. *dynamicSDM* includes the function `brt_fit()` to fit boosted
 regression tree models to training and test data. There are arguments to specify the blocks to split
 data by (`block.col`, function returns a list of models the length of unique blocks) and to weight
-records by spatiotemporal sampling effort (`weights.col`, see the Stage 1 tutorial).
+records by spatio-temporal sampling effort (`weights.col`, see the Stage 1 tutorial).
 
 ```{r example-brt_fit}
 sample_explan_data$weights <- (1 - sample_explan_data$REL_SAMP_EFFORT)
@@ -117,12 +117,12 @@ models <- brt_fit(sample_explan_data,
 
 
 ##### Note: 
-If you want to use other modelling approaches, this data frame of response and
+If you want to use other modelling approaches, this data frame containing response and
 explanatory variable data can easily be input into SDM functions in other packages.
 
 ## Summary
 At the end of this vignette, we now have our fitted species distribution models for each
-spatiotemporal block. Let’s save this list of models to our project directory for use in the next
+spatio-temporal block. Let’s save this list of models to our project directory for use in the next
 tutorial!
 
 ```{r save models, eval=F}
