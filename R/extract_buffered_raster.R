@@ -458,9 +458,9 @@ extract_buffered_raster <- function(dates,
 
        check_file <- paste0(varname, "_", date1, ".tif")
 
-        file_list <- file_list[grep(check_file, file_list)]
+        file_list_filt <- file_list[grep(check_file, file_list)]
 
-        if (!length(file_list) == 0) {
+        if (!length(file_list_filt) == 0) {
           next()
         }
         }
@@ -665,7 +665,7 @@ extract_buffered_raster <- function(dates,
 
 
       # Record successful download and iterate onto next date
-      completed.list <- rbind(completed.list, paste0(varname, "_", dates.in.period))
+      completed.list <- c(completed.list, paste0(varname, "_", dates.in.period))
       message(paste0("Completed: ",varname, "_", dates.in.period))
     }
 

@@ -331,9 +331,9 @@ extract_dynamic_raster <- function(dates,
 
         check_file <- paste0(varname, "_", firstdate, ".tif")
 
-        file_list <- file_list[grep(check_file, file_list)]
+        file_list_filt <- file_list[grep(check_file, file_list)]
 
-        if (!length(file_list) == 0) {
+        if (!length(file_list_filt) == 0) {
           next()
         }
         }
