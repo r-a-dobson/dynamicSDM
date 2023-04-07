@@ -30,7 +30,7 @@ and time. Our functions are:
     Drive to minimise the computing power and storage demands associated
     with high spatiotemporal resolution modelling.
 
-*In progress* - dynamicSDM is currently being updated to remove all raster and sp dependencies. 
+**In progress - dynamicSDM is currently being updated to remove all raster and sp dependencies.** 
 
 # Package structure
 
