@@ -31,6 +31,17 @@
 #'  covariates. Default is assumed to be the same as `prj`.
 #'@param spatial.mask an object of class `Raster`, `sf` or `Spatial`, representing a mask in which
 #'  NA cells in the mask layer are removed from the projection covariates.
+#'@param static.rasters a RasterStack of one or more rasters to be added to covariates for each date.
+#'@param static.varnames a character string or vector, the unique names for each
+#'  explanatory variable in order of rasters in `static.raster` stack.
+#'@param static.resample.method a character string or vector length of `static.varnames`, specifying resampling
+#'  method to use on static rasters provided. One of `ngb` and `bilinear`. See details for more information..
+#'@param static.moving.window.matrix optional; a matrix of weights with an odd number
+#'  of sides, representing the spatial neighbourhood of cells (“moving
+#'  window”) to calculate `GEE.math.fun` across from record co-ordinate. See
+#'  details for more information.
+#'@param static.GEE.math.fun optional; a character string, the mathematical function to
+#'  compute across the specified spatial matrix for each cell in `spatial.ext`
 #'@details
 #'# Input variable rasters
 #'
@@ -77,6 +88,44 @@
 #'appropriate Google Drive user account. This requires users to have installed R package
 #'`googledrive` and initialised Google Drive with valid log-in credentials. Please follow
 #'instructions on <https://googledrive.tidyverse.org/>.
+#'
+#'
+#'# Static rasters
+#'
+#'If static datasets are to be added into the dynamic projection covariates,
+#'then five arguments are available to specify their inclusion.
+#'
+#'Please provide the static rasters in RasterStack format, specifying any
+#'spatial buffering needed (using `static.moving.window.matrix` and
+#'`static.GEE.math.fun` as described below).
+#'
+#'The resample method or methods for rasters within the static raster stack need
+#'to be specified too using `static.resample.method`. Please also provide
+#'`static.varnames` to name the static variables in the covariate data exported.
+#'
+#'#' # Spatial buffering of static rasters (optional)
+#'
+#'  Using the `focal` function from `raster` R package (Hijmans et al., 2015),
+#'  `GEE.math.fun` is calculated across the spatial buffer area from the record
+#'  co-ordinate. The spatial buffer area used is specified by the argument
+#'  `moving.window.matrix`, which dictates the neighbourhood of cells
+#'  surrounding the cell containing the occurrence record to include in this
+#'  calculation.
+#'
+#'  See function `get_moving_window()` to generate appropriate
+#'  `moving.window.matrix`.
+#'
+#'  # Mathematical function
+#'
+#'  `GEE.math.fun` specifies the mathematical function to be calculated over the
+#'  spatial buffered area and temporal period. Options are limited to Google
+#'  Earth Engine ImageCollection Reducer functions
+#'  (<https://developers.google.com/earth-engine/apidocs/>) for which an
+#'  analogous R function is available. This includes: "allNonZero","anyNonZero",
+#'  "count", "first","firstNonNull", "last", "lastNonNull", "max","mean",
+#'  "median","min", "mode","product", "sampleStdDev", "sampleVariance",
+#'  "stdDev", "sum" and "variance".
+#'
 #'@returns Exports combined covariates in "csv" or "tif" file for each projection date to the local
 #'directory or Google Drive folder.
 #'@export
@@ -149,39 +198,45 @@ dynamic_proj_covariates <- function(dates,
                                     prj="+proj=longlat +datum=WGS84",
                                     cov.prj,
                                     save.directory,
-                                    save.drive.folder) {
+                                    save.drive.folder,
+                                    static.rasters,
+                                    static.varnames,
+                                    static.resample.method,
+                                    static.moving.window.matrix,
+                                    static.GEE.math.fun
+                                    ) {
 
-    # Check arguments to prevent error downstream
+  # Check arguments to prevent error downstream
 
-    if (missing(spatial.ext)) {
-      message("spatial.ext missing. Rasters must have same extent.")
-    }
+  if (missing(spatial.ext)) {
+    message("spatial.ext missing. Rasters must have same extent.")
+  }
 
   if (missing(cov.prj)) {
     cov.prj <- prj
   }
 
-    if (missing(spatial.res.degrees)) {
-      message("spatial.res.degrees missing. Rasters must have same resolution.")
+  if (missing(spatial.res.degrees)) {
+    message("spatial.res.degrees missing. Rasters must have same resolution.")
+  }
+
+
+  if (!missing(spatial.res.degrees)) {
+    if (missing(resample.method)) {stop("Provide a resample method(s).")}
+
+    if (length(resample.method) != 1 &&
+        length(resample.method) != length(varnames)) {
+      stop("resample.method must be of length(1) or length(varnames).")
     }
+  }
 
+  if (missing(local.directory) && missing(drive.folder)) {
+    stop("Provide local.directory or drive.folder to download rasters from.")
+  }
 
-    if (!missing(spatial.res.degrees)) {
-      if (missing(resample.method)) {stop("Provide a resample method(s).")}
-
-      if (length(resample.method) != 1 &&
-          length(resample.method) != length(varnames)) {
-        stop("resample.method must be of length(1) or length(varnames).")
-      }
-    }
-
-    if (missing(local.directory) && missing(drive.folder)) {
-      stop("Provide local.directory or drive.folder to download rasters from.")
-    }
-
-    if (missing(save.directory) && missing(save.drive.folder)) {
-      stop("Provide save.directory or save.drive.folder to export data.frame.")
-    }
+  if (missing(save.directory) && missing(save.drive.folder)) {
+    stop("Provide save.directory or save.drive.folder to export data.frame.")
+  }
 
   # If mask if sf polygon, convert to spatial polygons dataframe for raster:: mask
   if (!missing(spatial.mask)) {
@@ -190,9 +245,9 @@ dynamic_proj_covariates <- function(dates,
     }
   }
 
-    # Process spatial extent given for cropping rasters before stacking into covariate data frame
+  # Process spatial extent given for cropping rasters before stacking into covariate data frame
 
-    # Check spatial.ext appropriate object class.
+  # Check spatial.ext appropriate object class.
 
   if (!missing(spatial.ext)) {
 
@@ -209,168 +264,323 @@ dynamic_proj_covariates <- function(dates,
 
 
 
-      # Numeric extent to co-ords
-      if (is.numeric(spatial.ext) && length(spatial.ext) != 4) {
-        stop("spatial.ext vector should be length 4: xmin, xmax, ymin, ymax.")
+    # Numeric extent to co-ords
+    if (is.numeric(spatial.ext) && length(spatial.ext) != 4) {
+      stop("spatial.ext vector should be length 4: xmin, xmax, ymin, ymax.")
+    }
+
+    xmin <- extract_xy_min_max(spatial.ext)[1]
+    xmax <- extract_xy_min_max(spatial.ext)[2]
+    ymin <- extract_xy_min_max(spatial.ext)[3]
+    ymax <- extract_xy_min_max(spatial.ext)[4]
+
+  }
+
+  # If drive.folder given intitate Google Drive and list files in the folder(s)
+
+  if (!missing(drive.folder)) {
+    # Check user email provided
+    if (missing(user.email)) {
+      stop("Provide user email linked to Google Drive account.")
+    }
+
+    # Initiate Google Drive
+    googledrive::drive_auth(email = user.email)
+    googledrive::drive_user()
+
+
+    # List all files in Google Drive folders
+    drivefiles = NULL
+
+    for (folder in 1:length(drive.folder)) {
+
+      # Check folder exists in user's Google Drive
+      folderpath <- googledrive::drive_find(pattern = drive.folder[folder], type = 'folder')
+
+      if(nrow(folderpath)>1) {
+        folderpath <- folderpath[grep(paste0("^", drive.folder[folder], "$"),
+                                      folderpath$name), ]
       }
 
-      xmin <- extract_xy_min_max(spatial.ext)[1]
-      xmax <- extract_xy_min_max(spatial.ext)[2]
-      ymin <- extract_xy_min_max(spatial.ext)[3]
-      ymax <- extract_xy_min_max(spatial.ext)[4]
+      if (nrow(folderpath) == 0) {stop("drive.folder does not exist.")}
+
+      drivefiles <- rbind(drivefiles,
+                          googledrive::drive_ls(path = googledrive::as_id(folderpath$id))[,1:2])
+
+
+    }
+  }
+
+  # If local.directory list files in the folder(s)
+
+  if (!missing(local.directory)) {
+    directoryfiles <- list.files(local.directory, full.names = TRUE)
+  }
+
+
+
+
+
+
+  #-----------------------------------------------------------------
+  # Process static
+  #-----------------------------------------------------------------
+  if (!missing(static.rasters)) {
+
+  if (inherits(static.rasters, "RasterLayer")) {
+    static.rasters <- raster::stack(static.rasters)
+  }
+
+  if (!inherits(static.rasters, "RasterStack")) {
+    stop("Please provide static rasters as RasterStack object")
+  }
+
+  if (!raster::nlayers(static.rasters) == length(static.varnames)) {
+    stop("Provide unique name for each layer in raster stack")
+  }
+
+
+  if(!missing(static.moving.window.matrix)){
+
+    if (missing(static.GEE.math.fun)) {
+      stop("Please provide math function for spatial buffering")
+    }}
+
+  static.raster.stack<-raster::stack()
+
+  for (sr in 1:length(static.varnames)) {
+
+    name <- static.varnames[sr]
+
+    raster <- static.rasters[[sr]] # Read raster from local dir
+
+    raster::crs(raster) <- prj # Check that projection is set
+
+    if(!missing(static.moving.window.matrix)){
+
+      if (missing(static.GEE.math.fun)) {
+        stop("Please provide math function for spatial buffering of static")
+      }
+
+      # Match GEE.math.fun argument to analogous R function
+      R.FUNC <- list(allNonZero,
+                     anyNonZero,
+                     count,
+                     First,
+                     firstNonNull,
+                     last,
+                     lastNonNull,
+                     max,
+                     mean,
+                     stats::median,
+                     min,
+                     mode,
+                     prod,
+                     sd,
+                     var,
+                     stdDev,
+                     sum,
+                     variance
+      )
+
+      namelist <- c("allNonZero",
+                    "anyNonZero",
+                    "count",
+                    "first",
+                    "firstNonNull",
+                    "last",
+                    "lastNonNull",
+                    "max",
+                    "mean",
+                    "median",
+                    "min",
+                    "mode",
+                    "product",
+                    "sampleStdDev",
+                    "sampleVariance",
+                    "stdDev",
+                    "sum",
+                    "variance"
+      )
+
+      # Match named function to actual function for use. Error if no match.
+
+      static.GEE.math.fun <- match.arg(arg = static.GEE.math.fun, choices = namelist)
+
+      # Match GEE.math.fun argument to analogous R function
+      math.fun <- R.FUNC[[match(static.GEE.math.fun, namelist)]]
+
+
+      raster<- raster::focal(raster,
+                             static.moving.window.matrix,
+                             fun = math.fun,
+                             na.rm = TRUE)
+
 
     }
 
-    # If drive.folder given intitate Google Drive and list files in the folder(s)
 
-    if (!missing(drive.folder)) {
+    # Crop to spatial.ext provided so that all rasters are same extent for stacking
+    if (!missing(spatial.ext)) {
+
+      # Create raster of desired extent and resolution
+      r <- raster::raster(raster::extent(xmin, xmax, ymin, ymax))
+
+      raster::res(r) <- spatial.res.degrees
+      r <- raster::setValues(r, 1:raster::ncell(r))
+
+      if(!missing(spatial.mask)) {
+        # Mask to original spatial.ext, if fails keep original. Depending on spatial.ext type.
+        tryCatch({
+          r <- raster::mask(r, spatial.ext)
+        }, error = function(error_message) {
+          r <- r
+          message("spatial.mask could not be used. Check valid input type.")
+        })}
+
+      # Resample raster using single method given
+      if (length(static.resample.method) == 1) {
+        raster <- raster::resample(raster, r, method = static.resample.method)
+      }
+
+      # Resample raster using variable specific method given
+      if (!length(static.resample.method) == 1) {
+        raster <- raster::resample(raster, r, method = static.resample.method[sr])
+      }
+    }
+
+    raster::crs(raster) <- prj
+
+    static.raster.stack <- raster::stack(static.raster.stack , raster) # Add raster to stack
+
+  }
+
+
+
+
+  }
+
+
+
+
+  # Iterate through each projection date and variable.
+
+  listofdone <- as.Date("2000-01-01") # Date vector to record completed (removed before return)
+
+  for (x in 1:length(dates)) {
+    date <- dates[x]
+
+    stack <- raster::stack() # Empty stack to bind rasters for this date to
+
+    if (!missing(static.rasters)) {
+      stack <- static.raster.stack
+    }
+
+    for (v in 1:length(varnames)) {
+      name <- varnames[v]
+
+      # Read in raster for this variable and date from Google Drive
+
+      if (!missing(drive.folder)) {
+
+        # Extract the ID for the file (prevents error if duplicate named files within Drive
+        fileid <- drivefiles[grep(name, drivefiles$name),]
+        fileid <- fileid[grep(date, fileid$name),"id"]
+
+        pathforthisfile <- paste0(tempfile(), ".tif") # Create temp file name
+
+        googledrive::drive_download(file = googledrive::as_id(fileid$id)[1],
+                                    path = pathforthisfile,
+                                    overwrite = TRUE) # Download from Drive
+
+        raster <- raster::raster(pathforthisfile)# Read raster from temp dir
+
+        raster::crs(raster) <- prj # Check that projection is set
+      }
+
+      # Alternatively, read in raster for this variable and date from local directory
+      if (!missing(local.directory)) {
+        fileimport <- directoryfiles[grep(name, directoryfiles)]
+        fileimport <- fileimport[grep(date, fileimport)] # Select files
+        raster <- raster::raster(fileimport) # Read raster from local dir
+        raster::crs(raster) <- prj # Check that projection is set
+      }
+
+      # Crop to spatial.ext provided so that all rasters are same extent for stacking
+      if (!missing(spatial.ext)) {
+
+        # Create raster of desired extent and resolution
+        r <- raster::raster(raster::extent(xmin, xmax, ymin, ymax))
+        raster::res(r) <- spatial.res.degrees
+        r <- raster::setValues(r, 1:raster::ncell(r))
+
+        if(!missing(spatial.mask)) {
+          # Mask to original spatial.ext, if fails keep original. Depending on spatial.ext type.
+          tryCatch({
+            r <- raster::mask(r, spatial.ext)
+          }, error = function(error_message) {
+            r <- r
+            message("spatial.mask could not be used. Check valid input type.")
+          })}
+
+        # Resample raster using single method given
+        if (length(resample.method) == 1) {
+          raster <- raster::resample(raster, r, method = resample.method)
+        }
+
+        # Resample raster using variable specific method given
+        if (!length(resample.method) == 1) {
+          raster <- raster::resample(raster, r, method = resample.method[v])
+        }
+      }
+
+      raster::crs(raster) <- prj
+
+      stack <- raster::stack(stack , raster) # Add raster to stack
+
+    }
+
+    varnames_all <- varnames
+
+    if(!missing(static.rasters)){varnames_all<-c(static.varnames,varnames)}
+
+    names(stack) <- varnames_all # Label each layer in stack as variable
+
+    if (!prj == cov.prj) {
+      stack <- raster::projectRaster(stack, crs = cov.prj)
+    }
+
+    cov.file.type <- match.arg(cov.file.type, choices = c("tif", "csv"))
+
+    # Save covariate data frame to Google Drive folder
+    if (!missing(save.drive.folder)) {
       # Check user email provided
       if (missing(user.email)) {
-        stop("Provide user email linked to Google Drive account.")
+        stop("Please provide user email linked to Google Drive account")
       }
 
       # Initiate Google Drive
       googledrive::drive_auth(email = user.email)
       googledrive::drive_user()
 
+      # Check folder exists in  Google Drive
+      save.folderpath <- googledrive::drive_find(pattern = save.drive.folder, type = 'folder')
 
-      # List all files in Google Drive folders
-      drivefiles = NULL
-
-      for (folder in 1:length(drive.folder)) {
-
-        # Check folder exists in user's Google Drive
-        folderpath <- googledrive::drive_find(pattern = drive.folder[folder], type = 'folder')
-
-        if(nrow(folderpath)>1) {
-          folderpath <- folderpath[grep(paste0("^", drive.folder[folder], "$"),
-                                        folderpath$name), ]
-        }
-
-        if (nrow(folderpath) == 0) {stop("drive.folder does not exist.")}
-
-        drivefiles <- rbind(drivefiles,
-                        googledrive::drive_ls(path = googledrive::as_id(folderpath$id))[,1:2])
-
-
+      # If more than one folder partially matches, use grep to get exact match
+      if(nrow(save.folderpath)>1) {
+        save.folderpath <- save.folderpath[grep(paste0("^", save.drive.folder, "$"),
+                                                save.folderpath$name), ]
       }
-    }
-
-    # If local.directory list files in the folder(s)
-
-    if (!missing(local.directory)) {
-      directoryfiles <- list.files(local.directory, full.names = TRUE)
-    }
-
-    # Iterate through each projection date and variable.
-
-    listofdone <- as.Date("2000-01-01") # Date vector to record completed (removed before return)
-
-    for (x in 1:length(dates)) {
-      date <- dates[x]
-
-      stack <- raster::stack() # Empty stack to bind rasters for this date to
-
-      for (v in 1:length(varnames)) {
-        name <- varnames[v]
-
-        # Read in raster for this variable and date from Google Drive
-
-        if (!missing(drive.folder)) {
-
-          # Extract the ID for the file (prevents error if duplicate named files within Drive
-          fileid <- drivefiles[grep(name, drivefiles$name),]
-          fileid <- fileid[grep(date, fileid$name),"id"]
-
-          pathforthisfile <- paste0(tempfile(), ".tif") # Create temp file name
-
-          googledrive::drive_download(file = googledrive::as_id(fileid$id),
-                                      path = pathforthisfile,
-                                      overwrite = TRUE) # Download from Drive
-
-          raster <- raster::raster(pathforthisfile)# Read raster from temp dir
-
-          raster::crs(raster) <- prj # Check that projection is set
-        }
-
-        # Alternatively, read in raster for this variable and date from local directory
-        if (!missing(local.directory)) {
-          fileimport <- directoryfiles[grep(name, directoryfiles)]
-          fileimport <- fileimport[grep(date, fileimport)] # Select files
-          raster <- raster::raster(fileimport) # Read raster from local dir
-          raster::crs(raster) <- prj # Check that projection is set
-        }
-
-        # Crop to spatial.ext provided so that all rasters are same extent for stacking
-        if (!missing(spatial.ext)) {
-
-          # Create raster of desired extent and resolution
-          r <- raster::raster(raster::extent(xmin, xmax, ymin, ymax))
-          raster::res(r) <- spatial.res.degrees
-          r <- raster::setValues(r, 1:raster::ncell(r))
-
-          if(!missing(spatial.mask)) {
-            # Mask to original spatial.ext, if fails keep original. Depending on spatial.ext type.
-            tryCatch({
-              r <- raster::mask(r, spatial.ext)
-            }, error = function(error_message) {
-              r <- r
-              message("spatial.mask could not be used. Check valid input type.")
-              })}
-
-          # Resample raster using single method given
-          if (length(resample.method) == 1) {
-            raster <- raster::resample(raster, r, method = resample.method)
-          }
-
-          # Resample raster using variable specific method given
-          if (!length(resample.method) == 1) {
-            raster <- raster::resample(raster, r, method = resample.method[v])
-          }
-        }
-
-        raster::crs(raster) <- prj
-
-        stack <- raster::stack(stack , raster) # Add raster to stack
+      # If exact match to more than one folder then not uniquely named. Cannot write file.
+      if (nrow(save.folderpath) > 1) {
+        stop("save.drive.folder is not uniquely named in your Google Drive ")
       }
 
-      names(stack) <- varnames # Label each layer in stack as variable
-
-      if (!prj == cov.prj) {
-        stack <- raster::projectRaster(stack, crs = cov.prj)
+      if (nrow(save.folderpath) == 0) {
+        stop("save.drive.folder doesn't exist")
       }
 
-      cov.file.type <- match.arg(cov.file.type, choices = c("tif", "csv"))
-
-      # Save covariate data frame to Google Drive folder
-      if (!missing(save.drive.folder)) {
-        # Check user email provided
-        if (missing(user.email)) {
-          stop("Please provide user email linked to Google Drive account")
-        }
-
-        # Initiate Google Drive
-        googledrive::drive_auth(email = user.email)
-        googledrive::drive_user()
-
-        # Check folder exists in  Google Drive
-        save.folderpath <- googledrive::drive_find(pattern = save.drive.folder, type = 'folder')
-
-        # If more than one folder partially matches, use grep to get exact match
-        if(nrow(save.folderpath)>1) {
-          save.folderpath <- save.folderpath[grep(paste0("^", save.drive.folder, "$"),
-                                                  save.folderpath$name), ]
-        }
-        # If exact match to more than one folder then not uniquely named. Cannot write file.
-        if (nrow(save.folderpath) > 1) {
-          stop("save.drive.folder is not uniquely named in your Google Drive ")
-        }
-
-        if (nrow(save.folderpath) == 0) {
-          stop("save.drive.folder doesn't exist")
-        }
-
-        if (cov.file.type == "csv") {
+      if (cov.file.type == "csv") {
 
         stack_df <- as.data.frame(raster::rasterToPoints(stack)) # Create data frame
 
@@ -388,45 +598,45 @@ dynamic_proj_covariates <- function(dates,
           name = paste0(date, "_projection_dataframe.csv"),
           overwrite = TRUE)}
 
-        if (cov.file.type == "tif") {
+      if (cov.file.type == "tif") {
 
-          # Save to temporary location before Google Drive upload
-          rasterfile <- paste0(tempfile(), ".tif")
+        # Save to temporary location before Google Drive upload
+        rasterfile <- paste0(tempfile(), ".tif")
 
-          stack_rast <- stars::st_as_stars(stack)
+        stack_rast <- stars::st_as_stars(stack)
 
-          # By writing with the stars package we keep band layer names for projections
-          stars::write_stars(stack_rast, rasterfile)
+        # By writing with the stars package we keep band layer names for projections
+        stars::write_stars(stack_rast, rasterfile)
 
-          # Upload to Google Drive
-          googledrive::drive_upload(media = rasterfile,
-                                    path = googledrive::as_id(save.folderpath$id),
-                                    name = paste0(date, "_projection_rasterstack.tif"),
-                                    overwrite = TRUE)}
+        # Upload to Google Drive
+        googledrive::drive_upload(media = rasterfile,
+                                  path = googledrive::as_id(save.folderpath$id),
+                                  name = paste0(date, "_projection_rasterstack.tif"),
+                                  overwrite = TRUE)}
+    }
+
+    # Alternatively save covariate data.frame to local directory
+
+    if (!missing(save.directory)) {
+      if (!dir.exists(save.directory)) {
+        stop("save.directory does not exist")
       }
 
-      # Alternatively save covariate data.frame to local directory
+      if (cov.file.type == "csv") {
 
-      if (!missing(save.directory)) {
-        if (!dir.exists(save.directory)) {
-          stop("save.directory does not exist")
+        stack_df <- as.data.frame(raster::rasterToPoints(stack)) # Create data frame
+
+        csvfile <- paste0(tempfile(), ".csv")
+
+        if (!missing(save.directory)) {
+          csvfile <- paste0(save.directory, "/", date, "_projection_dataframe.csv")
         }
 
-        if (cov.file.type == "csv") {
-
-          stack_df <- as.data.frame(raster::rasterToPoints(stack)) # Create data frame
-
-          csvfile <- paste0(tempfile(), ".csv")
-
-          if (!missing(save.directory)) {
-            csvfile <- paste0(save.directory, "/", date, "_projection_dataframe.csv")
-          }
-
-          utils::write.csv(stack_df, file = csvfile, row.names = FALSE) # Save to temporary location
-        }
+        utils::write.csv(stack_df, file = csvfile, row.names = FALSE) # Save to temporary location
+      }
 
 
-        if (cov.file.type == "tif") {
+      if (cov.file.type == "tif") {
 
         stack_rast <- stars::st_as_stars(stack)
 
@@ -436,11 +646,11 @@ dynamic_proj_covariates <- function(dates,
                                               "_projection_rasterstack.tif"))
 
 
-        }}
+      }}
 
-      listofdone <- c(listofdone, dates[x]) # Record that this date has been completed
-    }
-
-
-    return(listofdone[2:length(listofdone)])
+    listofdone <- c(listofdone, dates[x]) # Record that this date has been completed
   }
+
+
+  return(listofdone[2:length(listofdone)])
+}

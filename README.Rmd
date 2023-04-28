@@ -23,6 +23,11 @@ knitr::opts_chunk$set(
 [![CRAN status](https://www.r-pkg.org/badges/version/dynamicSDM)](https://CRAN.R-project.org/package=dynamicSDM)
 <!-- badges: end -->
 
+# Added features dynamicSDM v1.3 
+
+* Added function `extract_static_coords` for extracting spatially-buffered co-ordinate data from static datasets.
+
+* Added arguments to `dynamic_proj_covariates()` for adding static rasters to covariates for each data (e.g. static elevation raster)
 
 # Summary
 
@@ -35,7 +40,7 @@ Our functions are:
 
 # Package structure
 
-dynamicSDM functions are split into four key modelling stages: response data, explanatory variables, modelling relationships and dynamic projections. See the package manual [here](https://github.com/r-a-dobson/dynamicSDM/blob/main/man/figures/dynamicSDM_1.2.pdf) for more details on each function. 
+dynamicSDM functions are split into four key modelling stages: response data, explanatory variables, modelling relationships and dynamic projections. See the package manual [here](https://github.com/r-a-dobson/dynamicSDM/blob/main/man/figures/dynamicSDM_1.3.pdf) for more details on each function. 
 
 <a href='https://github.com/r-a-dobson/dynamicSDM'><img src="https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/main/man/figures/Figure1.png" align="centre" height="300"/></a>
 
@@ -58,6 +63,7 @@ Functions for extracting spatiotemporally dynamic explanatory variable data for 
 * `get_moving_window()` Generate a “moving window” matrix of optimal size for spatial buffering of explanatory variable data.
 * `extract_buffered_coords()` Extract spatially buffered and temporally dynamic explanatory variable data for occurrence records.
 * `extract_coords_combine()` Combine extracted explanatory variable data for occurrence records into single data frame for model fitting.
+* `extract_static_coords` Extract spatially buffered data from static rasters for occurrence record co-ordinates (no temporal dimension).
 
 ### 3) Modelling relationship functions
 
