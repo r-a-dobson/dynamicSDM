@@ -214,7 +214,8 @@ extract_dynamic_raster <- function(dates,
                                        "Extent",
                                        "RasterLayer",
                                        "Polygon",
-                                       "sf"))) {
+                                       "sf",
+                                       "SpatRaster"))) {
 
       stop("Please check the class of spatial.ext")
 
@@ -236,7 +237,6 @@ extract_dynamic_raster <- function(dates,
     if (inherits(spatial.ext, "numeric") && !length(spatial.ext) == 4) {
       stop("spatial.ext vector should be length 4: xmin, xmax, ymin and ymax")
     }
-
     xmin <- extract_xy_min_max(spatial.ext)[1]
     xmax <- extract_xy_min_max(spatial.ext)[2]
     ymin <- extract_xy_min_max(spatial.ext)[3]

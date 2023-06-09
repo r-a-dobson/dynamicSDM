@@ -492,7 +492,7 @@ extract_buffered_raster <- function(dates,
         path = pathforthisfile,
         overwrite = TRUE
       )
-      raster <- raster::raster(pathforthisfile) # Import raster from temp
+      raster <- terra::rast(pathforthisfile) # Import raster from temp
 
       # Delete unprocessed raster from Google Drive.
       googledrive::drive_rm(paste0(varname, "_", date1, "_unprocessed.tif"))
@@ -559,14 +559,14 @@ extract_buffered_raster <- function(dates,
         }
 
         if(!missing(agg.factor)) {
-          rast <- raster::aggregate(rast, agg.factor, fun = math.fun, na.rm = TRUE)
+          rast <- terra::aggregate(rast, agg.factor, fun = math.fun, na.rm = TRUE)
         }
         # If data are categorical then moving.window.matrix with weights = 1
         moving.window.matrix[1:nrow(moving.window.matrix),
                              1:ncol(moving.window.matrix)] <- 1
 
         # Calculate math.fun function across moving.window.matrix for the raster
-        focalraster <- raster::focal(rast,
+        focalraster <- terra::focal(rast,
                                      moving.window.matrix,
                                      fun = math.fun,
                                      na.rm = TRUE)
@@ -576,11 +576,11 @@ extract_buffered_raster <- function(dates,
       if (missing(categories)) {
 
         if (!missing(agg.factor)) {
-          raster <- raster::aggregate(raster, agg.factor, fun = math.fun, na.rm = TRUE)
+          raster <- terra::aggregate(raster, agg.factor, fun = math.fun, na.rm = TRUE)
         }
 
         # Calculate math.fun function across moving.window.matrix for the raster
-        focalraster <- raster::focal(raster, moving.window.matrix, fun = math.fun)
+        focalraster <- terra::focal(raster, moving.window.matrix, fun = math.fun)
       }
 
       if (!missing(save.directory)) {
@@ -588,8 +588,7 @@ extract_buffered_raster <- function(dates,
       }
 
       # Write spatially buffered raster to temp dir or save dir
-      raster::writeRaster(focalraster, pathforthisfile, overwrite = TRUE)
-
+      terra::writeRaster(focalraster, pathforthisfile, overwrite = TRUE)
 
       if(!missing(save.drive.folder)){
       # Check folder exists in  Google Drive
@@ -655,7 +654,7 @@ extract_buffered_raster <- function(dates,
       if (!missing(save.directory)) {
 
         lapply(dates.in.period[2:length(dates.in.period)], FUN = function(savefile)
-          raster::writeRaster(focalraster,
+          terra::writeRaster(focalraster,
                               paste0(save.directory, "/", varname, "_", savefile, ".tif"),
                               overwrite = TRUE
             )

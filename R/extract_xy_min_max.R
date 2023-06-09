@@ -25,10 +25,11 @@ extract_xy_min_max <- function(x) {
   ### RasterLayer object to co-ords
 
   if ("RasterLayer" %in% class(x)) {
-    xmin <- sp::bbox(raster::extent(x))[1, 1]
-    xmax <- sp::bbox(raster::extent(x))[1, 2]
-    ymin <- sp::bbox(raster::extent(x))[2, 1]
-    ymax <- sp::bbox(raster::extent(x))[2, 2]
+    x <- terra::rast(x)
+    xmin <-  terra::ext(x)[1]
+    xmax <-  terra::ext(x)[2]
+    ymin <-  terra::ext(x)[3]
+    ymax <-  terra::ext(x)[4]
 
   }
 
@@ -54,6 +55,32 @@ extract_xy_min_max <- function(x) {
     xmax <- sp::bbox(raster::extent(x))[1, 2]
     ymin <- sp::bbox(raster::extent(x))[2, 1]
     ymax <- sp::bbox(raster::extent(x))[2, 2]
+
+  }
+
+
+  if ("SpatRaster" %in% class(x)) {
+    xmin <-  terra::ext(x)[1]
+    xmax <-  terra::ext(x)[2]
+    ymin <-  terra::ext(x)[3]
+    ymax <-  terra::ext(x)[4]
+
+  }
+
+
+  if ("SpatExtent" %in% class(x)) {
+    xmin <-  x[1]
+    xmax <-  x[2]
+    ymin <-  x[3]
+    ymax <-  x[4]
+
+  }
+
+  if ("SpatVector" %in% class(x)) {
+    xmin <-  terra::ext(x)[1]
+    xmax <-  terra::ext(x)[2]
+    ymin <-  terra::ext(x)[3]
+    ymax <-  terra::ext(x)[4]
 
   }
 

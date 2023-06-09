@@ -123,9 +123,15 @@ spatiotemp_block <- function(occ.data,
 
     if (!missing(spatial.layer)) {
 
-      if (!inherits(spatial.layer, "RasterLayer")) {
-        stop("spatial.layer must be of class RasterLayer")
+
+      if (inherits(spatial.layer, "RasterLayer")) {
+        spatial.layer <- terra::rast(spatial.layer)
       }
+
+      if (!inherits(spatial.layer, "SpatRaster")) {
+        stop("spatial.layer must be of class SpatRaster or RasterLayer")
+      }
+
       if (missing(spatial.split.degrees)) {
         stop("spatial.layer given but not spatial.split.degrees")
       }
@@ -133,12 +139,14 @@ spatiotemp_block <- function(occ.data,
         stop("spatial.split.degrees must be of class numeric")
       }
 
-      occ.data.points <- sp::SpatialPointsDataFrame(data = occ.data,
-                                                    coords = cbind(occ.data$x, occ.data$y),
-                                                    proj4string = raster::crs(spatial.layer))
+
+      occ.data.points <-  terra::vect(occ.data[, c("x", "y")],
+                             geom = c("x", "y"),
+                             crs = terra::crs(spatial.layer))
 
       # Assign occ points value from the categorical RasterLayer
-      split1 <- raster::extract(spatial.layer, occ.data.points)
+      split1 <- terra::extract(spatial.layer, occ.data.points, ID = FALSE)
+      split1 <- split1$lyr.1
       occ.data$split1 <- split1
 
 
@@ -146,16 +154,19 @@ spatiotemp_block <- function(occ.data,
       # given res to split large categories of categorical RasterLayer
 
       # Create another grid with same spatial extent and CRS as spatial.layer
-      split_grid <- raster::raster(raster::extent(spatial.layer),
-                                   crs = raster::crs(spatial.layer))
+
+      split_grid <- terra::rast(terra::ext(spatial.layer),
+                                   crs = terra::crs(spatial.layer))
 
       # Set the grid's resolution as specified by the user
-      raster::res(split_grid) <- spatial.split.degrees
+      terra::res(split_grid) <- spatial.split.degrees
       # Fill grid squares with numerical value to create label
-      split_grid <- raster::setValues(split_grid,  1:raster::ncell(split_grid))
-      split_grid <- raster::crop(split_grid, raster::extent(spatial.layer))
+      split_grid <- terra::setValues(split_grid,  1:terra::ncell(split_grid))
+      split_grid <- terra::crop(split_grid, terra::ext(spatial.layer))
+
       # Extract grid cell number that each occurrence record belongs too.
-      split2 <- raster::extract(split_grid, occ.data.points)
+      split2 <- terra::extract(split_grid, occ.data.points, ID = FALSE)
+      split2 <- split2$lyr.1
       occ.data$split2 <- split2
     }
 

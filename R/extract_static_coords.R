@@ -79,24 +79,28 @@ extract_static_coords <- function(occ.data,
                                   moving.window.matrix,
                                   GEE.math.fun){
 
-
-  if (inherits(static.rasters, "RasterLayer")) {
-    static.rasters <- raster::stack(static.rasters)
+  if(inherits(static.rasters, "RasterLayer")){
+    static.rasters <- terra::rast(static.rasters)
   }
 
-  if (!inherits(static.rasters, "RasterStack")) {
-    stop("Please provide static rasters as RasterStack object")
+  if(inherits(static.rasters, "RasterStack")){
+    static.rasters <- terra::rast(static.rasters)
   }
 
-  if (!raster::nlayers(static.rasters) == length(varnames)) {
+
+  if (!inherits(static.rasters, "SpatRaster")) {
+    stop("Please provide static rasters as SpatRaster object")
+  }
+
+  if (!terra::nlyr(static.rasters) == length(varnames)) {
     stop("Provide unique name for each layer in raster stack")
   }
 
   if(length(extraction.method)==1) {
-    extraction.method <- rep(extraction.method, raster::nlayers(static.rasters))
+    extraction.method <- rep(extraction.method, terra::nlyr(static.rasters))
   }
 
-  if (!raster::nlayers(static.rasters) == length(extraction.method)) {
+  if (!terra::nlyr(static.rasters) == length(extraction.method)) {
     stop("Provide single or unique extraction.method for each layer in stack")
   }
 
@@ -156,17 +160,17 @@ extract_static_coords <- function(occ.data,
 
     extracted_data = NULL
 
-    for (x in 1:raster::nlayers(static.rasters)) {
+    for (x in 1:terra::nlyr(static.rasters)) {
 
-      focal_raster<- raster::focal(static.rasters[[x]],
+      focal_raster<- terra::focal(static.rasters[[x]],
                                    moving.window.matrix,
                                    fun = math.fun,
                                    na.rm = TRUE)
 
       extracted_data <- cbind(extracted_data,
-                              raster::extract(focal_raster,
-                              y = as.data.frame(occ.data[, c("x", "y")]),
-                              method = extraction.method ))
+                              terra::extract(focal_raster,
+                              y = as.matrix(occ.data[, c("x", "y")]),
+                              method = extraction.method )[,1])
 
     }
 
@@ -179,12 +183,11 @@ extract_static_coords <- function(occ.data,
   if (missing(moving.window.matrix)) {
     extracted_data = NULL
 
-    for (x in 1:raster::nlayers(static.rasters)) {
+    for (x in 1:terra::nlyr(static.rasters)) {
       extracted_data <- cbind(extracted_data,
-                              raster::extract(static.rasters[[x]],
-                              y = as.data.frame(occ.data[, c("x", "y")]),
-                              method = extraction.method ))
-
+                              terra::extract(static.rasters[[x]],
+                                             y = as.matrix(occ.data[, c("x", "y")]),
+                                             method = extraction.method)[,1])
     }
 
   }

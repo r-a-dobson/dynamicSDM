@@ -512,7 +512,7 @@ extract_buffered_coords <-  function(occ.data,
       googledrive::drive_download(googledrive::as_id(drivefiles$id),
                                   path = pathforthisfile,
                                   overwrite = TRUE)
-      raster <- raster::raster(pathforthisfile) # Read in raster from temp dir
+      raster <- terra::rast(pathforthisfile) # Read in raster from temp dir
 
 
       # Match GEE.math.fun argument to analogous R function
@@ -579,7 +579,7 @@ extract_buffered_coords <-  function(occ.data,
         }
 
         if(!missing(agg.factor)) {
-          rast <- raster::aggregate(rast, agg.factor, fun = math.fun, na.rm = TRUE)
+          rast <- terra::aggregate(rast, agg.factor, fun = math.fun, na.rm = TRUE)
         }
 
         # If data are categorical then matrix weights must = 1
@@ -587,7 +587,7 @@ extract_buffered_coords <-  function(occ.data,
                              1:ncol(moving.window.matrix)] <- 1
 
         ## Calculate math.fun across moving.window.matrix for the raster
-        focalraster <- raster::focal(rast,
+        focalraster <- terra::focal(rast,
                                      moving.window.matrix,
                                      fun = math.fun,
                                      na.rm = TRUE)
@@ -599,20 +599,20 @@ extract_buffered_coords <-  function(occ.data,
       if (missing(categories)) {
 
         if(!missing(agg.factor)) {
-          raster <- raster::aggregate(raster, agg.factor, fun = math.fun, na.rm=TRUE)
+          raster <- terra::aggregate(raster, agg.factor, fun = math.fun, na.rm=TRUE)
         }
 
-        focalraster <- raster::focal(raster,
+        focalraster <- terra::focal(raster,
                                      moving.window.matrix,
                                      fun = math.fun, na.rm=TRUE)
       }
 
       # Extract value at co-ordinates of each occurrence record
-      extracted_data <- as.data.frame(raster::extract(focalraster,
-                                                      sp::SpatialPoints(cbind(
+      extracted_data <- as.data.frame(terra::extract(focalraster,
+                                                      as.matrix(cbind(
                                                         occforperiod[, "x"],
                                                         occforperiod[, "y"]
-                                                      ))))
+                                                      )))[,1])
 
       colnames(extracted_data) <- varname
 

@@ -69,16 +69,16 @@
 #'data(sample_proj_rast)
 #'# Save sample projection rasters to replicate output from `dynamic_proj()`
 #'
-#'raster::writeRaster(sample_proj_rast[[1]],
+#'terra::writeRaster(sample_proj_rast[[1]],
 #'  filename = paste0(tempdir(), "/", paste0(projectiondates[1], "_proportional.tif")),
 #'  overwrite = TRUE)
-#'raster::writeRaster(sample_proj_rast[[2]],
+#'terra::writeRaster(sample_proj_rast[[2]],
 #'  filename = paste0(tempdir(), "/", paste0(projectiondates[2], "_proportional.tif")),
 #'  overwrite = TRUE)
-#'raster::writeRaster(sample_proj_rast[[3]],
+#'terra::writeRaster(sample_proj_rast[[3]],
 #'  filename = paste0(tempdir(), "/", paste0(projectiondates[3], "_proportional.tif")),
 #'  overwrite = TRUE)
-#'raster::writeRaster(sample_proj_rast[[4]],
+#'terra::writeRaster(sample_proj_rast[[4]],
 #'  filename = paste0(tempdir(), "/", paste0(projectiondates[4], "_proportional.tif")),
 #'  overwrite = TRUE)
 #'
@@ -149,7 +149,7 @@ dynamic_proj_GIF <- function(dates,
         filename <- filename[grep(".tif$", filename)]# projection type.
 
         # Read raster file into R
-        projraster <- raster::raster(filename)
+        projraster <- terra::rast(filename)
       }
 
 
@@ -181,11 +181,14 @@ dynamic_proj_GIF <- function(dates,
         # Download raster to temp dir
         googledrive::drive_download(file = googledrive::as_id(fileid$id),
                                     path = pathforthisfile, overwrite = TRUE)
-        projraster <- raster::raster(pathforthisfile) # Import raster
+        projraster <- terra::rast(pathforthisfile) # Import raster
       }
 
       # Convert raster to data frame for plotting data with ggplot2
-      projraster <- as.data.frame(raster::rasterToPoints(projraster))
+      projraster <- as.data.frame(cbind(terra::xyFromCell(projraster,
+                                            1:terra::ncell(projraster)),
+                          terra::values(projraster)))
+
       colnames(projraster) <- c("x", "y", "value") # Rename columns
 
       #Set default plot parameters

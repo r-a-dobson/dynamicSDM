@@ -209,10 +209,10 @@ dynamic_proj(dates = projectiondates,
 Let’s read in and plot our projections!
 
 ```{r plot projections, eval = FALSE}
-sp::plot(raster::raster(list.files(projection_directories)[1]))
-sp::plot(raster::raster(list.files(projection_directories)[2]))
-sp::plot(raster::raster(list.files(projection_directories)[3]))
-sp::plot(raster::raster(list.files(projection_directories)[4]))
+sp::plot(terra::rast(list.files(projection_directories)[1]))
+sp::plot(terra::rast(list.files(projection_directories)[2]))
+sp::plot(terra::rast(list.files(projection_directories)[3]))
+sp::plot(terra::rast(list.files(projection_directories)[4]))
 ```
 
 

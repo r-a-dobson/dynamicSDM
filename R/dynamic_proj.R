@@ -191,7 +191,7 @@ dynamic_proj <-  function(dates,
 
   if (!missing(spatial.mask)) {
     spatial.mask<-convert_to_sf(spatial.mask,prj)
-    spatial.mask<-sf::as_Spatial(spatial.mask)
+   # spatial.mask<-sf::as_Spatial(spatial.mask)
   }
 
 
@@ -274,10 +274,10 @@ dynamic_proj <-  function(dates,
 
         if (cov.file.type == "tif") {
           filename <- filename[grep("*rasterstack.tif", filename)] # Get only .csv file name
-          projection_df <- raster::brick(filename)
+          projection_df <- terra::rast(filename)
 
           if (!missing(spatial.mask)) {
-          projection_df <- raster::mask(projection_df, spatial.mask)
+          projection_df <- terra::mask(projection_df, spatial.mask)
           }
 
         }
@@ -312,10 +312,10 @@ dynamic_proj <-  function(dates,
                                       path = pathforthisfile,
                                       overwrite = TRUE) # Download file to temp dir
 
-          projection_df <- raster::brick(pathforthisfile)
+          projection_df <- terra::rast(pathforthisfile)
 
           if (!missing(spatial.mask)) {
-            projection_df <- raster::mask(projection_df, spatial.mask)
+            projection_df <- terra::mask(projection_df, spatial.mask)
           }
 
         }}
@@ -327,7 +327,7 @@ dynamic_proj <-  function(dates,
 
           if (cov.file.type == "tif") {
 
-            SDMpred <- raster::predict(model = sdm.mod,
+            SDMpred <- terra::predict(model = sdm.mod,
                                        object = projection_df,
                                        type = "response")
 
@@ -348,17 +348,17 @@ dynamic_proj <-  function(dates,
         if (inherits(sdm.mod, "list")) {
 
           proj_blocks = NULL
-          proj_stack <- raster::stack()
+
+          proj_stack<- vector("list",length(sdm.mod))
+
 
           # Make projection with each model
           for (model in 1:length(sdm.mod)) {
 
             if(cov.file.type == "tif") {
-
-              proj_stack <- raster::stack(proj_stack,
-                                                 raster::predict(model=sdm.mod[[model]],
+              proj_stack[[model]] <- terra::predict(model=sdm.mod[[model]],
                                                                  object = projection_df,
-                                                                 type = "response"))}
+                                                                 type = "response")}
 
             if(cov.file.type=="csv"){
 
@@ -369,6 +369,7 @@ dynamic_proj <-  function(dates,
                                                          na.action = stats::na.pass))}
           }
 
+          if(cov.file.type=="tif") {proj_stack <- terra::rast(proj_stack)}
           if (length(sdm.weight) == 1) {
             if(cov.file.type=="csv") {
               SDMpred <- matrixStats::rowWeightedMeans(proj_blocks,
@@ -377,7 +378,7 @@ dynamic_proj <-  function(dates,
             }
 
             if(cov.file.type=="tif") {
-              SDMpred <- raster::weighted.mean(proj_stack,
+              SDMpred <- terra::weighted.mean(proj_stack,
                                                w = rep(sdm.weight, length(sdm.mod)),
                                                na.rm = TRUE)
             }
@@ -392,7 +393,7 @@ dynamic_proj <-  function(dates,
             }
 
             if (cov.file.type == "tif") {
-              SDMpred <- raster::weighted.mean(proj_stack, w = sdm.weight, na.rm = TRUE)
+              SDMpred <- terra::weighted.mean(proj_stack, w = sdm.weight, na.rm = TRUE)
             }
 
           }
@@ -415,7 +416,7 @@ dynamic_proj <-  function(dates,
         if (inherits(sam.mod, "gbm")) {
 
           if (cov.file.type == "tif") {
-            SAMpred <- raster::predict(model = sam.mod,
+            SAMpred <- terra::predict(model = sam.mod,
                                        object = projection_df,
                                        type = "response")
           }
@@ -431,15 +432,16 @@ dynamic_proj <-  function(dates,
         if (inherits(sam.mod, "list")) {
 
           proj_blocks = NULL
-          proj_stack <- raster::stack()
+          proj_stack <- vector("list", length(sam.mod))
+
 
           # Make projection with each model
           for (model in 1:length(sam.mod)) {
 
             if (cov.file.type == "tif") {
-              proj_stack <- raster::stack(proj_stack, raster::predict(model = sam.mod[[model]],
+              proj_stack[[model]] <- terra::predict(model = sam.mod[[model]],
                                                                       object = projection_df,
-                                                                      type = "response"))
+                                                                      type = "response")
             }
 
 
@@ -450,6 +452,10 @@ dynamic_proj <-  function(dates,
                                                               na.action = stats::na.pass))
             }}
 
+          if (cov.file.type == "tif") {
+            proj_stack <- terra::rast(proj_stack)
+          }
+
           if (length(sam.weight) == 1) {
 
             if (cov.file.type == "csv") {
@@ -459,7 +465,7 @@ dynamic_proj <-  function(dates,
                                                        na.rm = TRUE)
             }
             if(cov.file.type=="tif") {
-              SAMpred <- raster::weighted.mean(proj_stack,
+              SAMpred <- terra::weighted.mean(proj_stack,
                                                w = rep(sam.weight, length(sam.mod)),
                                                na.rm = TRUE)
             }
@@ -470,7 +476,7 @@ dynamic_proj <-  function(dates,
               SAMpred <- matrixStats::rowWeightedMeans(proj_blocks, w = sam.weight, na.rm = TRUE)
             }
             if (cov.file.type == "tif") {
-              SAMpred <- raster::weighted.mean(proj_stack, w = sam.weight, na.rm = TRUE)
+              SAMpred <- terra::weighted.mean(proj_stack, w = sam.weight, na.rm = TRUE)
             }
 
           }
@@ -490,20 +496,23 @@ dynamic_proj <-  function(dates,
         }
 
         if(cov.file.type == "csv") {
-          binaryrast <- raster::rasterFromXYZ(cbind(projection_df[, "x"],
+
+          binaryrast <- terra::rast(as.matrix(cbind(projection_df[, "x"],
                                                     projection_df[, "y"],
-                                                    SDMbinary), crs = prj)
+                                                    SDMbinary), crs = prj),
+                                    type="xyz")
+
         }
 
 
         if (!missing(spatial.mask)) {
 
-          binaryrast <- raster::mask(binaryrast, spatial.mask)
+          binaryrast <- terra::mask(binaryrast, spatial.mask)
         }
 
         # If projection of covariates are not the same as desired, reproject the projection
         if (!prj == proj.prj) {
-          binaryrast <- raster::projectRaster(binaryrast, crs = proj.prj)
+          binaryrast <- terra::project(binaryrast, y = proj.prj)
         }
 
 
@@ -517,19 +526,21 @@ dynamic_proj <-  function(dates,
         }
 
         if (cov.file.type == "csv") {
-          abundancerast <- raster::rasterFromXYZ(cbind(projection_df[, "x"],
-                                                       projection_df[, "y"],
-                                                       SAMpred), crs = prj)
+          abundancerast <-  terra::rast(as.matrix(cbind(projection_df[, "x"],
+                                                        projection_df[, "y"],
+                                                        SAMpred), crs = prj),
+                                        type="xyz")
+
         }
 
         if (!missing(spatial.mask)) {
-          abundancerast <- raster::mask(abundancerast, spatial.mask)
+          abundancerast <- terra::mask(abundancerast, spatial.mask)
         }
 
 
         # If projection of covariates are not the same as desired, reproject the projection
         if (!prj == proj.prj) {
-          abundancerast <- raster::projectRaster(abundancerast, crs = proj.prj)
+          abundancerast <- terra::project(abundancerast, y = proj.prj)
         }
 
       }
@@ -541,21 +552,20 @@ dynamic_proj <-  function(dates,
         }
 
         if (cov.file.type == "csv") {
-          proportionalrast <- raster::rasterFromXYZ(cbind(projection_df[, "x"],
+          proportionalrast <- terra::rast(as.matrix(cbind(projection_df[, "x"],
                                                           projection_df[, "y"],
-                                                          SDMpred), crs = prj)
+                                                          SDMpred), crs = prj),
+                                          type="xyz")
         }
 
         if (!missing(spatial.mask)) {
-          proportionalrast <- raster::mask(proportionalrast, spatial.mask)
+          proportionalrast <- terra::mask(proportionalrast, spatial.mask)
         }
 
         # If projection of covariates are not the same as desired, reproject the projection
         if (!prj == proj.prj) {
-          proportionalrast <- raster::projectRaster(proportionalrast, crs = proj.prj)
+          proportionalrast <- terra::project(proportionalrast, y = proj.prj)
         }
-
-
 
 
       }
@@ -567,18 +577,19 @@ dynamic_proj <-  function(dates,
         }
 
         if (cov.file.type == "csv") {
-          stackedrast <- raster::rasterFromXYZ(cbind(projection_df[, "x"],
-                                                     projection_df[, "y"],
-                                                     stacked), crs = prj)
+          stackedrast <- terra::rast(as.matrix(cbind(projection_df[, "x"],
+                                                    projection_df[, "y"],
+                                                    stacked), crs = prj),
+                                    type="xyz")
         }
 
         if (!missing(spatial.mask)) {
-          stackedrast <- raster::mask(stackedrast, spatial.mask)
+          stackedrast <- terra::mask(stackedrast, spatial.mask)
         }
 
         # If projection of covariates are not the same as desired, reproject the projection
         if (!prj == proj.prj) {
-          stackedrast <- raster::projectRaster(stackedrast, crs = proj.prj)
+          stackedrast <- terra::project(stackedrast, y = proj.prj)
         }
 
 
@@ -590,34 +601,30 @@ dynamic_proj <-  function(dates,
 
         if (exists("binaryrast")) {
 
-          raster::writeRaster(binaryrast,
+          terra::writeRaster(binaryrast,
                               file = paste0(save.directory, "/", date, "_binary.tif"),
-                              overwrite = TRUE,
-                              crs = proj.prj)
+                              overwrite = TRUE)
         }
 
         if (exists("abundancerast")) {
 
-          raster::writeRaster(abundancerast,
+          terra::writeRaster(abundancerast,
                               file = paste0(save.directory, "/", date, "_abundance.tif"),
-                              overwrite = TRUE,
-                              crs = proj.prj)
+                              overwrite = TRUE)
         }
         if (exists("proportionalrast")) {
 
-          raster::writeRaster(proportionalrast,
+          terra::writeRaster(proportionalrast,
                               file = paste0(save.directory, "/", date, "_proportional.tif"),
-                              overwrite = TRUE,
-                              crs = proj.prj
+                              overwrite = TRUE
           )
         }
 
         if (exists("stackedrast")) {
 
-          raster::writeRaster(stackedrast,
+          terra::writeRaster(stackedrast,
                               file = paste0(save.directory, "/", date, "_stacked.tif"),
-                              overwrite = TRUE,
-                              crs = proj.prj)
+                              overwrite = TRUE)
         }
       }
 
@@ -652,7 +659,7 @@ dynamic_proj <-  function(dates,
 
         if (exists("binaryrast")) {
 
-          raster::writeRaster(binaryrast, filename, overwrite = TRUE)
+          terra::writeRaster(binaryrast, filename, overwrite = TRUE)
           googledrive::drive_upload(
             media = filename,
             path = googledrive::as_id(save.folderpath$id),
@@ -662,7 +669,7 @@ dynamic_proj <-  function(dates,
         }
 
         if (exists("abundancerast")) {
-          raster::writeRaster(abundancerast, filename, overwrite = TRUE, crs = prj)
+          terra::writeRaster(abundancerast, filename, overwrite = TRUE)
           googledrive::drive_upload(
             media = filename,
             path = googledrive::as_id(save.folderpath$id),
@@ -672,7 +679,7 @@ dynamic_proj <-  function(dates,
         }
 
         if (exists("proportionalrast")) {
-          raster::writeRaster(proportionalrast, filename, overwrite = TRUE, crs = prj)
+          terra::writeRaster(proportionalrast, filename, overwrite = TRUE)
           googledrive::drive_upload(
             media = filename,
             path = googledrive::as_id(save.folderpath$id),
@@ -682,7 +689,7 @@ dynamic_proj <-  function(dates,
         }
 
         if (exists("stackedrast")) {
-          raster::writeRaster(stackedrast, filename, overwrite = TRUE, crs = prj)
+          terra::writeRaster(stackedrast, filename, overwrite = TRUE)
           googledrive::drive_upload(
             media = filename,
             path = googledrive::as_id(save.folderpath$id),

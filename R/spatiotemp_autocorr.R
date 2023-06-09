@@ -12,6 +12,8 @@
 #'  containing data to test for autocorrelation.
 #'@param plot a logical indicating whether to generate plot of temporal autocorrelation. See details
 #'  for plot description. Default = `FALSE`.
+#'@param prj a character string, the coordinate reference system of occurrence data.
+#'  Default is "+proj=longlat +datum=WGS84".
 #'@details To test for temporal autocorrelation, the function first calculates the average value
 #'  across records for each time step (`temporal.level`). The correlation between the average value
 #'  at one time point (t) and the value at the previous time point (t-1) is calculated and plotted
@@ -39,7 +41,8 @@
 spatiotemp_autocorr <- function(occ.data,
                                 varname,
                                 temporal.level,
-                                plot = FALSE) {
+                                plot = FALSE,
+                                prj="+proj=longlat +datum=WGS84") {
 
 
 
@@ -119,15 +122,21 @@ spatiotemp_autocorr <- function(occ.data,
     # ----------------------------------------------------------------------
 
     # Calculate spatial distance matrix between each record co-ordinate
-    distance_matrix <- geodist::geodist(data.frame(occ.data$x, occ.data$y),
-                                        measure = 'geodesic')
+    points <-  terra::vect(occ.data[, c("x", "y")],
+                           geom = c("x", "y"),
+                           crs = prj)
+
+    distance_matrix <- as.matrix(terra::distance(points))
 
     # Set diagonal combinations as FALSE
     diag(distance_matrix) <- FALSE
 
     # Calculate Moran's I statistic for specified variable using distance matrix
 
-    SA<-as.data.frame(ape::Moran.I(occ.data[, varname[v]], distance_matrix,na.rm=TRUE))
+
+    SA <- as.data.frame(ape::Moran.I(occ.data[, varname[v]],
+                                     distance_matrix,
+                                     na.rm = TRUE))
 
     # Names the results
 
@@ -146,7 +155,8 @@ spatiotemp_autocorr <- function(occ.data,
 
     names(plot.list) <- c(varname)
 
-    oldpar<- par(no.readonly=TRUE)
+
+    oldpar <- par(no.readonly = TRUE)
     on.exit(suppressWarnings(graphics::par(oldpar)),add=T)
 
     #Function to allow users to click through each plot individually
@@ -158,13 +168,10 @@ spatiotemp_autocorr <- function(occ.data,
       }
     }
 
-
     res.list.plots <- list(Statistical_tests = list.of.results, Plots = plot.list)
 
     return(res.list.plots)
   }
-
-
 
   return(list.of.results)
 }

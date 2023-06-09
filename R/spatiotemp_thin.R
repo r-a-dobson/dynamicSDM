@@ -14,6 +14,8 @@
 #'  occurrence records by before temporal thinning.
 #'@param iterations a numeric value, the number of iterations to randomly thin occurrence records
 #'  by. Default; 100.
+#'@param prj a character string, the coordinate reference system of occ.data co-ordinates. Default
+#'  is "+proj=longlat +datum=WGS84".
 #'@details
 #'# Overview
 #'`spatiotemp_thin()` calculates the temporal distance between occurrence records in given area
@@ -88,7 +90,8 @@ spatiotemp_thin <-  function(occ.data,
                              temporal.dist,
                              spatial.split.degrees,
                              spatial.dist = 0,
-                             iterations = 100) {
+                             iterations = 100,
+                             prj = "+proj=longlat +datum=WGS84") {
 
 
   # Check correct formatting of iterations argument
@@ -117,27 +120,27 @@ spatiotemp_thin <-  function(occ.data,
   ymax <- ceiling(max(occ.data$y, na.rm = TRUE) / 10) * 10
 
   # Create a grid using the rounded minimum and maximum longitude and latitude
-  split_grid <- raster::raster(raster::extent(c(xmin, xmax, ymin, ymax)))
+  split_grid <- terra::rast(terra::ext(c(xmin, xmax, ymin, ymax)))
 
   # Set grid as resolution specified by the user
-  raster::res(split_grid) <- spatial.split.degrees
+  terra::res(split_grid) <- spatial.split.degrees
 
   # Fill grid squares with numerical value to create label
-  split_grid <- raster::setValues(split_grid,  1:raster::ncell(split_grid))
+  split_grid <- terra::setValues(split_grid,  1:terra::ncell(split_grid))
 
   # Convert occ.data co-ordinates into spatial points
   tryCatch({
-  occ.data.points <- sp::SpatialPointsDataFrame(data = occ.data,
-                                                coords = cbind(occ.data$x,
-                                                               occ.data$y))
+    occ.data.points <-  terra::vect(occ.data[, c("x", "y")],
+                                    geom = c("x", "y"),
+                                    crs = prj)
   }, error = function(e) {
 
     stop("Error making SpatialPointsDataFrame from co-ordinates filter occ.data spatiotemp_check()")
     })
 
   # Extract grid cell number each record belongs to, to group before thinning
-   split2 <- raster::extract(split_grid, occ.data.points)
-
+   split2 <- terra::extract(split_grid, occ.data.points, ID = FALSE)
+   split2 <- split2$lyr.1
    occ.data$split2 <- split2
 
   #-------------------------------------------------------
@@ -273,6 +276,7 @@ spatiotemp_thin <-  function(occ.data,
 
     # Remove species name column
       list.of.thinned.dfs[[It]] <- results[, -which(names(results) %in% c("species"))]
+
   }
 
   # Calculate which thinned dataframe has the most records remaining

@@ -1,5 +1,5 @@
 dates <- c("2010-01-01", "2011-01-01")
-Extent <- raster::extent(c(12, 36, -35, -12))
+Extent <- terra::ext(c(12, 36, -35, -12))
 data("sample_extent_data")
 
 test_that("Stops if dates missing", {
@@ -102,7 +102,7 @@ test_that("Works if spatial.ext = numeric", {
 
 test_that("Works if spatial.ext = Extent", {
   dates <- c("2010-01-01")
-  Extent <- raster::extent(c(12, 36, -35, -12))
+  Extent <- terra::ext(c(12, 36, -35, -12))
   results <- dynamic_proj_covariates(
       dates = dates,
       varnames = c("precipitation_10_prior_sum", "NDVI_5_post_max"),
@@ -119,7 +119,7 @@ test_that("Works if spatial.ext = Extent", {
 
 test_that("Works if spatial.ext = RasterLayer", {
   dates <- c("2010-01-01")
-  raster <- raster::raster(raster::extent(c(12, 36, -35, -12)))
+  raster <- terra::rast(terra::ext(c(12, 36, -35, -12)))
   results <- dynamic_proj_covariates(
       dates = dates,
       varnames = c("precipitation_10_prior_sum", "NDVI_5_post_max"),

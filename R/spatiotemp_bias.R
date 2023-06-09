@@ -155,13 +155,12 @@ spatiotemp_bias <-  function(occ.data,
     ymin <- min(occ.data$y)
     ymax <- max(occ.data$y)
 
-    area <- sp::SpatialPolygons(list(sp::Polygons(list(sp::Polygon(cbind(
-            c(xmin, xmin, xmax, xmax, xmin),
-            c(ymin, ymax, ymax, ymin, ymin)))),
-            ID = "A")))
+    area <- c(xmin, xmax, ymin, ymax)
 
     # Crop occ.data to this area
-    clipped.occ <- dynamicSDM::spatiotemp_extent(occ.data, spatial.ext = area, prj = prj)
+    clip.occ <- suppressMessages(spatiotemp_extent(occ.data,
+                                                   spatial.ext = area,
+                                                   prj = prj))
 
   }
 
@@ -176,33 +175,37 @@ spatiotemp_bias <-  function(occ.data,
 
     # Average distance in metres of all points from centroid
     if (missing(radius)) {
-      radius <- mean(raster::pointDistance(occ.data[, c("x", "y")], centroid, lonlat = FALSE))
+
+      radius <-  mean(terra::distance(as.matrix(occ.data[, c("x", "y")]),
+                                      as.matrix(centroid),
+                                      lonlat = FALSE))
+
     }
 
     # Create spatial buffer of radius from centroid
     area <- sf::st_buffer(sf::st_as_sf(centroid, coords = c("x", "y")), dist = radius)
 
-    area <- sf::as_Spatial(area)
-
-
     # Crop occ.data to this area
-    clipped.occ <- dynamicSDM::spatiotemp_extent(occ.data, spatial.ext = area, prj = prj)
+    clip.occ <- spatiotemp_extent(occ.data, spatial.ext = area, prj = prj)
+
   }
 
   if (spatial.method == "convex_hull") {
     # Create convex hull of occurrence records
-    area <- sf::st_simplify(sf::st_convex_hull(sf::st_union(sf::st_geometry(
+    area <- sf::st_as_sf(sf::st_convex_hull(sf::st_union(sf::st_geometry(
                                                             sf::st_as_sf(occ.data,
                                                                           coords = c("x", "y"))))))
-    area <- sf::as_Spatial(area)
-
     # Crop occ.data to this area
-    clipped.occ <- dynamicSDM::spatiotemp_extent(occ.data, spatial.ext = area, prj = prj)
+    clip.occ <- spatiotemp_extent(occ.data, spatial.ext = area, prj = prj)
 
   }
 
   # Calculate distance between each occurrence record
-  dist <- geosphere::distm(data.frame(clipped.occ$x, clipped.occ$y))
+  points <-  terra::vect(occ.data[, c("x", "y")],
+                         geom = c("x", "y"),
+                         crs = prj)
+
+  dist <-as.matrix(terra::distance(points))
 
   # Calculate which column contain the minimum distance from another record
   min.d <- apply(dist, 1, function(x){order(x, decreasing = FALSE)[2]})
@@ -215,12 +218,27 @@ spatiotemp_bias <-  function(occ.data,
 
 
   # Randomly generate same number of occurrence records as occ.data in this area
-  df <- data.frame(sp::coordinates(sp::spsample(area,
-                                                n = nrow(clipped.occ),
-                                                type = "random")))
+  spatial.ext <- convert_to_sf(area, prj)
+
+  # Randomly generate pseudo-absence co-ordinates within extent
+  # Transforms to a CRS st_sample() can use, then transforms back.
+  df <- as.data.frame(sf::st_coordinates(sf::st_transform(
+    sf::st_sample(
+      sf::st_transform(spatial.ext , 27700),
+      type = 'random',
+      size = nrow(clip.occ),
+      iter = 30
+    ), prj)))
+
+  colnames(df)<-c("x","y")
 
   # Calculate distance between each simulated set of co-ordinates
-  dist <- geosphere::distm(data.frame(df$x, df$y))
+
+  points <-  terra::vect(df[, c("x", "y")],
+                         geom = c("x", "y"),
+                         crs = prj)
+
+  dist <-as.matrix(terra::distance(points))
 
   # Calculate minimum distance between simulated set of co-ordinates
   min.d <- apply(dist, 1, function(x){order(x, decreasing = FALSE)[2]})
@@ -241,7 +259,7 @@ spatiotemp_bias <-  function(occ.data,
     x <- df$x
     y <- df$y
     # Plot spatial distribution of records to visualise clustering or bias
-    plot.list[[length(temporal.level)+1]]<- ggplot2::ggplot(clipped.occ, ggplot2::aes(x, y)) +
+    plot.list[[length(temporal.level)+1]]<- ggplot2::ggplot(clip.occ, ggplot2::aes(x, y)) +
       ggplot2::geom_point(ggplot2::aes(colour="Occurrence"))+
       ggplot2::coord_fixed(ratio = 1)+
       ggplot2::labs( title = "Spatial clustering of occurrence records",

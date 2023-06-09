@@ -10,7 +10,8 @@ spatiotemp_thin(
   temporal.dist,
   spatial.split.degrees,
   spatial.dist = 0,
-  iterations = 100
+  iterations = 100,
+  prj = "+proj=longlat +datum=WGS84"
 )
 }
 \arguments{
@@ -31,6 +32,9 @@ Default no spatial thinning.}
 
 \item{iterations}{a numeric value, the number of iterations to randomly thin occurrence records
 by. Default; 100.}
+
+\item{prj}{a character string, the coordinate reference system of occ.data co-ordinates. Default
+is "+proj=longlat +datum=WGS84".}
 }
 \value{
 Returns data frame of occurrence records thinned by specified temporal and spatial

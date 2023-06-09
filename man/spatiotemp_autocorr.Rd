@@ -4,7 +4,13 @@
 \alias{spatiotemp_autocorr}
 \title{Test for spatial and temporal autocorrelation in species distribution model explanatory data.}
 \usage{
-spatiotemp_autocorr(occ.data, varname, temporal.level, plot = FALSE)
+spatiotemp_autocorr(
+  occ.data,
+  varname,
+  temporal.level,
+  plot = FALSE,
+  prj = "+proj=longlat +datum=WGS84"
+)
 }
 \arguments{
 \item{occ.data}{a data frame, with columns for occurrence record co-ordinates and dates with
@@ -19,6 +25,9 @@ autocorrelation at. One or multiple of \code{day} or \code{month}, \code{year}. 
 
 \item{plot}{a logical indicating whether to generate plot of temporal autocorrelation. See details
 for plot description. Default = \code{FALSE}.}
+
+\item{prj}{a character string, the coordinate reference system of occurrence data.
+Default is "+proj=longlat +datum=WGS84".}
 }
 \value{
 Returns a list of temporal and spatial autocorrelation test results for each variable.

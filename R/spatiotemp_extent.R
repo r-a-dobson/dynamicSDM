@@ -100,18 +100,22 @@ spatiotemp_extent <- function(occ.data,
   if (!missing(spatial.ext)) {
 
     if (any(class(spatial.ext) == "numeric") && length(spatial.ext) == 4) {
-      spatial.ext <- raster::extent(spatial.ext)
+      spatial.ext <- terra::ext(spatial.ext)
     }
 
     # Create spatial points dataframe from occurrence records
-    points <- sp::SpatialPointsDataFrame(coords = occ.data[,c("x","y")],
-                                       data = occ.data,
-                                       proj4string = sp::CRS(prj))
+
+    points <-  terra::vect(occ.data[, c("x", "y")],
+                           geom = c("x", "y"),
+                           crs = prj)
+
     r <- spatial.ext
 
     # Convert sf object to Spatial object that can be tranformed into raster
     if("sf" %in% class(spatial.ext)){
-      spatial.ext <- sf::as_Spatial(spatial.ext)}
+      v <- terra::vect(spatial.ext)
+      r <- terra::rast(v,ncols=75, nrows=100)
+      spatial.ext <- terra::rasterize(v, r)}
 
 
     # Convert polygon object to Extent object that can be transformed into raster
@@ -120,30 +124,35 @@ spatiotemp_extent <- function(occ.data,
       xmax <- sp::bbox(spatial.ext)[1, 2]
       ymin <- sp::bbox(spatial.ext)[2, 1]
       ymax <- sp::bbox(spatial.ext)[2, 2]
-      r<-raster::extent(xmin,xmax,ymin,ymax)}
+      r<- terra::ext(xmin,xmax,ymin,ymax)}
 
 
     if("RasterLayer" %in% class(spatial.ext)){
-      spatial.ext <- raster::rasterToPolygons(spatial.ext)}
+      spatial.ext <- terra::rast(spatial.ext)
+    }
 
+    if("SpatRaster" %in% class(spatial.ext)){
+      spatial.ext <- terra::as.polygons(spatial.ext)
+    }
+
+    if(inherits(spatial.ext,"SpatExtent")){
+      spatial.ext <- terra::as.polygons(terra::ext(sample_extent_data))}
 
     # Convert spatial.ext to raster in same projection
-    r <- raster::raster(r)
-    raster::crs(r) <- prj
-    raster::res(r) <- 0.05 # High resolution for precise clipping
-    r <- raster::setValues(r, values = 1:raster::ncell(r)) # Set fake raster values - not important
-
+    r <- terra::rast(r)
+    terra::crs(r) <- prj
+    terra::res(r) <- 0.05# High resolution for precise clipping
+    r <- terra::setValues(r, values = 1:terra::ncell(r)) # Set fake raster values - not important
 
     # Mask to original spatial.ext, if fails keep original. Depending on spatial.ext type.
     tryCatch({
-      r <- raster::mask(r, spatial.ext)
+      r <- terra::mask(r, spatial.ext)
     }, error = function(error_message) {
       r <- r
       message("spatial.ext could not be used as a mask.")})
 
-
     # Remove points that return NA as these do not overlap the spatial extent
-    occ.data<-occ.data[!is.na(raster::extract(r,points)),]
+    occ.data <- occ.data[!is.na(terra::extract(r, points, ID = FALSE)),]
 
   }
 

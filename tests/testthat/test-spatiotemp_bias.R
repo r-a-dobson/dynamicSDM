@@ -50,3 +50,4 @@ test_that("Result of length(4) method - convex ", {
     )
   expect_equal(length(result), 4)
 })
+

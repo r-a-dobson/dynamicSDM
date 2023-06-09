@@ -239,11 +239,11 @@ dynamic_proj_covariates <- function(dates,
   }
 
   # If mask if sf polygon, convert to spatial polygons dataframe for raster:: mask
-  if (!missing(spatial.mask)) {
-    if (any(class(spatial.mask) == "sf")) {
-      spatial.mask<-sf::as_Spatial(spatial.mask)
-    }
-  }
+  #if (!missing(spatial.mask)) {
+ ##   if (any(class(spatial.mask) == "sf")) {
+  #    spatial.mask<-sf::as_Spatial(spatial.mask)
+  #  }
+ # }
 
   # Process spatial extent given for cropping rasters before stacking into covariate data frame
 
@@ -256,6 +256,8 @@ dynamic_proj_covariates <- function(dates,
                                        "Extent",
                                        "RasterLayer",
                                        "Polygon",
+                                       "SpatRaster",
+                                       "SpatExtent",
                                        "sf"))) {
 
       stop("Please check spatial.ext is of the correct class")
@@ -327,15 +329,19 @@ dynamic_proj_covariates <- function(dates,
   #-----------------------------------------------------------------
   if (!missing(static.rasters)) {
 
-  if (inherits(static.rasters, "RasterLayer")) {
-    static.rasters <- raster::stack(static.rasters)
-  }
+    if(inherits(static.rasters, "RasterLayer")){
+      static.rasters <- terra::rast(static.rasters)
+    }
 
-  if (!inherits(static.rasters, "RasterStack")) {
-    stop("Please provide static rasters as RasterStack object")
-  }
+    if(inherits(static.rasters, "RasterStack")){
+      static.rasters <- terra::rast(static.rasters)
+    }
 
-  if (!raster::nlayers(static.rasters) == length(static.varnames)) {
+    if (!inherits(static.rasters, "SpatRaster")) {
+      stop("Please provide static rasters as SpatRaster object")
+    }
+
+  if (!terra::nlyr(static.rasters) == length(static.varnames)) {
     stop("Provide unique name for each layer in raster stack")
   }
 
@@ -346,7 +352,7 @@ dynamic_proj_covariates <- function(dates,
       stop("Please provide math function for spatial buffering")
     }}
 
-  static.raster.stack<-raster::stack()
+  static.raster.stack<- vector("list",(length(static.varnames) + length(varnames)))
 
   for (sr in 1:length(static.varnames)) {
 
@@ -354,7 +360,7 @@ dynamic_proj_covariates <- function(dates,
 
     raster <- static.rasters[[sr]] # Read raster from local dir
 
-    raster::crs(raster) <- prj # Check that projection is set
+    terra::crs(raster) <- prj # Check that projection is set
 
     if(!missing(static.moving.window.matrix)){
 
@@ -411,7 +417,7 @@ dynamic_proj_covariates <- function(dates,
       math.fun <- R.FUNC[[match(static.GEE.math.fun, namelist)]]
 
 
-      raster<- raster::focal(raster,
+      raster<- terra::focal(raster,
                              static.moving.window.matrix,
                              fun = math.fun,
                              na.rm = TRUE)
@@ -424,15 +430,15 @@ dynamic_proj_covariates <- function(dates,
     if (!missing(spatial.ext)) {
 
       # Create raster of desired extent and resolution
-      r <- raster::raster(raster::extent(xmin, xmax, ymin, ymax))
+      r <- terra::rast(terra::ext(xmin, xmax, ymin, ymax))
 
-      raster::res(r) <- spatial.res.degrees
-      r <- raster::setValues(r, 1:raster::ncell(r))
+      terra::res(r) <- spatial.res.degrees
+      r <- terra::setValues(r, 1:terra::ncell(r))
 
       if(!missing(spatial.mask)) {
         # Mask to original spatial.ext, if fails keep original. Depending on spatial.ext type.
         tryCatch({
-          r <- raster::mask(r, spatial.ext)
+          r <- terra::mask(r, spatial.ext)
         }, error = function(error_message) {
           r <- r
           message("spatial.mask could not be used. Check valid input type.")
@@ -440,21 +446,20 @@ dynamic_proj_covariates <- function(dates,
 
       # Resample raster using single method given
       if (length(static.resample.method) == 1) {
-        raster <- raster::resample(raster, r, method = static.resample.method)
+        raster <- terra::resample(raster, r, method = static.resample.method)
       }
 
       # Resample raster using variable specific method given
       if (!length(static.resample.method) == 1) {
-        raster <- raster::resample(raster, r, method = static.resample.method[sr])
+        raster <- terra::resample(raster, r, method = static.resample.method[sr])
       }
     }
 
-    raster::crs(raster) <- prj
+    terra::crs(raster) <- prj
 
-    static.raster.stack <- raster::stack(static.raster.stack , raster) # Add raster to stack
+    static.raster.stack[[sr]] <- static.raster.stack # Add raster to stack
 
   }
-
 
 
 
@@ -470,13 +475,16 @@ dynamic_proj_covariates <- function(dates,
   for (x in 1:length(dates)) {
     date <- dates[x]
 
-    stack <- raster::stack() # Empty stack to bind rasters for this date to
-
+    stack <- vector("list",length(varnames)) # Empty stack to bind rasters for this date to
+    start <- 1
+    end <- length(varnames)
     if (!missing(static.rasters)) {
       stack <- static.raster.stack
+      start <- length(static.varnames)+1
+      end <-  length(static.varnames) + length(varnames)
     }
 
-    for (v in 1:length(varnames)) {
+    for (v in start:end) {
       name <- varnames[v]
 
       # Read in raster for this variable and date from Google Drive
@@ -493,31 +501,31 @@ dynamic_proj_covariates <- function(dates,
                                     path = pathforthisfile,
                                     overwrite = TRUE) # Download from Drive
 
-        raster <- raster::raster(pathforthisfile)# Read raster from temp dir
+        raster <- terra::rast(pathforthisfile)# Read raster from temp dir
 
-        raster::crs(raster) <- prj # Check that projection is set
+        terra::crs(raster) <- prj # Check that projection is set
       }
 
       # Alternatively, read in raster for this variable and date from local directory
       if (!missing(local.directory)) {
         fileimport <- directoryfiles[grep(name, directoryfiles)]
         fileimport <- fileimport[grep(date, fileimport)] # Select files
-        raster <- raster::raster(fileimport) # Read raster from local dir
-        raster::crs(raster) <- prj # Check that projection is set
+        raster <- terra::rast(fileimport) # Read raster from local dir
+        terra::crs(raster) <- prj # Check that projection is set
       }
 
       # Crop to spatial.ext provided so that all rasters are same extent for stacking
       if (!missing(spatial.ext)) {
 
         # Create raster of desired extent and resolution
-        r <- raster::raster(raster::extent(xmin, xmax, ymin, ymax))
-        raster::res(r) <- spatial.res.degrees
-        r <- raster::setValues(r, 1:raster::ncell(r))
+        r <- terra::rast(terra::ext(xmin, xmax, ymin, ymax))
+        terra::res(r) <- spatial.res.degrees
+        r <- terra::setValues(r, 1:terra::ncell(r))
 
         if(!missing(spatial.mask)) {
           # Mask to original spatial.ext, if fails keep original. Depending on spatial.ext type.
           tryCatch({
-            r <- raster::mask(r, spatial.ext)
+            r <- terra::mask(r, spatial.ext)
           }, error = function(error_message) {
             r <- r
             message("spatial.mask could not be used. Check valid input type.")
@@ -525,18 +533,18 @@ dynamic_proj_covariates <- function(dates,
 
         # Resample raster using single method given
         if (length(resample.method) == 1) {
-          raster <- raster::resample(raster, r, method = resample.method)
+          raster <- terra::resample(raster, r, method = resample.method)
         }
 
         # Resample raster using variable specific method given
         if (!length(resample.method) == 1) {
-          raster <- raster::resample(raster, r, method = resample.method[v])
+          raster <- terra::resample(raster, r, method = resample.method[v])
         }
       }
 
-      raster::crs(raster) <- prj
+      terra::crs(raster) <- prj
 
-      stack <- raster::stack(stack , raster) # Add raster to stack
+      stack[[v]] <- raster # Add raster to stack
 
     }
 
@@ -544,10 +552,12 @@ dynamic_proj_covariates <- function(dates,
 
     if(!missing(static.rasters)){varnames_all<-c(static.varnames,varnames)}
 
+    stack <- terra::rast(stack)
+
     names(stack) <- varnames_all # Label each layer in stack as variable
 
     if (!prj == cov.prj) {
-      stack <- raster::projectRaster(stack, crs = cov.prj)
+      stack <- terra::project(stack, crs = cov.prj)
     }
 
     cov.file.type <- match.arg(cov.file.type, choices = c("tif", "csv"))
@@ -582,7 +592,10 @@ dynamic_proj_covariates <- function(dates,
 
       if (cov.file.type == "csv") {
 
-        stack_df <- as.data.frame(raster::rasterToPoints(stack)) # Create data frame
+
+        stack_df <- as.data.frame(cbind(terra::xyFromCell(stack,
+                                                          1:terra::ncell(stack)),
+                                        terra::values(stack)))
 
         csvfile <- paste0(tempfile(), ".csv")
 
@@ -624,7 +637,9 @@ dynamic_proj_covariates <- function(dates,
 
       if (cov.file.type == "csv") {
 
-        stack_df <- as.data.frame(raster::rasterToPoints(stack)) # Create data frame
+        stack_df <- as.data.frame(cbind(terra::xyFromCell(stack,
+                                                          1:terra::ncell(stack)),
+                                        terra::values(stack)))
 
         csvfile <- paste0(tempfile(), ".csv")
 

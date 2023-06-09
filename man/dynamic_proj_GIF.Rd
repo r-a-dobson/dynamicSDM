@@ -116,16 +116,16 @@ projectiondates <- dynamic_proj_dates(startdate = "2018-01-01",
 data(sample_proj_rast)
 # Save sample projection rasters to replicate output from `dynamic_proj()`
 
-raster::writeRaster(sample_proj_rast[[1]],
+terra::writeRaster(sample_proj_rast[[1]],
  filename = paste0(tempdir(), "/", paste0(projectiondates[1], "_proportional.tif")),
  overwrite = TRUE)
-raster::writeRaster(sample_proj_rast[[2]],
+terra::writeRaster(sample_proj_rast[[2]],
  filename = paste0(tempdir(), "/", paste0(projectiondates[2], "_proportional.tif")),
  overwrite = TRUE)
-raster::writeRaster(sample_proj_rast[[3]],
+terra::writeRaster(sample_proj_rast[[3]],
  filename = paste0(tempdir(), "/", paste0(projectiondates[3], "_proportional.tif")),
  overwrite = TRUE)
-raster::writeRaster(sample_proj_rast[[4]],
+terra::writeRaster(sample_proj_rast[[4]],
  filename = paste0(tempdir(), "/", paste0(projectiondates[4], "_proportional.tif")),
  overwrite = TRUE)
 

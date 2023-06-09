@@ -159,3 +159,4 @@ test_that("method DOY produces data.frame over 0 even when high temporal.dist va
               )
             expect_gt(nrow(result), 0)
           })
+
