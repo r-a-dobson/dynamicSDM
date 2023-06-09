@@ -108,33 +108,51 @@ Options for colour palettes using \code{viridis} are illustrated at:
 }
 
 \examples{
-projectiondates <- dynamic_proj_dates(startdate = "2018-01-01",
+\donttest{
+proj_dates <- dynamic_proj_dates(startdate = "2018-01-01",
                                      enddate = "2018-12-01",
                                      interval = 3,
                                      interval.level = "month")
-\donttest{
-data(sample_proj_rast)
+
+# Generate fake proportional projection SpatRasters
+proj1 <- terra::rast(ncols=22, nrows=25)
+proj1 <- terra::setValues(proj1, sample(0:100, terra::ncell(proj1), replace = TRUE)/100)
+
+proj2 <- terra::rast(ncols=22, nrows=25)
+proj2 <- terra::setValues(proj2, sample(0:100, terra::ncell(proj2), replace = TRUE)/100)
+
+proj3 <- terra::rast(ncols=22, nrows=25)
+proj3 <- terra::setValues(proj3, sample(0:100, terra::ncell(proj3), replace = TRUE)/100)
+
+proj4 <- terra::rast(ncols=22, nrows=25)
+proj4 <- terra::setValues(proj4, sample(0:100, terra::ncell(proj4), replace = TRUE)/100)
+
 # Save sample projection rasters to replicate output from `dynamic_proj()`
+terra::writeRaster(proj1,
+                  filename = paste0(tempdir(),
+                  "/",
+                  paste0(proj_dates[1], "_proportional.tif")),
+                  overwrite = TRUE)
+terra::writeRaster(proj2,
+                  filename = paste0(tempdir(),
+                  "/",
+                  paste0(proj_dates[2], "_proportional.tif")),
+                  overwrite = TRUE)
+terra::writeRaster(proj3,
+                  filename = paste0(tempdir(),
+                  "/",
+                  paste0(proj_dates[3], "_proportional.tif")),
+                  overwrite = TRUE)
+terra::writeRaster(proj4,
+                  filename = paste0(tempdir(),
+                  "/",
+                  paste0(proj_dates[4], "_proportional.tif")),
+                  overwrite = TRUE)
 
-terra::writeRaster(sample_proj_rast[[1]],
- filename = paste0(tempdir(), "/", paste0(projectiondates[1], "_proportional.tif")),
- overwrite = TRUE)
-terra::writeRaster(sample_proj_rast[[2]],
- filename = paste0(tempdir(), "/", paste0(projectiondates[2], "_proportional.tif")),
- overwrite = TRUE)
-terra::writeRaster(sample_proj_rast[[3]],
- filename = paste0(tempdir(), "/", paste0(projectiondates[3], "_proportional.tif")),
- overwrite = TRUE)
-terra::writeRaster(sample_proj_rast[[4]],
- filename = paste0(tempdir(), "/", paste0(projectiondates[4], "_proportional.tif")),
- overwrite = TRUE)
-
-dynamic_proj_GIF(
-dates = projectiondates,
-projection.type = "proportional",
-local.directory = tempdir(),
-save.directory = tempdir()
-)
+dynamic_proj_GIF(dates = proj_dates,
+                projection.type = "proportional",
+                local.directory = tempdir(),
+                save.directory = tempdir())
 }
 }
 \references{

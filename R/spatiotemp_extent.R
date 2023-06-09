@@ -136,7 +136,7 @@ spatiotemp_extent <- function(occ.data,
     }
 
     if(inherits(spatial.ext,"SpatExtent")){
-      spatial.ext <- terra::as.polygons(terra::ext(sample_extent_data))}
+      spatial.ext <- terra::as.polygons(terra::ext(spatial.ext))}
 
     # Convert spatial.ext to raster in same projection
     r <- terra::rast(r)

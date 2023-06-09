@@ -150,6 +150,8 @@
 #' Potential. PeerJ Preprints.
 "sample_biome_data"
 
+
+
 #' @name sample_events_data
 #' @title  Sample e-Bird sampling event records
 #'@description

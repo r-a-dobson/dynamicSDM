@@ -167,15 +167,15 @@ sample_occ_cropped <- spatiotemp_extent(occ.data = sample_occ_filtered,
 
 
 ## Lets plot the change
-terra::plot(sample_extent_data$geometry)
+#terra::plot(sample_extent_data$geometry)
 terra::plot(terra::vect(sample_occ_filtered[, c("x", "y")],
                         geom = c("x", "y"),
-                        crs = "+proj=longlat +datum=WGS84 +no_defs"), add =T)
+                        crs = "+proj=longlat +datum=WGS84 +no_defs"))
 
 #terra::plot(sample_extent_data$geometry)
 terra::plot(terra::vect(sample_occ_cropped[, c("x", "y")],
                         geom = c("x", "y"),
-                        crs = "+proj=longlat +datum=WGS84 +no_defs"),add=T)
+                        crs = "+proj=longlat +datum=WGS84 +no_defs"))
 ```
 
 
@@ -247,7 +247,7 @@ occ_thin <- spatiotemp_thin(occ.data = sample_occ_cropped,
                                    temporal.method = "day",
                                    temporal.dist = 30,
                                    spatial.split.degrees = 3,
-                                   spatial.dist = 30,
+                                   spatial.dist = 100000,
                                    iterations = 5)
 
 # Plot the difference in spatial distribution after thinning
