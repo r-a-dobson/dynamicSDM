@@ -38,7 +38,7 @@ geographical distribution and abundance modelling at high spatiotemporal
 resolution. Methods in Ecology and
 Evolution.*](https://doi.org/10.1111/2041-210X.14101)
 
-<a href='https://github.com/r-a-dobson/dynamicSDM'><img src="https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/main/man/figures/MEE_title.png" align="centre" height="500" width="100%"/></a>
+<a href='https://github.com/r-a-dobson/dynamicSDM'><img src="https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/main/man/figures/MEE_title.png" align="centre" height="200" width="40%" /></a>
 
 # Summary
 
