@@ -10,6 +10,8 @@
 coverage](https://codecov.io/gh/r-a-dobson/dynamicSDM/branch/main/graph/badge.svg)](https://app.codecov.io/gh/r-a-dobson/dynamicSDM?branch=main)
 [![R-CMD-check](https://github.com/r-a-dobson/dynamicSDM/workflows/R-CMD-check/badge.svg)](https://github.com/r-a-dobson/dynamicSDM/actions)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7405906.svg)](https://doi.org/10.5281/zenodo.7405906)
+[![Journal
+article](https://img.shields.io/badge/Published%20in-Methods%20in%20Ecology%20and%20Evolution-purple.svg)](https://doi.org/10.1111/2041-210X.14101)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/dynamicSDM)](https://CRAN.R-project.org/package=dynamicSDM)
 <!-- badges: end -->
@@ -21,6 +23,22 @@ status](https://www.r-pkg.org/badges/version/dynamicSDM)](https://CRAN.R-project
 
 - Added arguments to `dynamic_proj_covariates()` for adding static
   rasters to covariates for each data (e.g. static elevation raster)
+
+- Removed package dependency on `raster`, `sp`, `geodist` and
+  `geosphere`.
+
+- All functions are now `terra` and `sf` compatible.
+
+- The package has since been published in the **Open Access journal
+  “Methods in Ecology and Evolution”**
+
+[*Dobson, R., Challinor, A.J., Cheke, R.A., Jennings, S., Willis, S.G.
+and Dallimer, M., 2023. dynamicSDM: An R package for species
+geographical distribution and abundance modelling at high spatiotemporal
+resolution. Methods in Ecology and
+Evolution.*](https://doi.org/10.1111/2041-210X.14101)
+
+<a href='https://github.com/r-a-dobson/dynamicSDM'><img src="https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/main/man/figures/MEE_title.png" align="centre" height="300"/></a>
 
 # Summary
 
@@ -37,8 +55,6 @@ and time. Our functions are:
 - **computer friendly** - utilising Google Earth Engine and Google Drive
   to minimise the computing power and storage demands associated with
   high spatiotemporal resolution modelling.
-
-**In progress - dynamicSDM is currently being updated to remove all raster and sp dependencies.** 
 
 # Package structure
 

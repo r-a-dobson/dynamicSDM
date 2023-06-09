@@ -60,9 +60,8 @@
 #'
 #'@export
 #'
-#'
 #'@examples
-#'
+#'\donttest{
 #'data("sample_explan_data")
 #'data("sample_biome_data")
 #'
@@ -70,7 +69,7 @@
 #'                      varnames = "biome_type",
 #'                      static.rasters = raster::stack(sample_biome_data))
 #'
-#'
+#'}
 
 extract_static_coords <- function(occ.data,
                                   varnames,

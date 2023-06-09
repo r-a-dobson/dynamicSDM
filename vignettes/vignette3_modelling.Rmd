@@ -79,15 +79,17 @@ ecoregions or biome) and temporal units (e.g. month or year of record), before b
 some spatial categories can be very large, the argument `spatial.split.degrees` can be used to split
 large contiguous regions into smaller units.
 
-In our case study, we use a raster of various biomes in southern Africa and split large biomes by 3
-degree cells. The function returns the original data frame with an additional column containing
-the block numbers that each record belongs to.
+In our case study, we use a SpatRast of randomly simulated categorical data in southern Africa and split large contiguous units by 3 degree cells. The function returns the original data frame with an additional column containing the block numbers that each record belongs to.
 
 ```{r example-spatiotemp_block}
-data("sample_biome_data")
+data("sample_extent_data")
+random_cat_layer <- terra::rast(sample_extent_data)
+random_cat_layer <- terra::setValues(random_cat_layer,
+                                     sample(0:10, terra::ncell(random_cat_layer),
+                                            replace = TRUE))
 
 sample_explan_data <- spatiotemp_block(sample_explan_data,
-                                     spatial.layer = sample_biome_data,
+                                     spatial.layer = random_cat_layer,
                                      spatial.split.degrees = 3,
                                      vars.to.block.by = variablenames,
                                      temporal.block = "month",
