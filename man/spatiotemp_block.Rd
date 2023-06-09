@@ -88,10 +88,15 @@ variables (\code{vars.to.block.by}) and total sample size are similar across eac
 \examples{
 \donttest{
 data("sample_explan_data")
-data("sample_biome_data")
+data("sample_extent_data")
+random_cat_layer <- terra::rast(sample_extent_data)
+random_cat_layer <- terra::setValues(random_cat_layer,
+                                    sample(0:10, terra::ncell(random_cat_layer),
+                                           replace = TRUE))
+
 spatiotemp_block(
  occ.data = sample_explan_data,
- spatial.layer = sample_biome_data,
+ spatial.layer = random_cat_layer,
  spatial.split.degrees = 3,
  temporal.block = c("month"),
  vars.to.block.by = colnames(sample_explan_data)[14:16],

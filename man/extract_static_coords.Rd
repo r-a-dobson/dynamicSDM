@@ -82,7 +82,7 @@ analogous R function is available. This includes: "allNonZero","anyNonZero",
 }
 
 \examples{
-
+\donttest{
 data("sample_explan_data")
 data("sample_biome_data")
 
@@ -90,5 +90,5 @@ extract_static_coords(occ.data = sample_explan_data,
                      varnames = "biome_type",
                      static.rasters = raster::stack(sample_biome_data))
 
-
+}
 }

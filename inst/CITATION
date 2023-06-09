@@ -1,0 +1,14 @@
+bibentry(
+  bibtype  = "Article",
+  title    = "{dynamicSDM}: dynamicSDM: An R package for species geographical distribution and abundance modelling at high spatiotemporal resolution.",
+  author   = c(as.person("Rachel Dobson"), as.person("Andy J. Challinor"),
+  as.person("Robert A. Cheke"),as.person("Stewart Jennings"),as.person("Stephen G. Willis"),
+  as.person("Martin Dallimer")),
+ journal  = "Methods in Ecology and Evolution",
+  year     = "2023",
+  volume   = "14",
+  number   = "5",
+  pages     = "1190-1199",
+  doi      = "10.1111/2041-210X.14101"
+)
+
