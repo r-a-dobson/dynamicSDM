@@ -64,7 +64,7 @@ projections. See the package manual
 [here](https://github.com/r-a-dobson/dynamicSDM/blob/main/man/figures/dynamicSDM_1.3.pdf)
 for more details on each function.
 
-<a href='https://github.com/r-a-dobson/dynamicSDM'><img src="https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/main/man/figures/Figure1.png" align="centre" height="300" width="100%" /></a>
+<a href='https://github.com/r-a-dobson/dynamicSDM'><img src="https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/main/man/figures/Figure1.png" align="centre" height="500" width="100%" /></a>
 
 ### 1) Response data functions
 
