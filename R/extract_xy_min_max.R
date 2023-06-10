@@ -93,6 +93,14 @@ extract_xy_min_max <- function(x) {
     ymax <- as.numeric(sf::st_bbox(x)[4])
   }
 
+  if ("sfc_MULTIPOLYGON" %in% class(x)) {
+    xmin <- as.numeric(sf::st_bbox(x)[1])
+    xmax <- as.numeric(sf::st_bbox(x)[3])
+    ymin <- as.numeric(sf::st_bbox(x)[2])
+    ymax <- as.numeric(sf::st_bbox(x)[4])
+  }
+
+
   return(c(xmin, xmax, ymin, ymax))
 }
 
@@ -107,6 +115,16 @@ extract_xy_min_max <- function(x) {
 #' @noRd
 convert_to_sf <- function(x,prj) {
 
+
+
+  if ("SpatRaster" %in% class(x)) {
+    terra::crs(x) <- prj
+    spatial.ext <- terra::as.polygons(x)
+    spatial.ext <- sf::st_as_sf(spatial.ext)
+    spatial.ext <-  sf::st_transform(spatial.ext, 7801)
+    spatial.ext <- sf::st_union(spatial.ext)
+    spatial.ext <-  sf::st_transform(spatial.ext, prj)
+  }
 
   if ("numeric" %in% class(x) && length(x) == 4) {
     raster<-terra::rast(terra::ext(x[1],x[2],x[3],x[4]),crs=prj)
@@ -157,7 +175,7 @@ convert_to_sf <- function(x,prj) {
   }
 
   if ("POLYGON" %in% class(x)) {
-    polygon <- polygon %>%
+    polygon <- x %>%
       sf::st_sfc(crs = prj)
     x <- sf::st_set_crs(polygon, prj)
     return(x)
@@ -169,6 +187,11 @@ convert_to_sf <- function(x,prj) {
     return(x)
   }
 
+
+  if ("sfc_MULTIPOLYGON" %in% class(x)) {
+    x <- sf::st_set_crs(x, prj)
+    return(x)
+  }
 
   if ("SpatialPolygonsDataFrame" %in% class(x)) {
     spatial.ext <- sf::st_as_sf(x)

@@ -425,6 +425,10 @@ dynamic_proj_covariates <- function(dates,
           spatial.mask <- terra::vect(spatial.mask)
         }
 
+        if(inherits(spatial.mask, "sfc_MULTIPOLYGON")){
+          spatial.mask <- terra::vect(spatial.mask)
+        }
+
         if("sf" %in% class(spatial.mask)){
           spatial.mask <- terra::vect(spatial.mask)
         }
@@ -531,6 +535,11 @@ dynamic_proj_covariates <- function(dates,
           if(inherits(spatial.mask, "sfc_POLYGON")){
             spatial.mask <- terra::vect(spatial.mask)
           }
+
+          if(inherits(spatial.mask, "sfc_MULTIPOLYGON")){
+            spatial.mask <- terra::vect(spatial.mask)
+          }
+
           # Mask to original spatial.ext, if fails keep original. Depending on spatial.ext type.
           tryCatch({
             r <- terra::mask(r, spatial.mask)

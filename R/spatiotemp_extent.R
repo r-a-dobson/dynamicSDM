@@ -124,9 +124,22 @@ spatiotemp_extent <- function(occ.data,
       spatial.ext <- terra::rast(spatial.ext)
     }
 
+    if (inherits(spatial.ext, "XY")) {
+      spatial.ext <- spatial.ext %>%
+        sf::st_sfc(crs = prj)
+      spatial.ext <- sf::st_set_crs(spatial.ext, prj)
+    }
+
     if(inherits(spatial.ext, "sfc_POLYGON")){
       spatial.ext <- terra::vect(spatial.ext)
+      r <- terra::ext(spatial.ext)
     }
+
+    if(inherits(spatial.ext, "sfc_MULTIPOLYGON")){
+      spatial.ext <- terra::vect(spatial.ext)
+      r <- terra::ext(spatial.ext)
+    }
+
 
     # Convert spatial.ext to raster in same projection
     r <- terra::rast(r)

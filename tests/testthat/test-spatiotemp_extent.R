@@ -97,7 +97,13 @@ test_that("Filters by spatial.ext but all within extent, raster ", {
 test_that("Filters by spatial.ext polygon ", {
   polygon <-  sf::st_polygon(list(cbind(c(20, 12, 36, 36,20), c(-35, -12, -35, -12,-35))))
   results <- spatiotemp_extent(occ.data = sample_explan_data, spatial.ext = polygon)
-  expect_equal(nrow(results), 327)
+  expect_equal(nrow(results), 224)
+})
+
+test_that("Filters by spatial.ext sf polygon ", {
+  polygon <- sample_extent_data$geometry
+  results <- spatiotemp_extent(occ.data = sample_explan_data, spatial.ext = polygon)
+  expect_equal(nrow(results), 328)
 })
 
 test_that("Filters by spatial.ext but not all within extent, numeric ", {

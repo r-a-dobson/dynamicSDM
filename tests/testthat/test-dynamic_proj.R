@@ -5,7 +5,7 @@ sample_explan_data$fakeweights <-  sample(1:50, nrow(sample_explan_data), replac
 sample_explan_data$fakeabundance <-  sample(1:50, nrow(sample_explan_data), replace = T)
 sample_explan_data_test <- dplyr::sample_n(sample_explan_data, 100)
 sample_explan_data_train <- dplyr::sample_n(sample_explan_data, 100)
-
+data("sample_extent_data")
 colnames(sample_explan_data_train)[14]<-"Precipitation8Wsum"
 
 results1 <- brt_fit(occ.data = sample_explan_data_train,
@@ -273,6 +273,27 @@ test_that("Success if projection.method = tif and spatial mask used", {
     sam.mod = results3,
     sam.weight = as.numeric(unlist(results3_eval)),
     save.directory = tempdir()
+  )
+  expect_equal(file.exists(paste0(save.directory, "/", filenames[1])), TRUE)
+})
+
+
+
+test_that("Success if projection.method = tif and spatial mask multi used", {
+  save.directory = tempdir()
+  dates = c("2011-01-01")
+  filenames <- paste0(dates, "_stacked.tif")
+  dynamic_proj(dates = c("2011-01-01"),
+               local.directory = testthat::test_path("test-files"),
+               projection.method = c("binary", "proportional", "abundance", "stacked"),
+               sdm.mod = results1,
+               sdm.thresh = 0.5,
+               sdm.weight = as.numeric(unlist(results1_eval)),
+               cov.file.type = "tif",
+               spatial.mask = sample_extent_data$geometry,
+               sam.mod = results3,
+               sam.weight = as.numeric(unlist(results3_eval)),
+               save.directory = tempdir()
   )
   expect_equal(file.exists(paste0(save.directory, "/", filenames[1])), TRUE)
 })

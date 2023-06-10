@@ -170,6 +170,22 @@ test_that("Works if spatial.ext = sf", {
 })
 
 
+test_that("Works if spatial.ext = sf geom", {
+  dates <- c("2010-01-01")
+  results <- dynamic_proj_covariates(
+    dates = dates,
+    varnames = c("precipitation_10_prior_sum", "NDVI_5_post_max"),
+    local.directory = testthat::test_path("test-files"),
+    spatial.ext = sample_extent_data$geometry,
+    spatial.res.degrees = 10,
+    resample.method = "bilinear",
+    cov.file.type = "csv",
+    save.directory = tempdir()
+  )
+  expect_equal(length(results), length(dates))
+})
+
+
 test_that("Works if method is tif", {
   dates = c("2010-01-01")
   results <- dynamic_proj_covariates(

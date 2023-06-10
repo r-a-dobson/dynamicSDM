@@ -1,4 +1,5 @@
 data("sample_explan_data")
+data("sample_extent_data")
 sample_explan_data <- sample_explan_data[1:3, ]
 test_that("stops if no occcurence data provided and method buffer chosen", {
   expect_error(
@@ -319,6 +320,18 @@ test_that("Success if spatial extent numeric", {
       spatial.ext = numeric,
       temporal.buffer = c(14, 30)
     )
+  expect_equal(class(results), "data.frame")
+})
+
+test_that("Success if spatial extent sf multipol", {
+  results <- spatiotemp_pseudoabs(
+    occ.data = sample_explan_data,
+    n.pseudoabs = 10,
+    temporal.method = "buffer",
+    spatial.method = "random",
+    spatial.ext = sample_extent_data$geometry,
+    temporal.buffer = c(14, 30)
+  )
   expect_equal(class(results), "data.frame")
 })
 

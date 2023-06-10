@@ -197,6 +197,10 @@ dynamic_proj <-  function(dates,
       spatial.mask <- terra::vect(spatial.mask)
     }
 
+    if(inherits(spatial.mask, "sfc_MULTIPOLYGON")){
+      spatial.mask <- terra::vect(spatial.mask)
+    }
+
   }
 
 
