@@ -22,7 +22,7 @@ column names as follows; record longitude as "x", latitude as "y", year as "year
 \item{vars.to.block.by}{a character string or vector, the explanatory variable column names to
 group sampling units based upon.}
 
-\item{spatial.layer}{optional; a \code{RasterLayer} object, a categorical spatial layer for sample
+\item{spatial.layer}{optional; a \code{SpatRaster} object, a categorical spatial layer for sample
 unit splitting.}
 
 \item{spatial.split.degrees}{a numeric value, the grid cell resolution in degrees to split

@@ -3,8 +3,8 @@
 #'Extract rasters for spatially buffered and temporally dynamic explanatory variables at each
 #'projection date using Google Earth Engine.
 #'@param dates a character string, vector of dates in format "YYYY-MM-DD".
-#'@param spatial.ext the spatial extent for the extracted raster. Object from which extent can be
-#'  extracted of class `Extent`, `RasterLayer`,`SpatialPolygonsDataFrame`, `sf` or `polygon` or
+#'@param spatial.ext the spatial extent for the extracted raster. Object from which extent
+#'  can be extracted of class `SpatExtent`, `SpatRaster`, `sf` polygon or
 #'  numeric vector listing xmin, xmax, ymin and ymax in order.
 #'@param datasetname a character string, the Google Earth Engine dataset to extract data from.
 #'@param bandname a character string, the Google Earth Engine dataset bandname to extract data for.
@@ -62,7 +62,7 @@
 #'
 #'  # Spatial dimension
 #'
-#'  Using the `focal` function in `raster` R package (Hijmans et al., 2015), `GEE.math.fun` is
+#'  Using the `focal` function in `terra` R package (Hijmans et al., 2022), `GEE.math.fun` is
 #'  calculated across the spatial buffer area from each cell in `spatial.ext`. The spatial buffer
 #'  area used is defined by `moving.window matrix`, which dictates the neighbourhood of cells
 #'  surrounding each cell in `spatial.ext` to include in the calculation.
@@ -90,8 +90,8 @@
 #'
 #'  # Aggregation factor
 #'
-#'  `agg.factor` given represents the factor to aggregate `RasterLayer` data with function
-#'  `aggregate` in `raster` R package (Hijmans et al., 2015). Aggregation uses the `GEE.math.fun` as
+#'  `agg.factor` given represents the factor to aggregate `SpatRaster` data with function
+#'  `aggregate` in `terra` R package (Hijmans et al., 2022). Aggregation uses the `GEE.math.fun` as
 #'  the function. Following aggregation spatial buffering using the moving window matrix occurs.
 #'  This is included to minimise computing time if data are of high spatial resolution and a large
 #'  spatial buffer is needed. Ensure to calculate `get_moving_window()` with the spatial resolution
@@ -158,9 +158,8 @@
 #'  D'Agostino McGowan L., and Bryan J., 2022. googledrive: An Interface to Google Drive.
 #'  <https://googledrive.tidyverse.org>, <https://github.com/tidyverse/googledrive>.
 #'
-#'  Hijmans, R. J., Van Etten, J., Cheng, J., Mattiuzzi, M., Sumner, M., Greenberg, J. A.,
-#'  Lamigueiro, O. P., Bevan, A., Racine, E. B. & Shortridge, A. 2015. Package ‘raster’. R package,
-#'  734.
+#'Hijmans, R.J., Bivand, R., Forner, K., Ooms, J., Pebesma, E. and Sumner, M.D.,
+#'2022. Package 'terra'. Maintainer: Vienna, Austria.
 #'@return Returns details of successful explanatory variable raster extractions for each projection
 #'  date.
 #'@export

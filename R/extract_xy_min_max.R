@@ -1,5 +1,5 @@
 #' extract_xy_min_max Extracts xmin,xmax,ymin,ymax from spatial extent object
-#' @param x spatial extent object. Object of class "Extent", "raster" or "polygon" or numeric vector
+#' @param x spatial extent object.
 #'   listing xmin, xmax, ymin and ymax in order.
 #' @noRd
 
@@ -15,10 +15,11 @@ extract_xy_min_max <- function(x) {
   ### Extent object to co-ords
 
   if ("Extent" %in% class(x)) {
-    xmin <- sp::bbox(x)[1, 1]
-    xmax <- sp::bbox(x)[1, 2]
-    ymin <- sp::bbox(x)[2, 1]
-    ymax <- sp::bbox(x)[2, 2]
+    x <- terra::ext(x)
+    xmin <-  x[1]
+    xmax <-  x[2]
+    ymin <-  x[3]
+    ymax <-  x[4]
   }
 
 
@@ -37,10 +38,14 @@ extract_xy_min_max <- function(x) {
   ### Polygon object to co-ords
 
   if ("Polygon" %in% class(x)) {
-    xmin <- sp::bbox(x)[1, 1]
-    xmax <- sp::bbox(x)[1, 2]
-    ymin <- sp::bbox(x)[2, 1]
-    ymax <- sp::bbox(x)[2, 2]
+    stop("Please provide sf polygon.")
+  }
+
+  if ("POLYGON" %in% class(x)) {
+    xmin <- as.numeric(sf::st_bbox(x)[1])
+    xmax <- as.numeric(sf::st_bbox(x)[3])
+    ymin <- as.numeric(sf::st_bbox(x)[2])
+    ymax <- as.numeric(sf::st_bbox(x)[4])
   }
 
   if ("sf" %in% class(x)) {
@@ -50,12 +55,9 @@ extract_xy_min_max <- function(x) {
     ymax <- as.numeric(sf::st_bbox(x)[4])
   }
 
-  if ("SpatialPolygonsDataFrame" %in% class(x)) {
-    xmin <- sp::bbox(raster::extent(x))[1, 1]
-    xmax <- sp::bbox(raster::extent(x))[1, 2]
-    ymin <- sp::bbox(raster::extent(x))[2, 1]
-    ymax <- sp::bbox(raster::extent(x))[2, 2]
 
+  if ("SpatialPolygonsDataFrame" %in% class(x)) {
+    stop("Please provide spatial object as an sf polygon or terra extent/r")
   }
 
 
@@ -84,6 +86,13 @@ extract_xy_min_max <- function(x) {
 
   }
 
+  if ("sfc_POLYGON" %in% class(x)) {
+    xmin <- as.numeric(sf::st_bbox(x)[1])
+    xmax <- as.numeric(sf::st_bbox(x)[3])
+    ymin <- as.numeric(sf::st_bbox(x)[2])
+    ymax <- as.numeric(sf::st_bbox(x)[4])
+  }
+
   return(c(xmin, xmax, ymin, ymax))
 }
 
@@ -100,17 +109,23 @@ convert_to_sf <- function(x,prj) {
 
 
   if ("numeric" %in% class(x) && length(x) == 4) {
-    raster<-raster::raster(raster::extent(x[1],x[2],x[3],x[4]),crs=prj)
-    spatial.ext <- methods::as(raster, 'SpatialPolygons')
+    raster<-terra::rast(terra::ext(x[1],x[2],x[3],x[4]),crs=prj)
+    spatial.ext <- terra::as.polygons(raster)
     spatial.ext<-sf::st_as_sf(spatial.ext,CRS = sf::st_crs(prj))
-
   }
 
   ### Extent object to co-ords
-
   if ("Extent" %in% class(x)) {
-    raster <- raster::raster(raster::extent(x), crs = prj)
-    spatial.ext <- methods::as(raster, 'SpatialPolygons')
+    raster <- terra::rast(terra::ext(x), crs = prj)
+    spatial.ext <- terra::as.polygons(raster)
+    spatial.ext <- sf::st_as_sf(spatial.ext, CRS = sf::st_crs(prj))
+  }
+
+
+
+  if ("SpatExtent" %in% class(x)) {
+    raster <- terra::rast(terra::ext(x), crs = prj)
+    spatial.ext <- terra::as.polygons(raster)
     spatial.ext <- sf::st_as_sf(spatial.ext, CRS = sf::st_crs(prj))
 
   }
@@ -119,31 +134,19 @@ convert_to_sf <- function(x,prj) {
   ### RasterLayer object to co-ords
 
   if ("RasterLayer" %in% class(x)) {
-    raster::crs(x) <- prj
-    spatial.ext <- methods::as(x, 'SpatialPolygons')
+    raster <- terra::rast(x, crs = prj)
+    terra::crs(raster) <- prj
+    spatial.ext <- terra::as.polygons(raster)
     spatial.ext <- sf::st_as_sf(spatial.ext)
     spatial.ext <-  sf::st_transform(spatial.ext, 7801)
     spatial.ext <- sf::st_union(spatial.ext)
     spatial.ext <-  sf::st_transform(spatial.ext, prj)
-
   }
-
 
   ### Polygon object to co-ords
 
   if ("Polygon" %in% class(x)) {
-    xmin <- sp::bbox(x)[1, 1]
-    xmax <- sp::bbox(x)[1, 2]
-    ymin <- sp::bbox(x)[2, 1]
-    ymax <- sp::bbox(x)[2, 2]
-
-    raster<-raster::raster(raster::extent(xmin,xmax,ymin,ymax),crs=prj)
-    spatial.ext <- methods::as(raster, 'SpatialPolygons')
-
-    message("Only using extent of sp Polygon. Provide sf polygon for specific shape")
-
-    spatial.ext<-sf::st_as_sf(spatial.ext)
-
+    stop("Please provide sf polygon")
   }
 
   if ("sf" %in% class(x)) {
@@ -153,10 +156,26 @@ convert_to_sf <- function(x,prj) {
     return(x)
   }
 
+  if ("POLYGON" %in% class(x)) {
+    polygon <- polygon %>%
+      sf::st_sfc(crs = prj)
+    x <- sf::st_set_crs(polygon, prj)
+    return(x)
+  }
+
+
+  if ("sfc_POLYGON" %in% class(x)) {
+    x <- sf::st_set_crs(x, prj)
+    return(x)
+  }
+
+
   if ("SpatialPolygonsDataFrame" %in% class(x)) {
     spatial.ext <- sf::st_as_sf(x)
 
   }
+
+
 
   return(spatial.ext)
 }

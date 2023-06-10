@@ -24,7 +24,7 @@ extract_dynamic_raster(
 \item{dates}{a character string, vector of dates in format "YYYY-MM-DD".}
 
 \item{spatial.ext}{the spatial extent for the extracted raster. Object from which extent can be
-extracted of class \code{Extent}, \code{RasterLayer}, \code{SpatialPolygonsDataFrame}, \code{sf} or \code{polygon} or
+extracted of class \code{SpatExtent}, \code{SpatRaster}, an \code{sf} polygon or a
 numeric vector listing xmin, xmax, ymin and ymax in order.}
 
 \item{datasetname}{a character string, the Google Earth Engine dataset to extract data from.}

@@ -20,9 +20,9 @@ variable data.}
 \item{spatial.res.metres}{a numeric value, the spatial resolution in metres of explanatory
 variable data.}
 
-\item{spatial.ext}{the spatial extent of the study. Object from which extent can be extracted of
-class \code{Extent}, \code{RasterLayer}, \code{sf} or \code{polygon} or numeric vector listing xmin, xmax, ymin and
-ymax in order.}
+\item{spatial.ext}{the spatial extent of the study. Object from which extent
+can be extracted of class \code{SpatExtent}, \code{SpatRaster}, \code{sf} polygon or
+numeric vector listing xmin, xmax, ymin and ymax in order.}
 }
 \value{
 Returns "moving window" matrix with an odd number of sides and equal weights.
@@ -42,10 +42,12 @@ variable would be calculated across the nine grid cells neighbouring the cell of
 cell of interest.
 }
 
-\section{Why use a moving window matrix instead of circular buffer? The benefit of using a “moving}{
-window” over calculating explanatory variable values across a set radius from each record
-co-ordinate, is that when generating projection rasters at high spatial and temporal resolution,
-these can be generated much faster as the “moving windows” standardise the calculation.
+\section{Why use a moving window matrix instead of circular buffer?}{
+The benefit of using a “moving window” over calculating explanatory
+variable values across a set radius from each record co-ordinate, is that when
+generating projection rasters at high spatial and temporal resolution, these
+can be generated much faster as the “moving windows” standardise the
+calculation.
 }
 
 \section{Function calculation}{

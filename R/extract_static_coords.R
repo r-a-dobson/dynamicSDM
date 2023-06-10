@@ -6,15 +6,15 @@
 #'@param occ.data a data frame, with columns for occurrence record co-ordinates
 #'  and dates with column names as follows; record longitude as "x", latitude as
 #'  "y", and associated explanatory variable data.
-#'@param static.rasters a RasterStack of one or more rasters to extracted data
-#'  from.
+#'@param static.rasters a `SpatRaster` containing one or more SpatRaster layers
+#'  to extract data from.
 #'@param extraction.method a character string or vector, the methods to extract
-#'  data from raster using `raster` package `extract` function. One of `simple`
+#'  data from SpatRaster using `terra` package `extract` function. One of `simple`
 #'  or `bilinear`. If `simple` values for the cell a point falls in are
 #'  returned. If `bilinear` the returned values are interpolated from the values
 #'  of the four nearest raster cells.
 #'@param varnames a character string or vector, the unique names for each
-#'  explanatory variable in order of rasters in stack.
+#'  explanatory variable in order of layers in the SpatRaster.
 #'@param GEE.math.fun optional; a character string, the mathematical function to
 #'  compute across the specified spatial matrix for each record.
 #'@param moving.window.matrix optional; a matrix of weights with an odd number
@@ -27,14 +27,13 @@
 #'
 #'
 #'Note:
-#' * `varnames` must be in the order of raster layers within the provided stack.
-#' * `extraction.method` must be of length one to use for all layers, or the
-#' length of nlayers(static.rasters) and in the same order as the appropriate
-#' layers within the provided stack.
+#' * `varnames` must be in the order of raster layers within the SpatRaster.
+#' * `extraction.method` must be of length one to apply to all layers, or
+#' length equal to the number of layers in `static.rasters`.
 #'
 #' # Spatial buffering (optional)
 #'
-#'  Using the `focal` function from `raster` R package (Hijmans et al., 2015),
+#'  Using the `focal` function from `terra` R package (Hijmans et al., 2022),
 #'  `GEE.math.fun` is calculated across the spatial buffer area from the record
 #'  co-ordinate. The spatial buffer area used is specified by the argument
 #'  `moving.window.matrix`, which dictates the neighbourhood of cells
@@ -59,15 +58,20 @@
 #'    data.
 #'
 #'@export
-#'
+#'@references
+#'Hijmans, R.J., Bivand, R., Forner, K., Ooms, J., Pebesma, E. and Sumner, M.D.,
+#'2022. Package ‘terra’. Maintainer: Vienna, Austria.
 #'@examples
 #'\donttest{
 #'data("sample_explan_data")
-#'data("sample_biome_data")
+#'random_cat_layer <- terra::rast(sample_extent_data)
+#'random_cat_layer <- terra::setValues(random_cat_layer,
+#'                                     sample(0:10, terra::ncell(random_cat_layer),
+#'                                            replace = TRUE))
 #'
 #'extract_static_coords(occ.data = sample_explan_data,
-#'                      varnames = "biome_type",
-#'                      static.rasters = raster::stack(sample_biome_data))
+#'                      varnames = "random_cat_layer",
+#'                      static.rasters = random_cat_layer)
 #'
 #'}
 

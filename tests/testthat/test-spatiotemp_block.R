@@ -1,9 +1,9 @@
 data("sample_explan_data")
 sample_model_data2 <- dplyr::sample_n(sample_explan_data, 50)
-biome_layer <- raster::raster()
-raster::extent(biome_layer) <-  c(11.71845, 40.85081,-47.89832,-4.428839)
-raster::res(biome_layer) <- 10
-raster::values(biome_layer) <- 1:raster::ncell(biome_layer)
+biome_layer <- terra::rast(sample_extent_data)
+terra::res(biome_layer) <- 10
+biome_layer <- terra::setValues(biome_layer,
+                                     1:terra::ncell(biome_layer))
 
 test_that("stops if no occ.data provided", {
   expect_error(

@@ -19,16 +19,16 @@ and dates with column names as follows; record longitude as "x", latitude as
 "y", and associated explanatory variable data.}
 
 \item{varnames}{a character string or vector, the unique names for each
-explanatory variable in order of rasters in stack.}
+explanatory variable in order of layers in the SpatRaster.}
 
 \item{extraction.method}{a character string or vector, the methods to extract
-data from raster using \code{raster} package \code{extract} function. One of \code{simple}
+data from SpatRaster using \code{terra} package \code{extract} function. One of \code{simple}
 or \code{bilinear}. If \code{simple} values for the cell a point falls in are
 returned. If \code{bilinear} the returned values are interpolated from the values
 of the four nearest raster cells.}
 
-\item{static.rasters}{a RasterStack of one or more rasters to extracted data
-from.}
+\item{static.rasters}{a \code{SpatRaster} containing one or more SpatRaster layers
+to extract data from.}
 
 \item{moving.window.matrix}{optional; a matrix of weights with an odd number
 of sides, representing the spatial neighbourhood of cells (“moving
@@ -52,14 +52,13 @@ record co-ordinates or spatially buffered using a moving window matrix.
 
 Note:
 \itemize{
-\item \code{varnames} must be in the order of raster layers within the provided stack.
-\item \code{extraction.method} must be of length one to use for all layers, or the
-length of nlayers(static.rasters) and in the same order as the appropriate
-layers within the provided stack.
+\item \code{varnames} must be in the order of raster layers within the SpatRaster.
+\item \code{extraction.method} must be of length one to apply to all layers, or
+length equal to the number of layers in \code{static.rasters}.
 }
 }
 \section{Spatial buffering (optional)}{
-Using the \code{focal} function from \code{raster} R package (Hijmans et al., 2015),
+Using the \code{focal} function from \code{terra} R package (Hijmans et al., 2022),
 \code{GEE.math.fun} is calculated across the spatial buffer area from the record
 co-ordinate. The spatial buffer area used is specified by the argument
 \code{moving.window.matrix}, which dictates the neighbourhood of cells
@@ -84,11 +83,18 @@ analogous R function is available. This includes: "allNonZero","anyNonZero",
 \examples{
 \donttest{
 data("sample_explan_data")
-data("sample_biome_data")
+random_cat_layer <- terra::rast(sample_extent_data)
+random_cat_layer <- terra::setValues(random_cat_layer,
+                                    sample(0:10, terra::ncell(random_cat_layer),
+                                           replace = TRUE))
 
 extract_static_coords(occ.data = sample_explan_data,
-                     varnames = "biome_type",
-                     static.rasters = raster::stack(sample_biome_data))
+                     varnames = "random_cat_layer",
+                     static.rasters = random_cat_layer)
 
 }
+}
+\references{
+Hijmans, R.J., Bivand, R., Forner, K., Ooms, J., Pebesma, E. and Sumner, M.D.,
+2022. Package ‘terra’. Maintainer: Vienna, Austria.
 }

@@ -52,7 +52,7 @@
 #'
 #'  # Spatial dimension
 #'
-#'  Using the `focal` function from `raster` R package (Hijmans et al., 2015), `GEE.math.fun` is
+#'  Using the `focal` function from `terra` R package (Hijmans et al., 2022), `GEE.math.fun` is
 #'  calculated across the spatial buffer area from the record co-ordinate. The spatial buffer area
 #'  used is specified by the argument `moving.window.matrix`, which dictates the neighbourhood of
 #'  cells surrounding the cell containing the occurrence record to include in this calculation.
@@ -101,7 +101,7 @@
 #'  # Aggregation factor
 #'
 #'  `agg.factor` given represents the factor to aggregate `RasterLayer` data with function
-#'  `aggregate` in `raster` R package (Hijmans et al., 2015). Aggregation uses the `GEE.math.fun` as
+#'  `aggregate` in `terra` R package (Hijmans et al., 2022). Aggregation uses the `GEE.math.fun` as
 #'  the function. Following aggregation spatial buffering using the moving window matrix occurs.
 #'  This is included to minimise computing time if data are of high spatial resolution and a large
 #'  spatial buffer is needed. Ensure to calculate `get_moving_window()` with the spatial resolution
@@ -151,9 +151,8 @@
 #'  D'Agostino McGowan L., and Bryan J., 2022. googledrive: An Interface to Google Drive.
 #'  <https://googledrive.tidyverse.org>, <https://github.com/tidyverse/googledrive>.
 #'
-#'  Hijmans, R. J., Van Etten, J., Cheng, J., Mattiuzzi, M., Sumner, M., Greenberg, J. A.,
-#'  Lamigueiro, O. P., Bevan, A., Racine, E. B. & Shortridge, A. 2015. Package ‘raster’. R package,
-#'  734.
+#'Hijmans, R.J., Bivand, R., Forner, K., Ooms, J., Pebesma, E. and Sumner, M.D.,
+#'2022. Package 'terra'. Maintainer: Vienna, Austria.
 #'@return Returns details of successful explanatory variable extractions.
 #'@export
 #'@examplesIf googledrive::drive_has_token()

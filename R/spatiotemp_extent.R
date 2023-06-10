@@ -9,9 +9,9 @@
 #'@param temporal.ext optional; a character vector, two dates in format "YYYY-MM-DD". First date
 #'  represents start of temporal extent and second date represents end of temporal extent for
 #'  inclusion.
-#'@param spatial.ext the spatial extent to filter by. Object from which extent can be extracted of
-#'  class `Extent`, `RasterLayer`, `SpatialPolygonsDataFrame`,`sf` or `polygon` or numeric vector
-#'  listing xmin, xmax, ymin and ymax in order.
+#'@param spatial.ext the spatial extent to filter by. Object from which extent
+#'  can be extracted of class `SpatExtent`, `SpatRaster`, `sf` polygon or
+#'  numeric vector listing xmin, xmax, ymin and ymax in order.
 #'@param prj a character string, the coordinate reference system of input `occ.data` co-ordinates.
 #'  Default is "+proj=longlat +datum=WGS84".
 #'@details
@@ -23,10 +23,9 @@
 #'outside of this extent.
 #'
 #'
-#'If `spatial.ext` object can be used as a mask by `raster::mask()` then the mask is used to filter
-#'records in a more targetted way. If not, then the rectangular extent of the `spatial.ext` object
-#'is used. If an `sf` polygon object is provided, this is first transformed into a `Spatial` object
-#'for use by `raster::mask()`.
+#'If `spatial.ext` object can be used as a mask by `terra::mask()` then the mask is used to filter
+#'records in a more targeted way. If not, then the rectangular extent of the `spatial.ext` object
+#'is used.
 #'
 #'# Temporal extent
 #'
@@ -113,30 +112,21 @@ spatiotemp_extent <- function(occ.data,
 
     # Convert sf object to Spatial object that can be tranformed into raster
     if("sf" %in% class(spatial.ext)){
-      v <- terra::vect(spatial.ext)
-      r <- terra::rast(v,ncols=75, nrows=100)
-      spatial.ext <- terra::rasterize(v, r)}
-
+      spatial.ext <- terra::vect(spatial.ext)
+     }
 
     # Convert polygon object to Extent object that can be transformed into raster
     if ("Polygon" %in% class(spatial.ext)) {
-      xmin <- sp::bbox(spatial.ext)[1, 1]
-      xmax <- sp::bbox(spatial.ext)[1, 2]
-      ymin <- sp::bbox(spatial.ext)[2, 1]
-      ymax <- sp::bbox(spatial.ext)[2, 2]
-      r<- terra::ext(xmin,xmax,ymin,ymax)}
-
+      stop("Please provide sf polygon as spatial.ext object.")
+    }
 
     if("RasterLayer" %in% class(spatial.ext)){
       spatial.ext <- terra::rast(spatial.ext)
     }
 
-    if("SpatRaster" %in% class(spatial.ext)){
-      spatial.ext <- terra::as.polygons(spatial.ext)
+    if(inherits(spatial.ext, "sfc_POLYGON")){
+      spatial.ext <- terra::vect(spatial.ext)
     }
-
-    if(inherits(spatial.ext,"SpatExtent")){
-      spatial.ext <- terra::as.polygons(terra::ext(spatial.ext))}
 
     # Convert spatial.ext to raster in same projection
     r <- terra::rast(r)

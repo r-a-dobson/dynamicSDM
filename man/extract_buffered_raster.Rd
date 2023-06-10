@@ -27,8 +27,8 @@ extract_buffered_raster(
 \arguments{
 \item{dates}{a character string, vector of dates in format "YYYY-MM-DD".}
 
-\item{spatial.ext}{the spatial extent for the extracted raster. Object from which extent can be
-extracted of class \code{Extent}, \code{RasterLayer},\code{SpatialPolygonsDataFrame}, \code{sf} or \code{polygon} or
+\item{spatial.ext}{the spatial extent for the extracted raster. Object from which extent
+can be extracted of class \code{SpatExtent}, \code{SpatRaster}, \code{sf} polygon or
 numeric vector listing xmin, xmax, ymin and ymax in order.}
 
 \item{datasetname}{a character string, the Google Earth Engine dataset to extract data from.}
@@ -109,7 +109,7 @@ more relevant that "sum" of land cover classification numbers.
 }
 
 \section{Spatial dimension}{
-Using the \code{focal} function in \code{raster} R package (Hijmans et al., 2015), \code{GEE.math.fun} is
+Using the \code{focal} function in \code{terra} R package (Hijmans et al., 2022), \code{GEE.math.fun} is
 calculated across the spatial buffer area from each cell in \code{spatial.ext}. The spatial buffer
 area used is defined by \verb{moving.window matrix}, which dictates the neighbourhood of cells
 surrounding each cell in \code{spatial.ext} to include in the calculation.
@@ -136,8 +136,8 @@ For example, this function could return the sum of suitable land cover classifie
 }
 
 \section{Aggregation factor}{
-\code{agg.factor} given represents the factor to aggregate \code{RasterLayer} data with function
-\code{aggregate} in \code{raster} R package (Hijmans et al., 2015). Aggregation uses the \code{GEE.math.fun} as
+\code{agg.factor} given represents the factor to aggregate \code{SpatRaster} data with function
+\code{aggregate} in \code{terra} R package (Hijmans et al., 2022). Aggregation uses the \code{GEE.math.fun} as
 the function. Following aggregation spatial buffering using the moving window matrix occurs.
 This is included to minimise computing time if data are of high spatial resolution and a large
 spatial buffer is needed. Ensure to calculate \code{get_moving_window()} with the spatial resolution
@@ -235,7 +235,6 @@ interacting with Google Earth Engine. Journal of Open Source Software, 5(51), p.
 D'Agostino McGowan L., and Bryan J., 2022. googledrive: An Interface to Google Drive.
 \url{https://googledrive.tidyverse.org}, \url{https://github.com/tidyverse/googledrive}.
 
-Hijmans, R. J., Van Etten, J., Cheng, J., Mattiuzzi, M., Sumner, M., Greenberg, J. A.,
-Lamigueiro, O. P., Bevan, A., Racine, E. B. & Shortridge, A. 2015. Package ‘raster’. R package,
-734.
+Hijmans, R.J., Bivand, R., Forner, K., Ooms, J., Pebesma, E. and Sumner, M.D.,
+2022. Package 'terra'. Maintainer: Vienna, Austria.
 }

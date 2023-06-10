@@ -4,9 +4,9 @@
 #'stacked and then exported as a covariate data frame or raster stack for each projection date.
 #'
 #'@param dates a character string, vector of dates in format "YYYY-MM-DD".
-#'@param spatial.ext optional; the spatial extent to crop explanatory variable rasters to. Object of
-#'  class `Extent`, `RasterLayer`, `sf`, `SpatialPolygonsDataFrame`, `polygon` or numeric vector
-#'  listing xmin, xmax, ymin and ymax in order.
+#'@param spatial.ext optional; the spatial extent to crop explanatory variable
+#'  rasters to. Object of class `SpatExtent`, `SpatRaster`, an `sf` polygon or
+#'  numeric vector listing xmin, xmax, ymin and ymax in order.
 #'@param varnames a character string, the unique names for each explanatory variable.
 #'@param spatial.res.degrees optional; a numeric value, the spatial resolution in degrees for
 #'  projection rasters to be resampled to. Required if `spatial.ext` given.
@@ -24,7 +24,7 @@
 #'@param save.drive.folder optional; a character string, Google Drive folder to save projection
 #'  covariates to. Folder must be uniquely named within Google Drive. Do not provide path.
 #'@param cov.file.type a character string, the type of file to export projection covariates as. One
-#'  of: `tif` (raster stack) or `csv`(data frame).
+#'  of: `tif` (SpatRaster with multiple layers) or `csv`(data frame).
 #'@param prj a character string, the coordinate reference system desired for projection covariates.
 #'  Default is "+proj=longlat +datum=WGS84".
 #'@param cov.prj a character string, the coordinate reference system desired for output projection
@@ -54,9 +54,10 @@
 #'date and explanatory variable name, then the function will error.
 #'
 #'# Processing rasters
-#'If required, rasters are cropped and resampled to the same spatial extent and resolution. If
-#'`spatial.mask` is given, then cells with NA in this mask layer are removed from the returned
-#'projection covariates. See `raster::mask()` in R package `raster` for details.
+#'If required, rasters are cropped and resampled to the same spatial extent and
+#'resolution. If `spatial.mask` is given, then cells with NA in this mask layer
+#'are removed from the returned projection covariates. See `terra::mask()` in R
+#'package `terra` for details (Hijmans et al., 2022).
 #'
 #'Rasters are then stacked and reprojected if `cov.prj` is different to `prj`.
 #'
@@ -105,7 +106,7 @@
 #'
 #'#' # Spatial buffering of static rasters (optional)
 #'
-#'  Using the `focal` function from `raster` R package (Hijmans et al., 2015),
+#'  Using the `focal` function from `terra` R package (Hijmans et al., 2022),
 #'  `GEE.math.fun` is calculated across the spatial buffer area from the record
 #'  co-ordinate. The spatial buffer area used is specified by the argument
 #'  `moving.window.matrix`, which dictates the neighbourhood of cells
@@ -129,6 +130,9 @@
 #'@returns Exports combined covariates in "csv" or "tif" file for each projection date to the local
 #'directory or Google Drive folder.
 #'@export
+#'@references
+#'Hijmans, R.J., Bivand, R., Forner, K., Ooms, J., Pebesma, E. and Sumner, M.D.,
+#'2022. Package 'terra'. Maintainer: Vienna, Austria.
 #'@examplesIf googledrive::drive_has_token()
 #'
 #'data("sample_extent_data")
@@ -238,32 +242,12 @@ dynamic_proj_covariates <- function(dates,
     stop("Provide save.directory or save.drive.folder to export data.frame.")
   }
 
-  # If mask if sf polygon, convert to spatial polygons dataframe for raster:: mask
-  #if (!missing(spatial.mask)) {
- ##   if (any(class(spatial.mask) == "sf")) {
-  #    spatial.mask<-sf::as_Spatial(spatial.mask)
-  #  }
- # }
 
   # Process spatial extent given for cropping rasters before stacking into covariate data frame
 
   # Check spatial.ext appropriate object class.
 
   if (!missing(spatial.ext)) {
-
-    if (!any(class(spatial.ext) %in% c("numeric",
-                                       "SpatialPolygonsDataFrame",
-                                       "Extent",
-                                       "RasterLayer",
-                                       "Polygon",
-                                       "SpatRaster",
-                                       "SpatExtent",
-                                       "sf"))) {
-
-      stop("Please check spatial.ext is of the correct class")
-
-    }
-
 
 
     # Numeric extent to co-ords
@@ -436,9 +420,18 @@ dynamic_proj_covariates <- function(dates,
       r <- terra::setValues(r, 1:terra::ncell(r))
 
       if(!missing(spatial.mask)) {
+
+        if(inherits(spatial.mask, "sfc_POLYGON")){
+          spatial.mask <- terra::vect(spatial.mask)
+        }
+
+        if("sf" %in% class(spatial.mask)){
+          spatial.mask <- terra::vect(spatial.mask)
+        }
+
         # Mask to original spatial.ext, if fails keep original. Depending on spatial.ext type.
         tryCatch({
-          r <- terra::mask(r, spatial.ext)
+          r <- terra::mask(r, spatial.mask)
         }, error = function(error_message) {
           r <- r
           message("spatial.mask could not be used. Check valid input type.")
@@ -453,6 +446,16 @@ dynamic_proj_covariates <- function(dates,
       if (!length(static.resample.method) == 1) {
         raster <- terra::resample(raster, r, method = static.resample.method[sr])
       }
+
+      if(!missing(spatial.mask)) {
+        tryCatch({
+          raster <- terra::mask(raster, spatial.mask)
+        }, error = function(error_message) {
+          raster <- raster
+          message("spatial.mask could not be used. Check valid input type.")
+        })}
+
+
     }
 
     terra::crs(raster) <- prj
@@ -522,10 +525,15 @@ dynamic_proj_covariates <- function(dates,
         terra::res(r) <- spatial.res.degrees
         r <- terra::setValues(r, 1:terra::ncell(r))
 
+
         if(!missing(spatial.mask)) {
+
+          if(inherits(spatial.mask, "sfc_POLYGON")){
+            spatial.mask <- terra::vect(spatial.mask)
+          }
           # Mask to original spatial.ext, if fails keep original. Depending on spatial.ext type.
           tryCatch({
-            r <- terra::mask(r, spatial.ext)
+            r <- terra::mask(r, spatial.mask)
           }, error = function(error_message) {
             r <- r
             message("spatial.mask could not be used. Check valid input type.")
@@ -540,6 +548,17 @@ dynamic_proj_covariates <- function(dates,
         if (!length(resample.method) == 1) {
           raster <- terra::resample(raster, r, method = resample.method[v])
         }
+
+        if(!missing(spatial.mask)) {
+        # Mask to original spatial.ext, if fails keep original. Depending on spatial.ext type.
+        tryCatch({
+          raster <- terra::mask(raster, spatial.mask)
+        }, error = function(error_message) {
+          raster <- raster
+          message("spatial.mask could not be used. Check valid input type.")
+        })}
+
+
       }
 
       terra::crs(raster) <- prj
@@ -557,7 +576,7 @@ dynamic_proj_covariates <- function(dates,
     names(stack) <- varnames_all # Label each layer in stack as variable
 
     if (!prj == cov.prj) {
-      stack <- terra::project(stack, crs = cov.prj)
+      stack <- terra::project(stack, cov.prj)
     }
 
     cov.file.type <- match.arg(cov.file.type, choices = c("tif", "csv"))

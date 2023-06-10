@@ -138,7 +138,7 @@ test_that("Works if spatial.ext = RasterLayer", {
 
 test_that("Works if spatial.ext = polygon", {
   dates <- c("2010-01-01")
-  polygon <- sp::Polygon(cbind(c(12, 12, 36, 36), c(-35, -12, -35, -12)))
+  polygon <-  sf::st_polygon(list(cbind(c(20, 12, 36, 36,20), c(-35, -12, -35, -12,-35))))
   results <- dynamic_proj_covariates(
       dates = dates,
       varnames = c("precipitation_10_prior_sum", "NDVI_5_post_max"),

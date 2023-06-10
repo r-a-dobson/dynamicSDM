@@ -8,9 +8,9 @@
 #'  variable data.
 #'@param spatial.res.metres a numeric value, the spatial resolution in metres of explanatory
 #'  variable data.
-#'@param spatial.ext the spatial extent of the study. Object from which extent can be extracted of
-#'  class `Extent`, `RasterLayer`, `sf` or `polygon` or numeric vector listing xmin, xmax, ymin and
-#'  ymax in order.
+#'@param spatial.ext the spatial extent of the study. Object from which extent
+#'  can be extracted of class `SpatExtent`, `SpatRaster`, `sf` polygon or
+#'  numeric vector listing xmin, xmax, ymin and ymax in order.
 #'@details
 #'
 #'# Importance for other functions in `dynamicSDM` To extract spatially buffered explanatory
@@ -22,10 +22,13 @@
 #'variable would be calculated across the nine grid cells neighbouring the cell of interest and the
 #'cell of interest.
 #'
-#'# Why use a moving window matrix instead of circular buffer? The benefit of using a “moving
-#'window” over calculating explanatory variable values across a set radius from each record
-#'co-ordinate, is that when generating projection rasters at high spatial and temporal resolution,
-#'these can be generated much faster as the “moving windows” standardise the calculation.
+#'# Why use a moving window matrix instead of circular buffer?
+#'
+#'The benefit of using a “moving window” over calculating explanatory
+#'variable values across a set radius from each record co-ordinate, is that when
+#'generating projection rasters at high spatial and temporal resolution, these
+#'can be generated much faster as the “moving windows” standardise the
+#'calculation.
 #'
 #'# Function calculation
 #'
@@ -72,12 +75,7 @@ get_moving_window <-  function(radial.distance,
         stop("spatial.ext is missing. Required when spatial.res given in degrees.")
       }
 
-    # Check spatial.ext is valid
-      if (!any(class(spatial.ext) %in% c("numeric", "Extent","sf", "RasterLayer", "Polygon","SpatRaster"))) {
-        stop("spatial.ext must be of class numeric, Extent, sf, RasterLayer, SpatRaster or Polygon")
-      }
-
-      if (any(class(spatial.ext) == "numeric") && !length(spatial.ext) == 4) {
+         if (any(class(spatial.ext) == "numeric") && !length(spatial.ext) == 4) {
         stop("spatial.ext numeric vector should be of length four c(xmin, xmax, ymin and ymax)")
       }
 

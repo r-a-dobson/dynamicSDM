@@ -323,7 +323,7 @@ test_that("Success if spatial extent numeric", {
 })
 
 test_that("Success if spatial extent extent", {
-  Extent <- raster::extent(c(20, 36, -35, -12))
+  Extent <- terra::ext(c(20, 36, -35, -12))
   results <- spatiotemp_pseudoabs(
       occ.data = sample_explan_data,
       n.pseudoabs = 10,
@@ -336,7 +336,7 @@ test_that("Success if spatial extent extent", {
 })
 
 test_that("Success if spatial extent raster", {
-  raster <- raster::raster(raster::extent(c(20, 36, -35, -12)))
+  raster <- terra::rast(terra::ext(c(20, 36, -35, -12)))
   results <- spatiotemp_pseudoabs(
       occ.data = sample_explan_data,
       n.pseudoabs = 10,
@@ -349,7 +349,7 @@ test_that("Success if spatial extent raster", {
 })
 
 test_that("Success if spatial extent polygon", {
-  polygon <- sp::Polygon(cbind(c(20, 12, 36, 36), c(-35, -12, -35, -12)))
+  polygon <-  sf::st_polygon(list(cbind(c(20, 12, 36, 36,20), c(-35, -12, -35, -12,-35))))
   results <-spatiotemp_pseudoabs(
       occ.data = sample_explan_data,
       n.pseudoabs = 10,

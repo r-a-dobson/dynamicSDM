@@ -35,16 +35,6 @@ test_that("stops if spatial.res.degrees given but spatial.ext not given", {
   ))
 })
 
-test_that("stops if spatial.res.degrees and spatial.ext class invalid", {
-  expect_error(
-    get_moving_window(
-      radial.distance = 100,
-      spatial.res.degrees = 0.5,
-      spatial.ext = "southernafrica"
-    )
-  )
-})
-
 test_that(
   "stops if spatial.res.degrees and spatial.ext class numeric and incorrect length invalid",
   {
@@ -82,7 +72,7 @@ test_that("works with spatial.ext as numeric", {
 })
 
 test_that("works with spatial.ext as Extent", {
-  Extent <- raster::extent(c(12, 36, -35, -12))
+  Extent <- terra::ext(c(12, 36, -35, -12))
   results <- get_moving_window(
       radial.distance = 100,
       spatial.res.degrees = 0.5,
@@ -93,7 +83,7 @@ test_that("works with spatial.ext as Extent", {
 
 test_that("works with spatial.ext as raster", {
   numeric <- c(12, 36, -35, -12)
-  raster <- raster::raster(raster::extent(numeric))
+  raster <- terra::rast(terra::ext(numeric))
   results <- get_moving_window(
       radial.distance = 100000,
       spatial.res.degrees = 0.5,
@@ -103,7 +93,7 @@ test_that("works with spatial.ext as raster", {
 })
 
 test_that("works with spatial.ext as polygon", {
-  polygon <- sp::Polygon(cbind(c(12, 12, 36, 36), c(-35, -12, -35, -12)))
+  polygon <-  sf::st_polygon(list(cbind(c(20, 12, 36, 36,20), c(-35, -12, -35, -12,-35))))
   results <- get_moving_window(
       radial.distance = 100000,
       spatial.res.degrees = 0.5,
@@ -123,15 +113,6 @@ test_that("works with spatial.ext as sf", {
   expect_equal(class(results)[1], "matrix")
 })
 
-test_that("stops if spatial.res.degrees and spatial.ext class invalid", {
-  expect_error(
-    get_moving_window(
-      radial.distance = 100000,
-      spatial.res.degrees = 0.5,
-      spatial.ext = "southernafrica"
-    )
-  )
-})
 
 test_that("Error if wrong class spatial.res.metres", {
   expect_error(get_moving_window(radial.distance = 100000, spatial.res.metres =

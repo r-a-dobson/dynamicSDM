@@ -56,7 +56,7 @@ and Nikulin, 1996) .
 }
 
 \section{Spatial bias}{
-To assess spatial sampling bias, the function returns a scatterplot of the spatial
+To assess spatial sampling bias, the function returns a scatter plot of the spatial
 distribution of occurrence records to illustrate any spatial clustering (if \code{plot = TRUE}). The
 average nearest neighbour distance of record co-ordinates is then compared to that of records
 randomly generated at same density using a t-test, following the nearest neighbour index

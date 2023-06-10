@@ -70,7 +70,7 @@ Default is "+proj=longlat +datum=WGS84".}
 \item{proj.prj}{a character string, the coordinate reference system desired for output projection
 rasters. Default is assumed to be the same as prj.}
 
-\item{spatial.mask}{an object of class \code{Raster}, \code{sf} or \code{Spatial}, representing a mask in which
+\item{spatial.mask}{an object of class \code{SpatRaster} or\code{sf} polygon, representing a mask in which
 NA cells in the mask layer are removed from the projection covariates.}
 }
 \value{

@@ -27,10 +27,11 @@ of \code{buffer} or \code{random}: can be abbreviated.}
 with column names as follows; record longitude as "x", latitude as "y", year as "year", month as
 "month", and day as "day". Required if either \code{temporal.method} or \code{spatial.method} is \code{buffer}.}
 
-\item{spatial.ext}{the spatial extent to randomly generate pseudo-absences within. Object from
-which extent can be extracted of class \code{Extent}, \code{RasterLayer},\code{SpatialPolygonsDataFrame}, \code{sf}
-or \code{polygon} or numeric vector listing xmin, xmax, ymin and ymax in order. Required if
-\code{spatial.method} is \code{random}, and optionally used if \code{buffer}. See details.}
+\item{spatial.ext}{the spatial extent to randomly generate pseudo-absences
+within. Object from which extent can be extracted of class \code{SpatExtent},
+\code{SpatRaster}, an \code{sf} polygon or a numeric vector listing xmin, xmax, ymin
+and ymax in order. Required if \code{spatial.method} is \code{random}, and optionally
+used if \code{buffer}. See details.}
 
 \item{temporal.ext}{optional; a character vector, two dates in format "YYYY-MM-DD". The first
 represents the start of the temporal extent and the second represents the end of temporal extent
@@ -89,12 +90,12 @@ want to clip buffers to only terrestrial regions using a country polygon given i
 If \code{spatial.method} is \code{random}, then the pseudo-absence record co-ordinates are randomly
 generated across \code{spatial.ext} object given.
 
-If \code{spatial.ext} is a \code{sf} polygon or multipolygon object, \code{RasterLayer} (mask if possible before
-input) or \code{SpatialPolygonsDataFrame}, then these shapes are used, instead of a simple rectangular
-extent. Therefore, inputting one of these objects will allow for more specific pseudo-absence
+If \code{spatial.ext} is a \code{sf} polygon or \code{SpatRaster} (mask if possible before
+input) then these shapes are used, instead of a simple rectangular
+extent (\code{SpatExtent}). Therefore, inputting one of these objects will allow for more specific pseudo-absence
 generation.
 
-For example, inputting a \code{SpatialPolygonsDataFrame} of specific countries will ensure co-ordinates
+For example, inputting an \code{sf} polygon of a specific countries will ensure co-ordinates
 are terrestrial, whereas an extent (xmin, xmax, ymin, ymax) that encompasses these countries may
 result in the generation of pseudo-absence records in inappropriate areas, such as oceans or
 non-study-area countries.

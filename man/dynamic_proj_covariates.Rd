@@ -41,9 +41,9 @@ if \code{drive.folder} or \code{save.drive.folder} used.}
 \item{local.directory}{optional; a character string or vector, path to local directory or
 directories to read projection covariate rasters from.}
 
-\item{spatial.ext}{optional; the spatial extent to crop explanatory variable rasters to. Object of
-class \code{Extent}, \code{RasterLayer}, \code{sf}, \code{SpatialPolygonsDataFrame}, \code{polygon} or numeric vector
-listing xmin, xmax, ymin and ymax in order.}
+\item{spatial.ext}{optional; the spatial extent to crop explanatory variable
+rasters to. Object of class \code{SpatExtent}, \code{SpatRaster}, an \code{sf} polygon or
+numeric vector listing xmin, xmax, ymin and ymax in order.}
 
 \item{spatial.mask}{an object of class \code{Raster}, \code{sf} or \code{Spatial}, representing a mask in which
 NA cells in the mask layer are removed from the projection covariates.}
@@ -55,7 +55,7 @@ projection rasters to be resampled to. Required if \code{spatial.ext} given.}
 method to use. One of \code{ngb} and \code{bilinear}. See details for more information.}
 
 \item{cov.file.type}{a character string, the type of file to export projection covariates as. One
-of: \code{tif} (raster stack) or \code{csv}(data frame).}
+of: \code{tif} (SpatRaster with multiple layers) or \code{csv}(data frame).}
 
 \item{prj}{a character string, the coordinate reference system desired for projection covariates.
 Default is "+proj=longlat +datum=WGS84".}
@@ -104,9 +104,10 @@ date and explanatory variable name, then the function will error.
 }
 
 \section{Processing rasters}{
-If required, rasters are cropped and resampled to the same spatial extent and resolution. If
-\code{spatial.mask} is given, then cells with NA in this mask layer are removed from the returned
-projection covariates. See \code{raster::mask()} in R package \code{raster} for details.
+If required, rasters are cropped and resampled to the same spatial extent and
+resolution. If \code{spatial.mask} is given, then cells with NA in this mask layer
+are removed from the returned projection covariates. See \code{terra::mask()} in R
+package \code{terra} for details (Hijmans et al., 2022).
 
 Rasters are then stacked and reprojected if \code{cov.prj} is different to \code{prj}.
 
@@ -154,7 +155,7 @@ to be specified too using \code{static.resample.method}. Please also provide
 
 #' # Spatial buffering of static rasters (optional)
 
-Using the \code{focal} function from \code{raster} R package (Hijmans et al., 2015),
+Using the \code{focal} function from \code{terra} R package (Hijmans et al., 2022),
 \code{GEE.math.fun} is calculated across the spatial buffer area from the record
 co-ordinate. The spatial buffer area used is specified by the argument
 \code{moving.window.matrix}, which dictates the neighbourhood of cells
@@ -231,4 +232,8 @@ dynamic_proj_covariates(dates = projectiondates,
                        prj="+proj=longlat +datum=WGS84",
                        save.directory = tempdir())
 \dontshow{\}) # examplesIf}
+}
+\references{
+Hijmans, R.J., Bivand, R., Forner, K., Ooms, J., Pebesma, E. and Sumner, M.D.,
+2022. Package 'terra'. Maintainer: Vienna, Austria.
 }

@@ -4,7 +4,7 @@
 #'Earth Engine.
 #'@param dates a character string, vector of dates in format "YYYY-MM-DD".
 #'@param spatial.ext the spatial extent for the extracted raster. Object from which extent can be
-#'  extracted of class `Extent`, `RasterLayer`, `SpatialPolygonsDataFrame`, `sf` or `polygon` or
+#'  extracted of class `SpatExtent`, `SpatRaster`, an `sf` polygon or a
 #'  numeric vector listing xmin, xmax, ymin and ymax in order.
 #'@param datasetname a character string, the Google Earth Engine dataset to extract data from.
 #'@param bandname a character string, the Google Earth Engine dataset bandname to extract data for.

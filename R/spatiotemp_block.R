@@ -9,7 +9,7 @@
 #'  "month", and day as "day", and associated explanatory variable data.
 #'@param vars.to.block.by a character string or vector, the explanatory variable column names to
 #'  group sampling units based upon.
-#'@param spatial.layer optional; a `RasterLayer` object, a categorical spatial layer for sample
+#'@param spatial.layer optional; a `SpatRaster` object, a categorical spatial layer for sample
 #'  unit splitting.
 #'@param spatial.split.degrees a numeric value, the grid cell resolution in degrees to split
 #'  `spatial.layer` by. Required if `spatial.layer` given.

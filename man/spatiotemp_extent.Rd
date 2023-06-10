@@ -20,9 +20,9 @@ column names as follows; record longitude as "x", latitude as "y", year as "year
 represents start of temporal extent and second date represents end of temporal extent for
 inclusion.}
 
-\item{spatial.ext}{the spatial extent to filter by. Object from which extent can be extracted of
-class \code{Extent}, \code{RasterLayer}, \code{SpatialPolygonsDataFrame},\code{sf} or \code{polygon} or numeric vector
-listing xmin, xmax, ymin and ymax in order.}
+\item{spatial.ext}{the spatial extent to filter by. Object from which extent
+can be extracted of class \code{SpatExtent}, \code{SpatRaster}, \code{sf} polygon or
+numeric vector listing xmin, xmax, ymin and ymax in order.}
 
 \item{prj}{a character string, the coordinate reference system of input \code{occ.data} co-ordinates.
 Default is "+proj=longlat +datum=WGS84".}
@@ -40,10 +40,9 @@ If \code{spatial.ext} is provided, \code{spatiotemp_extent()} checks whether spe
 co-ordinates are within the given spatial extent of the study (\code{spatial.ext}) and excludes any
 outside of this extent.
 
-If \code{spatial.ext} object can be used as a mask by \code{raster::mask()} then the mask is used to filter
-records in a more targetted way. If not, then the rectangular extent of the \code{spatial.ext} object
-is used. If an \code{sf} polygon object is provided, this is first transformed into a \code{Spatial} object
-for use by \code{raster::mask()}.
+If \code{spatial.ext} object can be used as a mask by \code{terra::mask()} then the mask is used to filter
+records in a more targeted way. If not, then the rectangular extent of the \code{spatial.ext} object
+is used.
 }
 
 \section{Temporal extent}{

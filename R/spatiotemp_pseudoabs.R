@@ -22,10 +22,11 @@
 #'  represents the start of the temporal extent and the second represents the end of temporal extent
 #'  to randomly generate pseudo-absences dates within. Required if `temporal.method` is `random`,
 #'  and optionally used if `buffer`. See details.
-#'@param spatial.ext the spatial extent to randomly generate pseudo-absences within. Object from
-#'  which extent can be extracted of class `Extent`, `RasterLayer`,`SpatialPolygonsDataFrame`, `sf`
-#'  or `polygon` or numeric vector listing xmin, xmax, ymin and ymax in order. Required if
-#'  `spatial.method` is `random`, and optionally used if `buffer`. See details.
+#'@param spatial.ext the spatial extent to randomly generate pseudo-absences
+#'  within. Object from which extent can be extracted of class `SpatExtent`,
+#'  `SpatRaster`, an `sf` polygon or a numeric vector listing xmin, xmax, ymin
+#'  and ymax in order. Required if `spatial.method` is `random`, and optionally
+#'  used if `buffer`. See details.
 #'@param prj a character string, the coordinate reference system of input `occ.data` co-ordinates.
 #'  Default is "+proj=longlat +datum=WGS84".
 #'@details
@@ -61,12 +62,12 @@
 #'If `spatial.method` is `random`, then the pseudo-absence record co-ordinates are randomly
 #'generated across `spatial.ext` object given.
 #'
-#'If `spatial.ext` is a `sf` polygon or multipolygon object, `RasterLayer` (mask if possible before
-#'input) or `SpatialPolygonsDataFrame`, then these shapes are used, instead of a simple rectangular
-#'extent. Therefore, inputting one of these objects will allow for more specific pseudo-absence
+#'If `spatial.ext` is a `sf` polygon or `SpatRaster` (mask if possible before
+#'input) then these shapes are used, instead of a simple rectangular
+#'extent (`SpatExtent`). Therefore, inputting one of these objects will allow for more specific pseudo-absence
 #'generation.
 #'
-#'For example, inputting a `SpatialPolygonsDataFrame` of specific countries will ensure co-ordinates
+#'For example, inputting an `sf` polygon of a specific countries will ensure co-ordinates
 #'are terrestrial, whereas an extent (xmin, xmax, ymin, ymax) that encompasses these countries may
 #'result in the generation of pseudo-absence records in inappropriate areas, such as oceans or
 #'non-study-area countries.

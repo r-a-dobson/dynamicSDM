@@ -127,30 +127,6 @@
 "sample_filt_data"
 
 
-#' @name sample_biome_data
-#' @title Biome classification raster for southern Africa.
-#' @description
-#' Categorical RasterLayer cropped to southern Africa at 0.08 degree resolution from OpenLandMap
-#' Potential Distribution of Biomes (Hengl et al., 2018).
-#' @format A RasterLayer
-#' \describe{
-#'   \item{class}{RasterLayer}
-#'   \item{dimensions}{4839, 3243, 15692877  (nrow, ncol, ncell)}
-#'   \item{resolution}{0.008983153, 0.008983153  (x, y)}
-#'   \item{extent}{11.71845, 40.85081, -47.89832, -4.428839  (xmin, xmax, ymin, ymax)}
-#'   \item{crs}{"+proj=longlat +datum=WGS84 +no_defs"}
-#'   \item{source}{biome_type_2001-01-01.tif }
-#'   \item{names}{biome_type_2001-01-01.tif }
-#'   \item{values}{Numerical categorical value ranging from 0, 255  (min, max).}
-#' }
-#' @docType data
-#' @references
-#' Hengl T, Walsh MG, Sanderman J, Wheeler I, Harrison SP, Prentice IC. (2018) Global Mapping of
-#' Potential Natural Vegetation: An Assessment of Machine Learning Algorithms for Estimating Land
-#' Potential. PeerJ Preprints.
-"sample_biome_data"
-
-
 
 #' @name sample_events_data
 #' @title  Sample e-Bird sampling event records
@@ -176,7 +152,6 @@
 #'  \doi{10.2173/ebirdst.2020}
 #'
 #' GBIF.org (12 July 2021) GBIF Occurrence Download \doi{10.15468/dl.ppcu6q}
-
 "sample_events_data"
 
 
@@ -212,25 +187,3 @@
 #' hazards infrared precipitation with stations-a new environmental record for monitoring extremes".
 #' Scientific Data 2, 150066.
 "sample_cov_data"
-
-#' @name sample_proj_rast
-#' @title Distribution suitability projections for red-billed quelea in southern Africa
-#' @description
-#' RasterBrick of distribution suitability projections for red-billed quelea across southern at one
-#' degree resolution for the dates: "2018-01-01", "2018-04-01", "2018-07-01" and "2018-10-01". A
-#' value of 1 represents high suitability and a value of 0 low suitability.
-#' @format A RasterBrick
-#' \describe{
-#'   \item{class}{RasterBrick}
-#'   \item{dimensions}{31, 30, 930, 4  (nrow, ncol, ncell, nlayers)}
-#'   \item{resolution}{1, 1  (x, y)}
-#'   \item{extent}{11.6901, 41.6901, -35.43802, -4.438023  (xmin, xmax, ymin, ymax)}
-#'   \item{crs}{"+proj=longlat +datum=WGS84 +no_defs"}
-#'   \item{source}{memory} \item{names}{ X2018.01.01_proportional, X2018.04.01_proportional,
-#'   X2018.07.01_proportional, X2018.10.01_proportional }
-#'   \item{min values}{Numerical minimum distribution suitability projected in each layer.}
-#'   \item{max values}{Numerical maximum distribution suitability projected in each layer.}
-#' }
-#' @docType data
-"sample_proj_rast"
-

@@ -34,7 +34,7 @@
 #'  Default is "+proj=longlat +datum=WGS84".
 #'@param proj.prj a character string, the coordinate reference system desired for output projection
 #'  rasters. Default is assumed to be the same as prj.
-#'@param spatial.mask an object of class `Raster`, `sf` or `Spatial`, representing a mask in which
+#'@param spatial.mask an object of class `SpatRaster` or`sf` polygon, representing a mask in which
 #'  NA cells in the mask layer are removed from the projection covariates.
 #'@details Function projects a model object or list of model objects onto projection covariate data
 #'  frames for each projection date given.
@@ -190,8 +190,13 @@ dynamic_proj <-  function(dates,
   # Convert mask to SPDF for use with raster::mask
 
   if (!missing(spatial.mask)) {
-    spatial.mask<-convert_to_sf(spatial.mask,prj)
-   # spatial.mask<-sf::as_Spatial(spatial.mask)
+
+    spatial.mask <- convert_to_sf(spatial.mask, prj)
+
+    if(inherits(spatial.mask, "sfc_POLYGON")){
+      spatial.mask <- terra::vect(spatial.mask)
+    }
+
   }
 
 
@@ -499,7 +504,7 @@ dynamic_proj <-  function(dates,
 
           binaryrast <- terra::rast(as.matrix(cbind(projection_df[, "x"],
                                                     projection_df[, "y"],
-                                                    SDMbinary), crs = prj),
+                                                    SDMbinary)), crs = prj,
                                     type="xyz")
 
         }
@@ -528,7 +533,7 @@ dynamic_proj <-  function(dates,
         if (cov.file.type == "csv") {
           abundancerast <-  terra::rast(as.matrix(cbind(projection_df[, "x"],
                                                         projection_df[, "y"],
-                                                        SAMpred), crs = prj),
+                                                        SAMpred)), crs = prj,
                                         type="xyz")
 
         }
@@ -554,8 +559,8 @@ dynamic_proj <-  function(dates,
         if (cov.file.type == "csv") {
           proportionalrast <- terra::rast(as.matrix(cbind(projection_df[, "x"],
                                                           projection_df[, "y"],
-                                                          SDMpred), crs = prj),
-                                          type="xyz")
+                                                          SDMpred)), crs = prj,
+                                          type = "xyz")
         }
 
         if (!missing(spatial.mask)) {
@@ -579,7 +584,7 @@ dynamic_proj <-  function(dates,
         if (cov.file.type == "csv") {
           stackedrast <- terra::rast(as.matrix(cbind(projection_df[, "x"],
                                                     projection_df[, "y"],
-                                                    stacked), crs = prj),
+                                                    stacked)), crs = prj,
                                     type="xyz")
         }
 
