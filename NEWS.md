@@ -8,3 +8,4 @@
 
 * Added compatibility with `terra` and `sf` packages.
 
+* Added citation for dynamicSDM publication in Methods in Ecology and Evolution. 
