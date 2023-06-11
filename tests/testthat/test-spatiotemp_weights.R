@@ -200,3 +200,4 @@ test_that("Output is adds two rows with sampling effort", {
     )
   expect_equal(ncol(results), ncol(sample_occ_abs_data_fortest) + 2)
 })
+

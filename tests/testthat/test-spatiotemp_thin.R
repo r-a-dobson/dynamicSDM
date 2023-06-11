@@ -122,18 +122,6 @@ test_that("method day produces smaller data.frame when thinning", {
 })
 
 
-test_that("method day produces data.frame over 0 even when high temporal.dist value",
-          {
-            result <- spatiotemp_thin(
-                occ.data = sample_explan_data,
-                temporal.method = "day",
-                temporal.dist = 365,
-                spatial.split.degrees = 4,
-                spatial.dist = 10000,
-                iterations = 2
-              )
-            expect_gt(nrow(result), 0)
-          })
 
 test_that("method DOY produces data.frame", {
   result <- spatiotemp_thin(

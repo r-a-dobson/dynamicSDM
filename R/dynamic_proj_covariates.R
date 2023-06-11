@@ -619,7 +619,6 @@ dynamic_proj_covariates <- function(dates,
 
       if (cov.file.type == "csv") {
 
-
         stack_df <- as.data.frame(cbind(terra::xyFromCell(stack,
                                                           1:terra::ncell(stack)),
                                         terra::values(stack)))
