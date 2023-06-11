@@ -186,6 +186,14 @@ test_that("Works if static rasters and buffering", {
 })
 
 
+
+
+
+
+
+
+
+
 test_that("Works if spatial.ext = polygon", {
   dates <- c("2010-01-01")
   polygon <-  sf::st_polygon(list(cbind(c(20, 12, 36, 36,20), c(-35, -12, -35, -12,-35))))
