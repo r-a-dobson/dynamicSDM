@@ -117,9 +117,10 @@ test_that("Works if spatial.ext = Extent", {
 })
 
 
-test_that("Works if spatial.ext = RasterLayer", {
+test_that("Works if static rasters", {
   dates <- c("2010-01-01")
   raster <- terra::rast(terra::ext(c(12, 36, -35, -12)))
+  raster <-terra::setValues(raster, 1:terra::ncell(raster) )
   results <- dynamic_proj_covariates(
       dates = dates,
       varnames = c("precipitation_10_prior_sum", "NDVI_5_post_max"),
@@ -128,12 +129,61 @@ test_that("Works if spatial.ext = RasterLayer", {
       spatial.res.degrees = 10,
       resample.method = "bilinear",
       cov.file.type = "csv",
+      static.rasters = raster,
+      static.varnames = "mystatic",
+      static.resample.method = "bilinear",
       spatial.mask = sample_extent_data,
       save.directory = tempdir()
     )
   expect_equal(length(results), length(dates))
 })
 
+
+test_that("Works if static rasters x2", {
+  dates <- c("2010-01-01")
+  raster <- terra::rast(terra::ext(c(12, 36, -35, -12)))
+  raster <-terra::setValues(raster, 1:terra::ncell(raster) )
+  raster <-c(raster,raster)
+  results <- dynamic_proj_covariates(
+    dates = dates,
+    varnames = c("precipitation_10_prior_sum", "NDVI_5_post_max"),
+    local.directory = testthat::test_path("test-files"),
+    spatial.ext = raster,
+    spatial.res.degrees = 10,
+    resample.method = "bilinear",
+    cov.file.type = "csv",
+    static.rasters = raster,
+    static.varnames = c("mystatic","mystatic2"),
+    static.resample.method = "bilinear",
+    spatial.mask = sample_extent_data,
+    save.directory = tempdir()
+  )
+  expect_equal(length(results), length(dates))
+})
+
+test_that("Works if static rasters and buffering", {
+  dates <- c("2010-01-01")
+  raster <- terra::rast(terra::ext(c(12, 36, -35, -12)))
+  raster <-terra::setValues(raster, 1:terra::ncell(raster) )
+  raster <-c(raster,raster)
+  results <- dynamic_proj_covariates(
+    dates = dates,
+    varnames = c("precipitation_10_prior_sum", "NDVI_5_post_max"),
+    local.directory = testthat::test_path("test-files"),
+    spatial.ext = raster,
+    spatial.res.degrees = 10,
+    resample.method = "bilinear",
+    cov.file.type = "csv",
+    static.rasters = raster,
+    static.varnames = c("mystatic","mystatic2"),
+    static.moving.window.matrix = matrix(1,3,3),
+    static.GEE.math.fun = "mean",
+    static.resample.method = "bilinear",
+    spatial.mask = sample_extent_data,
+    save.directory = tempdir()
+  )
+  expect_equal(length(results), length(dates))
+})
 
 
 test_that("Works if spatial.ext = polygon", {

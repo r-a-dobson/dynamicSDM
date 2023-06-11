@@ -464,7 +464,7 @@ dynamic_proj_covariates <- function(dates,
 
     terra::crs(raster) <- prj
 
-    static.raster.stack[[sr]] <- static.raster.stack # Add raster to stack
+    static.raster.stack[[sr]] <- raster # Add raster to stack
 
   }
 
@@ -485,13 +485,16 @@ dynamic_proj_covariates <- function(dates,
     stack <- vector("list",length(varnames)) # Empty stack to bind rasters for this date to
     start <- 1
     end <- length(varnames)
+
     if (!missing(static.rasters)) {
       stack <- static.raster.stack
       start <- length(static.varnames)+1
       end <-  length(static.varnames) + length(varnames)
+      varnames <- c(static.varnames,varnames)
     }
 
     for (v in start:end) {
+
       name <- varnames[v]
 
       # Read in raster for this variable and date from Google Drive
@@ -576,13 +579,9 @@ dynamic_proj_covariates <- function(dates,
 
     }
 
-    varnames_all <- varnames
-
-    if(!missing(static.rasters)){varnames_all<-c(static.varnames,varnames)}
-
     stack <- terra::rast(stack)
 
-    names(stack) <- varnames_all # Label each layer in stack as variable
+    names(stack) <- varnames # Label each layer in stack as variable
 
     if (!prj == cov.prj) {
       stack <- terra::project(stack, cov.prj)

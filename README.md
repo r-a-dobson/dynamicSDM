@@ -10,8 +10,6 @@
 coverage](https://codecov.io/gh/r-a-dobson/dynamicSDM/branch/main/graph/badge.svg)](https://app.codecov.io/gh/r-a-dobson/dynamicSDM?branch=main)
 [![R-CMD-check](https://github.com/r-a-dobson/dynamicSDM/workflows/R-CMD-check/badge.svg)](https://github.com/r-a-dobson/dynamicSDM/actions)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7405906.svg)](https://doi.org/10.5281/zenodo.7405906)
-[![Journal
-article](https://img.shields.io/badge/Published_in-Methods_in_Ecology_and_Evolution-purple.svg)](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/2041-210X.14101)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/dynamicSDM)](https://CRAN.R-project.org/package=dynamicSDM)
 <!-- badges: end -->
@@ -32,11 +30,10 @@ status](https://www.r-pkg.org/badges/version/dynamicSDM)](https://CRAN.R-project
 - The package has since been published in the **Open Access journal
   “Methods in Ecology and Evolution”**
 
-[*Dobson, R., Challinor, A.J., Cheke, R.A., Jennings, S., Willis, S.G.
+*Dobson, R., Challinor, A.J., Cheke, R.A., Jennings, S., Willis, S.G.
 and Dallimer, M., 2023. dynamicSDM: An R package for species
 geographical distribution and abundance modelling at high spatiotemporal
-resolution. Methods in Ecology and
-Evolution.*](https://besjournals.onlinelibrary.wiley.com/doi/10.1111/2041-210X.14101)
+resolution. Methods in Ecology and Evolution.*
 
 <a href='https://github.com/r-a-dobson/dynamicSDM'><img src="https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/main/man/figures/MEE_title.png" align="centre" height="500" width="100%" /></a>
 
