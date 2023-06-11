@@ -173,7 +173,7 @@ extract_static_coords <- function(occ.data,
       extracted_data <- cbind(extracted_data,
                               terra::extract(focal_raster,
                               y = as.matrix(occ.data[, c("x", "y")]),
-                              method = extraction.method )[,1])
+                              method = extraction.method[x] )[,1])
 
     }
 
@@ -190,7 +190,7 @@ extract_static_coords <- function(occ.data,
       extracted_data <- cbind(extracted_data,
                               terra::extract(static.rasters[[x]],
                                              y = as.matrix(occ.data[, c("x", "y")]),
-                                             method = extraction.method)[,1])
+                                             method = extraction.method[x])[,1])
     }
 
   }
