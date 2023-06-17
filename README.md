@@ -35,8 +35,8 @@ status](https://www.r-pkg.org/badges/version/dynamicSDM)](https://CRAN.R-project
 [*Dobson, R., Challinor, A.J., Cheke, R.A., Jennings, S., Willis, S.G.
 and Dallimer, M., 2023. dynamicSDM: An R package for species
 geographical distribution and abundance modelling at high spatiotemporal
-resolution. Methods in Ecology and
-Evolution.*](\doi%7B10.1111/2041-210X.14101%7D)
+resolution. Methods in Ecology and Evolution, 14,
+1190-1199.*](https://doi.org/10.1111/2041-210X.14101)
 
 <a href='https://github.com/r-a-dobson/dynamicSDM'><img src="https://raw.githubusercontent.com/r-a-dobson/dynamicSDM/main/man/figures/MEE_title.png" align="centre" height="500" width="100%" /></a>
 
