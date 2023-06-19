@@ -52,7 +52,7 @@ NA cells in the mask layer are removed from the projection covariates.}
 projection rasters to be resampled to. Required if \code{spatial.ext} given.}
 
 \item{resample.method}{a character string or vector length of varnames, specifying resampling
-method to use. One of \code{ngb} and \code{bilinear}. See details for more information.}
+method to use. One of \code{near} and \code{bilinear}. See details for more information.}
 
 \item{cov.file.type}{a character string, the type of file to export projection covariates as. One
 of: \code{tif} (SpatRaster with multiple layers) or \code{csv}(data frame).}
@@ -75,7 +75,7 @@ covariates to. Folder must be uniquely named within Google Drive. Do not provide
 explanatory variable in order of rasters in \code{static.raster} stack.}
 
 \item{static.resample.method}{a character string or vector length of \code{static.varnames}, specifying resampling
-method to use on static rasters provided. One of \code{ngb} and \code{bilinear}. See details for more information..}
+method to use on static rasters provided. One of \code{near} and \code{bilinear}. See details for more information..}
 
 \item{static.moving.window.matrix}{optional; a matrix of weights with an odd number
 of sides, representing the spatial neighbourhood of cells (“moving
@@ -114,7 +114,7 @@ Rasters are then stacked and reprojected if \code{cov.prj} is different to \code
 Note: if explanatory variable rasters are not of the same spatial resolution and extent, then the
 function will error. Resample methods (\code{resample.method}) include:
 \itemize{
-\item \code{ngb}:  Each cell acquires the value of its nearest neighbour cell in the original raster. This
+\item \code{near}:  Each cell acquires the value of its nearest neighbour cell in the original raster. This
 is typically used for categorical variables.
 \item \code{bilinear}: the distance-weighted average of the four nearest cells are used to estimate a new
 cell value. This is typically used for continuous variables.

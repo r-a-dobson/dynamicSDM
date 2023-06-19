@@ -498,18 +498,20 @@ dynamic_proj_covariates <- function(dates,
     stack <- vector("list",length(varnames)) # Empty stack to bind rasters for this date to
     start <- 1
     end <- length(varnames)
+    varnames_name <- varnames
+    resample.method_name <- resample.method
 
     if (!missing(static.rasters)) {
       stack <- static.raster.stack
       start <- length(static.varnames)+1
       end <-  length(static.varnames) + length(varnames)
-      varnames <- c(static.varnames,varnames)
-      resample.method <- c(static.resample.method, resample.method)
+      varnames_name <- c(static.varnames,varnames)
+      resample.method_name <- c(static.resample.method, resample.method)
     }
 
     for (v in start:end) {
 
-      name <- varnames[v]
+      name <- varnames_name[v]
 
       # Read in raster for this variable and date from Google Drive
 
@@ -534,6 +536,7 @@ dynamic_proj_covariates <- function(dates,
       if (!missing(local.directory)) {
         fileimport <- directoryfiles[grep(name, directoryfiles)]
         fileimport <- fileimport[grep(date, fileimport)] # Select files
+        fileimport <- fileimport[!grepl("unprocessed", fileimport)] # Select files
         raster <- terra::rast(fileimport) # Read raster from local dir
         terra::crs(raster) <- prj # Check that projection is set
       }
@@ -566,13 +569,13 @@ dynamic_proj_covariates <- function(dates,
           })}
 
         # Resample raster using single method given
-        if (length(resample.method) == 1) {
-          raster <- terra::resample(raster, r, method = resample.method)
+        if (length(resample.method_name) == 1) {
+          raster <- terra::resample(raster, r, method = resample.method_name)
         }
 
         # Resample raster using variable specific method given
-        if (!length(resample.method) == 1) {
-          raster <- terra::resample(raster, r, method = resample.method[v])
+        if (!length(resample.method_name) == 1) {
+          raster <- terra::resample(raster, r, method = resample.method_name[v])
         }
 
         if(!missing(spatial.mask)) {
@@ -595,7 +598,7 @@ dynamic_proj_covariates <- function(dates,
 
     stack <- terra::rast(stack)
 
-    names(stack) <- varnames # Label each layer in stack as variable
+    names(stack) <- varnames_name # Label each layer in stack as variable
 
     if (!prj == cov.prj) {
       stack <- terra::project(stack, cov.prj)
