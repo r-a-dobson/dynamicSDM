@@ -151,563 +151,621 @@ dynamic_proj <-  function(dates,
                           prj =  "+proj=longlat +datum=WGS84",
                           proj.prj,
                           spatial.mask) {
-
-    # Set thresholds
-    if (!missing(sdm.mod) && missing(sdm.thresh)) {
-      message("No sdm.thresh. Default 0.5")
+  
+  # Set thresholds
+  if (!missing(sdm.mod) && missing(sdm.thresh)) {
+    message("No sdm.thresh. Default 0.5")
+  }
+  
+  if (missing(proj.prj)) {
+    proj.prj <- prj
+  }
+  
+  if (!missing(sdm.mod) && !missing(sdm.thresh)) {
+    if (!length(sdm.thresh) == 1) {
+      stop("sdm.thresh should be of length(1) ")
     }
-
-   if (missing(proj.prj)) {
-     proj.prj <- prj
-   }
-
-    if (!missing(sdm.mod) && !missing(sdm.thresh)) {
-      if (!length(sdm.thresh) == 1) {
-        stop("sdm.thresh should be of length(1) ")
-      }
+  }
+  if (!missing(sdm.mod) && missing(sdm.weight)) {
+    message("No sdm.weight specified. Default equal weighting.")
+  }
+  
+  if (!length(sdm.weight) == length(sdm.mod) && !length(sdm.weight) == 1) {
+    stop(
+      "sdm.weight should be of length(1) or equal to number of sdm models."
+    )
+  }
+  
+  if (!missing(sam.mod)) {
+    if (missing(sam.weight)) {
+      message("No sam.weight specified. Default equal weighting")
     }
-      if (!missing(sdm.mod) && missing(sdm.weight)) {
-        message("No sdm.weight specified. Default equal weighting.")
-      }
-
-      if (!length(sdm.weight) == length(sdm.mod) && !length(sdm.weight) == 1) {
-        stop(
-          "sdm.weight should be of length(1) or equal to number of sdm models."
-        )
-      }
-
-    if (!missing(sam.mod)) {
-      if (missing(sam.weight)) {
-        message("No sam.weight specified. Default equal weighting")
-      }
-      if (!length(sam.weight) == length(sam.mod) && !length(sam.weight) == 1) {
-        stop(
-          "sam.weight should be of length(1) or equal to number of sam models."
-        )
-      }
+    if (!length(sam.weight) == length(sam.mod) && !length(sam.weight) == 1) {
+      stop(
+        "sam.weight should be of length(1) or equal to number of sam models."
+      )
     }
-
+  }
+  
   # Convert mask to SPDF for use with raster::mask
-
+  
   if (!missing(spatial.mask)) {
-
+    
     spatial.mask <- convert_to_sf(spatial.mask, prj)
-
+    
     if(inherits(spatial.mask, "sfc_POLYGON")){
       spatial.mask <- terra::vect(spatial.mask)
     }
-
+    
     if(inherits(spatial.mask, "sfc_MULTIPOLYGON")){
       spatial.mask <- terra::vect(spatial.mask)
     }
-
+    
   }
-
-
-
-    #Check directory exists if provided
-    if (!missing(local.directory)) {
-      if (!dir.exists(local.directory)) {
-        stop("local.directory does not exist")
-      }
+  
+  
+  
+  #Check directory exists if provided
+  if (!missing(local.directory)) {
+    if (!dir.exists(local.directory)) {
+      stop("local.directory does not exist")
     }
-
-    if (missing(save.directory) && missing(save.drive.folder)) {
-      stop("No folder or directory to save projections too.")
-    }
-
+  }
+  
+  if (missing(save.directory) && missing(save.drive.folder)) {
+    stop("No folder or directory to save projections too.")
+  }
+  
   if (!missing(save.drive.folder)) {
     # Check user email provided
     if (missing(user.email)) {
       stop("Please provide user email (user.email) linked to Google Drive")
     }
   }
-
-    # Check Google Drive folder exists if provided
-    if (!missing(drive.folder)) {
-      # Check user email provided
-      if (missing(user.email)) {
-        stop("Please provide user email (user.email) linked to Google Drive")
-      }
-      googledrive::drive_auth(email = user.email)  #Initiate Google Drive
-      googledrive::drive_user()
-
-
-      # Check folder exists in user's Google Drive
-      folderpath <- googledrive::drive_find(pattern = drive.folder, type = 'folder')
-
-
-      if (nrow(folderpath) == 0) {stop("drive.folder does not exist.")}
-
-
-      # If more than one partial match, use grep to extract exact match
-      if(nrow(folderpath)>1) {
-        folderpath <- folderpath[grep(paste0("^", drive.folder, "$"),
-                                      folderpath$name), ]
-      }
-
-      # If exact match to more than one folder then not uniquely named. Cannot write file.
-      if (nrow(folderpath) > 1) {
-        stop("save.drive.folder is not uniquely named in your Google Drive ")
-      }
-
-      drivefiles <- googledrive::drive_ls(path = googledrive::as_id(folderpath$id))[,1:2]
-
+  
+  # Check Google Drive folder exists if provided
+  if (!missing(drive.folder)) {
+    # Check user email provided
+    if (missing(user.email)) {
+      stop("Please provide user email (user.email) linked to Google Drive")
     }
-
-    # Match projection.method argument to available options
-    projection.method <- match.arg(projection.method, choices = c("proportional",
-                                                                  "binary",
-                                                                  "abundance",
-                                                                  "stacked"), several.ok = TRUE)
-
-    cov.file.type <- match.arg(cov.file.type, choices = c("tif", "csv"))
-
-
-
-    for (x in 1:length(dates)) {
-
-      date <- dates[x]
-
-      # Read in projection data from local directory
-      if (!missing(local.directory)) {
-
-        filename <- list.files(local.directory, full.names = TRUE) # List all files
-        filename <- filename[grep(date, filename)] # Get file name matching date
-
-        if(cov.file.type == "csv") {
-
-          filename <- filename[grep("*.csv", filename)] # Get only .csv file name
-          projection_df <- read.csv(filename)
-        } # Read in file
-
-        if (cov.file.type == "tif") {
-          filename <- filename[grep("*rasterstack.tif", filename)] # Get only .csv file name
-          projection_df <- terra::rast(filename)
-
-          if (!missing(spatial.mask)) {
+    googledrive::drive_auth(email = user.email)  #Initiate Google Drive
+    googledrive::drive_user()
+    
+    
+    # Check folder exists in user's Google Drive
+    folderpath <- googledrive::drive_find(pattern = drive.folder, type = 'folder')
+    
+    
+    if (nrow(folderpath) == 0) {stop("drive.folder does not exist.")}
+    
+    
+    # If more than one partial match, use grep to extract exact match
+    if(nrow(folderpath)>1) {
+      folderpath <- folderpath[grep(paste0("^", drive.folder, "$"),
+                                    folderpath$name), ]
+    }
+    
+    # If exact match to more than one folder then not uniquely named. Cannot write file.
+    if (nrow(folderpath) > 1) {
+      stop("save.drive.folder is not uniquely named in your Google Drive ")
+    }
+    
+    drivefiles <- googledrive::drive_ls(path = googledrive::as_id(folderpath$id))[,1:2]
+    
+  }
+  
+  # Match projection.method argument to available options
+  projection.method <- match.arg(projection.method, choices = c("proportional",
+                                                                "binary",
+                                                                "abundance",
+                                                                "stacked"), several.ok = TRUE)
+  
+  cov.file.type <- match.arg(cov.file.type, choices = c("tif", "csv"))
+  
+  
+  
+  for (x in 1:length(dates)) {
+    
+    date <- dates[x]
+    
+    # Read in projection data from local directory
+    if (!missing(local.directory)) {
+      
+      filename <- list.files(local.directory, full.names = TRUE) # List all files
+      filename <- filename[grep(date, filename)] # Get file name matching date
+      
+      if(cov.file.type == "csv") {
+        
+        filename <- filename[grep("*.csv", filename)] # Get only .csv file name
+        projection_df <- read.csv(filename)
+      } # Read in file
+      
+      if (cov.file.type == "tif") {
+        filename <- filename[grep("*rasterstack.tif", filename)] # Get only .csv file name
+        projection_df <- terra::rast(filename)
+        
+        if (!missing(spatial.mask)) {
           projection_df <- terra::mask(projection_df, spatial.mask)
-          }
-
         }
-
-        }
-
-
-      # Read in projection data from Google Drive folder
-      if (!missing(drive.folder)) {
-
-
-        fileid <- drivefiles[grep(date, drivefiles$name),]
-
-
-
-        if (cov.file.type == "csv") {
-
+        
+      }
+      
+    }
+    
+    
+    # Read in projection data from Google Drive folder
+    if (!missing(drive.folder)) {
+      
+      
+      fileid <- drivefiles[grep(date, drivefiles$name),]
+      
+      
+      
+      if (cov.file.type == "csv") {
+        
         fileid <- fileid[grep("*.csv", fileid$name),"id"]# Get file name matching date
-
+        
         pathforthisfile <- paste0(tempfile(), ".csv") # Temporary file name
         googledrive::drive_download(file = googledrive::as_id(fileid$id),
                                     path = pathforthisfile,
                                     overwrite = TRUE) # Download file to temp dir
         projection_df <- read.csv(pathforthisfile) }# Read in file
-
+      
+      if (cov.file.type == "tif") {
+        
+        fileid <- fileid[grep("*rasterstack.tif", fileid$name),"id"]# Get file name matching date
+        
+        pathforthisfile <- paste0(tempfile(), ".tif") # Temporary file name
+        googledrive::drive_download(file = googledrive::as_id(fileid$id),
+                                    path = pathforthisfile,
+                                    overwrite = TRUE) # Download file to temp dir
+        
+        projection_df <- terra::rast(pathforthisfile)
+        
+        if (!missing(spatial.mask)) {
+          projection_df <- terra::mask(projection_df, spatial.mask)
+        }
+        
+      }}
+    
+    ### If one model object given for either
+    
+    if (!missing(sdm.mod)) {
+      if (!inherits(sdm.mod, "list")) {
+        
+        pred_type <- "response"
+        
+        
         if (cov.file.type == "tif") {
-
-          fileid <- fileid[grep("*rasterstack.tif", fileid$name),"id"]# Get file name matching date
-
-          pathforthisfile <- paste0(tempfile(), ".tif") # Temporary file name
-          googledrive::drive_download(file = googledrive::as_id(fileid$id),
-                                      path = pathforthisfile,
-                                      overwrite = TRUE) # Download file to temp dir
-
-          projection_df <- terra::rast(pathforthisfile)
-
-          if (!missing(spatial.mask)) {
-            projection_df <- terra::mask(projection_df, spatial.mask)
+    
+          if (!inherits(sdm.mod, "randomForest")) {
+              SDMpred <- terra::predict(model = sdm.mod,
+                                      object = projection_df,
+                                      type = pred_type)
           }
-
-        }}
-
-      ### If one model object given for either
-
-      if (!missing(sdm.mod)) {
-        if (!inherits(sdm.mod, "list")) {
-
-          if (cov.file.type == "tif") {
-
+          
+          if(inherits(sdm.mod, "randomForest")){
+            pred_type <- "prob"
             SDMpred <- terra::predict(model = sdm.mod,
-                                       object = projection_df,
-                                       type = "response")
-
-            SDMbinary <- SDMpred > sdm.thresh} # Probability to binary
-
-          if(cov.file.type=="csv") {
-
+                                      object = projection_df,
+                                      type = pred_type)[[2]]
+            
+            }
+          
+          SDMbinary <- SDMpred > sdm.thresh} # Probability to binary
+        
+        if(cov.file.type=="csv") {
+          
+          if (!inherits(sdm.mod, "randomForest")) {
+          SDMpred <- stats::predict(sdm.mod,
+                                    newdata = projection_df,
+                                    type = pred_type,
+                                    na.action = stats::na.pass)}
+          
+          
+          if(inherits(sdm.mod, "randomForest")){
+            pred_type <- "prob"
+            
             SDMpred <- stats::predict(sdm.mod,
                                       newdata = projection_df,
-                                      type = "response",
-                                      na.action = stats::na.pass)
-
-            SDMbinary <- as.numeric(SDMpred > sdm.thresh)} # Probability to binary
-
-        }
-
-
-        if (inherits(sdm.mod, "list")) {
-
-          proj_blocks = NULL
-
-          proj_stack<- vector("list",length(sdm.mod))
-
-
-          # Make projection with each model
-          for (model in 1:length(sdm.mod)) {
-
-            if(cov.file.type == "tif") {
+                                      type = pred_type,
+                                      na.action = stats::na.pass)[,2]}
+          
+          SDMbinary <- as.numeric(SDMpred > sdm.thresh)} # Probability to binary
+        
+      }
+      
+      
+      if (inherits(sdm.mod, "list")) {
+        
+        
+        proj_blocks = NULL
+        
+        proj_stack<- vector("list",length(sdm.mod))
+        
+        
+        # Make projection with each model
+        for (model in 1:length(sdm.mod)) {
+          
+          pred_type <- "response"
+          
+          if(inherits(sdm.mod[[model]], "randomForest")){pred_type <- "prob"}
+          
+          
+          if(cov.file.type == "tif") {
+            
+            if(!inherits(sdm.mod[[model]], "randomForest")){
+            
+            
+            proj_stack[[model]] <- terra::predict(model=sdm.mod[[model]],
+                                                  object = projection_df,
+                                                  type = pred_type)}
+            
+            if(inherits(sdm.mod[[model]], "randomForest")){
+              pred_type <- "prob"
               proj_stack[[model]] <- terra::predict(model=sdm.mod[[model]],
-                                                                 object = projection_df,
-                                                                 type = "response")}
-
-            if(cov.file.type=="csv"){
-
+                                                    object = projection_df,
+                                                    type = pred_type)[[2]]}
+          }
+          
+          if(cov.file.type=="csv"){
+            
+            if(!inherits(sdm.mod[[model]], "randomForest")){
+            proj_blocks <- cbind(proj_blocks,
+                                 stats::predict(sdm.mod[[model]],
+                                                newdata = projection_df,
+                                                type = pred_type,
+                                                na.action = stats::na.pass))}
+            
+            if(inherits(sdm.mod[[model]], "randomForest")){
+              pred_type <- "prob"
+              
               proj_blocks <- cbind(proj_blocks,
-                                          stats::predict(sdm.mod[[model]],
-                                                         newdata = projection_df,
-                                                         type = "response",
-                                                         na.action = stats::na.pass))}
-          }
-
-          if(cov.file.type=="tif") {proj_stack <- terra::rast(proj_stack)}
-          if (length(sdm.weight) == 1) {
-            if(cov.file.type=="csv") {
-              SDMpred <- matrixStats::rowWeightedMeans(proj_blocks,
-                                                       w = rep(sdm.weight, length(sdm.mod)),
-                                                       na.rm = TRUE)
+                                   stats::predict(sdm.mod[[model]],
+                                                  newdata = projection_df,
+                                                  type = pred_type,
+                                                  na.action = stats::na.pass)[,2])}
+            
+            
+            
             }
-
-            if(cov.file.type=="tif") {
-              SDMpred <- terra::weighted.mean(proj_stack,
-                                               w = rep(sdm.weight, length(sdm.mod)),
-                                               na.rm = TRUE)
-            }
-
+        }
+        
+        if(cov.file.type=="tif") {proj_stack <- terra::rast(proj_stack)}
+        if (length(sdm.weight) == 1) {
+          if(cov.file.type=="csv") {
+            SDMpred <- matrixStats::rowWeightedMeans(proj_blocks,
+                                                     w = rep(sdm.weight, length(sdm.mod)),
+                                                     na.rm = TRUE)
           }
-
-
-          if (length(sdm.weight) > 1) {
-
-            if (cov.file.type == "csv") {
-              SDMpred <- matrixStats::rowWeightedMeans(proj_blocks, w = sdm.weight, na.rm = TRUE)
-            }
-
-            if (cov.file.type == "tif") {
-              SDMpred <- terra::weighted.mean(proj_stack, w = sdm.weight, na.rm = TRUE)
-            }
-
+          
+          if(cov.file.type=="tif") {
+            SDMpred <- terra::weighted.mean(proj_stack,
+                                            w = rep(sdm.weight, length(sdm.mod)),
+                                            na.rm = TRUE)
           }
-
-
-          if (cov.file.type == "tif") {
-            SDMbinary <- SDMpred > sdm.thresh # Probability to binary
-          }
-
+          
+        }
+        
+        
+        if (length(sdm.weight) > 1) {
+          
           if (cov.file.type == "csv") {
-            SDMbinary <- as.numeric(SDMpred > sdm.thresh) # Probability to binary
+            SDMpred <- matrixStats::rowWeightedMeans(proj_blocks, w = sdm.weight, na.rm = TRUE)
           }
-
-
+          
+          if (cov.file.type == "tif") {
+            SDMpred <- terra::weighted.mean(proj_stack, w = sdm.weight, na.rm = TRUE)
+          }
+          
+        }
+        
+        
+        if (cov.file.type == "tif") {
+          SDMbinary <- SDMpred > sdm.thresh # Probability to binary
+        }
+        
+        if (cov.file.type == "csv") {
+          SDMbinary <- as.numeric(SDMpred > sdm.thresh) # Probability to binary
+        }
+        
+        
       }}
-
-
-      if (!missing(sam.mod)) {
-
-        if (inherits(sam.mod, "gbm")) {
-
+    
+    
+    if (!missing(sam.mod)) {
+      
+      if (!inherits(sam.mod, "list")) {
+        
+        pred_type <- "response"
+        
+        if (cov.file.type == "tif") {
+          SAMpred <- terra::predict(model = sam.mod,
+                                    object = projection_df,
+                                    type = pred_type)
+        }
+        
+        if (cov.file.type == "csv") {
+          SAMpred <- stats::predict(sam.mod,
+                                    newdata = projection_df,
+                                    type = pred_type,
+                                    na.action = stats::na.pass)
+        }
+      }
+      
+      if (inherits(sam.mod, "list")) {
+       
+        proj_blocks = NULL
+        proj_stack <- vector("list", length(sam.mod))
+        
+        
+        # Make projection with each model
+        for (model in 1:length(sam.mod)) {
+          
+          pred_type <- "response"
+          
           if (cov.file.type == "tif") {
-            SAMpred <- terra::predict(model = sam.mod,
-                                       object = projection_df,
-                                       type = "response")
+            proj_stack[[model]] <- terra::predict(model = sam.mod[[model]],
+                                                  object = projection_df,
+                                                  type = pred_type)
           }
-
+          
+          
+          if(cov.file.type=="csv") {
+            proj_blocks <- cbind(proj_blocks,stats::predict(sam.mod[[model]],
+                                                            newdata = projection_df,
+                                                            type = pred_type,
+                                                            na.action = stats::na.pass))
+          }}
+        
+        if (cov.file.type == "tif") {
+          proj_stack <- terra::rast(proj_stack)
+        }
+        
+        if (length(sam.weight) == 1) {
+          
           if (cov.file.type == "csv") {
-            SAMpred <- stats::predict(sam.mod,
-                                      newdata = projection_df,
-                                      type = "response",
-                                      na.action = stats::na.pass)
+            
+            SAMpred <- matrixStats::rowWeightedMeans(proj_blocks,
+                                                     w = rep(sam.weight, length(sam.mod)),
+                                                     na.rm = TRUE)
+          }
+          if(cov.file.type=="tif") {
+            SAMpred <- terra::weighted.mean(proj_stack,
+                                            w = rep(sam.weight, length(sam.mod)),
+                                            na.rm = TRUE)
           }
         }
-
-        if (inherits(sam.mod, "list")) {
-
-          proj_blocks = NULL
-          proj_stack <- vector("list", length(sam.mod))
-
-
-          # Make projection with each model
-          for (model in 1:length(sam.mod)) {
-
-            if (cov.file.type == "tif") {
-              proj_stack[[model]] <- terra::predict(model = sam.mod[[model]],
-                                                                      object = projection_df,
-                                                                      type = "response")
-            }
-
-
-            if(cov.file.type=="csv") {
-              proj_blocks <- cbind(proj_blocks,stats::predict(sam.mod[[model]],
-                                                              newdata = projection_df,
-                                                              type = "response",
-                                                              na.action = stats::na.pass))
-            }}
-
+        
+        if (length(sam.weight) > 1) {
+          if (cov.file.type == "csv") {
+            SAMpred <- matrixStats::rowWeightedMeans(proj_blocks, w = sam.weight, na.rm = TRUE)
+          }
           if (cov.file.type == "tif") {
-            proj_stack <- terra::rast(proj_stack)
+            SAMpred <- terra::weighted.mean(proj_stack, w = sam.weight, na.rm = TRUE)
           }
-
-          if (length(sam.weight) == 1) {
-
-            if (cov.file.type == "csv") {
-
-              SAMpred <- matrixStats::rowWeightedMeans(proj_blocks,
-                                                       w = rep(sam.weight, length(sam.mod)),
-                                                       na.rm = TRUE)
-            }
-            if(cov.file.type=="tif") {
-              SAMpred <- terra::weighted.mean(proj_stack,
-                                               w = rep(sam.weight, length(sam.mod)),
-                                               na.rm = TRUE)
-            }
-              }
-
-          if (length(sam.weight) > 1) {
-            if (cov.file.type == "csv") {
-              SAMpred <- matrixStats::rowWeightedMeans(proj_blocks, w = sam.weight, na.rm = TRUE)
-            }
-            if (cov.file.type == "tif") {
-              SAMpred <- terra::weighted.mean(proj_stack, w = sam.weight, na.rm = TRUE)
-            }
-
-          }
-          }
+          
         }
-
-      ## Stacked
-      if (!missing(sdm.mod) && !missing(sam.mod)) {
-        stacked <- SDMbinary * SAMpred
       }
-
-      # Create rasters for each projection method requested by user
-      if ("binary" %in% projection.method) {
-
-        if (cov.file.type == "tif") {
-          binaryrast <- SDMbinary
-        }
-
-        if(cov.file.type == "csv") {
-
-          binaryrast <- terra::rast(as.matrix(cbind(projection_df[, "x"],
-                                                    projection_df[, "y"],
-                                                    SDMbinary)), crs = prj,
-                                    type="xyz")
-
-        }
-
-
-        if (!missing(spatial.mask)) {
-
-          binaryrast <- terra::mask(binaryrast, spatial.mask)
-        }
-
-        # If projection of covariates are not the same as desired, reproject the projection
-        if (!prj == proj.prj) {
-          binaryrast <- terra::project(binaryrast, y = proj.prj)
-        }
-
-
-
+    }
+    
+    ## Stacked
+    if (!missing(sdm.mod) && !missing(sam.mod)) {
+      stacked <- SDMbinary * SAMpred
+    }
+    
+    # Create rasters for each projection method requested by user
+    if ("binary" %in% projection.method) {
+      
+      if (cov.file.type == "tif") {
+        binaryrast <- SDMbinary
       }
-
-      if ("abundance" %in% projection.method) {
-
-        if (cov.file.type == "tif") {
-          abundancerast <- SAMpred
-        }
-
-        if (cov.file.type == "csv") {
-          abundancerast <-  terra::rast(as.matrix(cbind(projection_df[, "x"],
+      
+      if(cov.file.type == "csv") {
+        
+        binaryrast <- terra::rast(as.matrix(cbind(projection_df[, "x"],
+                                                  projection_df[, "y"],
+                                                  SDMbinary)), crs = prj,
+                                  type="xyz")
+        
+      }
+      
+      
+      if (!missing(spatial.mask)) {
+        
+        binaryrast <- terra::mask(binaryrast, spatial.mask)
+      }
+      
+      # If projection of covariates are not the same as desired, reproject the projection
+      if (!prj == proj.prj) {
+        binaryrast <- terra::project(binaryrast, y = proj.prj)
+      }
+      
+      
+      
+    }
+    
+    if ("abundance" %in% projection.method) {
+      
+      if (cov.file.type == "tif") {
+        abundancerast <- SAMpred
+      }
+      
+      if (cov.file.type == "csv") {
+        abundancerast <-  terra::rast(as.matrix(cbind(projection_df[, "x"],
+                                                      projection_df[, "y"],
+                                                      SAMpred)), crs = prj,
+                                      type="xyz")
+        
+      }
+      
+      if (!missing(spatial.mask)) {
+        abundancerast <- terra::mask(abundancerast, spatial.mask)
+      }
+      
+      
+      # If projection of covariates are not the same as desired, reproject the projection
+      if (!prj == proj.prj) {
+        abundancerast <- terra::project(abundancerast, y = proj.prj)
+      }
+      
+    }
+    
+    if ("proportional" %in% projection.method) {
+      
+      if (cov.file.type == "tif") {
+        proportionalrast <- SDMpred
+      }
+      
+      if (cov.file.type == "csv") {
+        proportionalrast <- terra::rast(as.matrix(cbind(projection_df[, "x"],
                                                         projection_df[, "y"],
-                                                        SAMpred)), crs = prj,
-                                        type="xyz")
-
-        }
-
-        if (!missing(spatial.mask)) {
-          abundancerast <- terra::mask(abundancerast, spatial.mask)
-        }
-
-
-        # If projection of covariates are not the same as desired, reproject the projection
-        if (!prj == proj.prj) {
-          abundancerast <- terra::project(abundancerast, y = proj.prj)
-        }
-
+                                                        SDMpred)), crs = prj,
+                                        type = "xyz")
       }
-
-      if ("proportional" %in% projection.method) {
-
-        if (cov.file.type == "tif") {
-          proportionalrast <- SDMpred
-        }
-
-        if (cov.file.type == "csv") {
-          proportionalrast <- terra::rast(as.matrix(cbind(projection_df[, "x"],
-                                                          projection_df[, "y"],
-                                                          SDMpred)), crs = prj,
-                                          type = "xyz")
-        }
-
-        if (!missing(spatial.mask)) {
-          proportionalrast <- terra::mask(proportionalrast, spatial.mask)
-        }
-
-        # If projection of covariates are not the same as desired, reproject the projection
-        if (!prj == proj.prj) {
-          proportionalrast <- terra::project(proportionalrast, y = proj.prj)
-        }
-
-
+      
+      if (!missing(spatial.mask)) {
+        proportionalrast <- terra::mask(proportionalrast, spatial.mask)
       }
-
-      if ("stacked" %in% projection.method) {
-
-        if (cov.file.type == "tif") {
-          stackedrast <- stacked
-        }
-
-        if (cov.file.type == "csv") {
-          stackedrast <- terra::rast(as.matrix(cbind(projection_df[, "x"],
-                                                    projection_df[, "y"],
-                                                    stacked)), crs = prj,
-                                    type="xyz")
-        }
-
-        if (!missing(spatial.mask)) {
-          stackedrast <- terra::mask(stackedrast, spatial.mask)
-        }
-
-        # If projection of covariates are not the same as desired, reproject the projection
-        if (!prj == proj.prj) {
-          stackedrast <- terra::project(stackedrast, y = proj.prj)
-        }
-
-
-
+      
+      # If projection of covariates are not the same as desired, reproject the projection
+      if (!prj == proj.prj) {
+        proportionalrast <- terra::project(proportionalrast, y = proj.prj)
       }
-
-      ## Save projection rasters to local directory
-      if (!missing(save.directory)) {
-
-        if (exists("binaryrast")) {
-
-          terra::writeRaster(binaryrast,
-                              file = paste0(save.directory, "/", date, "_binary.tif"),
-                              overwrite = TRUE)
-        }
-
-        if (exists("abundancerast")) {
-
-          terra::writeRaster(abundancerast,
-                              file = paste0(save.directory, "/", date, "_abundance.tif"),
-                              overwrite = TRUE)
-        }
-        if (exists("proportionalrast")) {
-
-          terra::writeRaster(proportionalrast,
-                              file = paste0(save.directory, "/", date, "_proportional.tif"),
-                              overwrite = TRUE
-          )
-        }
-
-        if (exists("stackedrast")) {
-
-          terra::writeRaster(stackedrast,
-                              file = paste0(save.directory, "/", date, "_stacked.tif"),
-                              overwrite = TRUE)
-        }
+      
+      
+    }
+    
+    if ("stacked" %in% projection.method) {
+      
+      if (cov.file.type == "tif") {
+        stackedrast <- stacked
       }
-
-      # Save projection rasters to Google Drive folder
-      if (!missing(save.drive.folder)) {
-        # Check user email provided
-        if (missing(user.email)) {
-          stop(" Please provide user email linked to Google Drive account")
-        }
-
-        # Initiate Google Drive
-        googledrive::drive_auth(email = user.email)
-        googledrive::drive_user()
-        save.folderpath <- googledrive::drive_find(pattern = save.drive.folder,
-                                                   type = 'folder')
-
-        # If more than one folder partially matches, use grep to get exact match
-        if(nrow(save.folderpath)>1) {
-          save.folderpath <- save.folderpath[grep(paste0("^", save.drive.folder, "$"),
-                                                  save.folderpath$name), ]
-        }
-        # If exact match to more than one folder then not uniquely named. Cannot write file.
-        if (nrow(save.folderpath) > 1) {
-          stop("save.drive.folder is not uniquely named in your Google Drive ")
-        }
-
-        if (nrow(save.folderpath) == 0) {
-          stop("save.drive.folder doesn't exist")
-        }
-
-        filename <- paste0(tempfile(), ".tif") # Temporary file name
-
-        if (exists("binaryrast")) {
-
-          terra::writeRaster(binaryrast, filename, overwrite = TRUE)
-          googledrive::drive_upload(
-            media = filename,
-            path = googledrive::as_id(save.folderpath$id),
-            name = paste0(date, "_binary.tif"),
-            overwrite = TRUE
-          )
-        }
-
-        if (exists("abundancerast")) {
-          terra::writeRaster(abundancerast, filename, overwrite = TRUE)
-          googledrive::drive_upload(
-            media = filename,
-            path = googledrive::as_id(save.folderpath$id),
-            name = paste0(date, "_abundance.tif"),
-            overwrite = TRUE
-          )
-        }
-
-        if (exists("proportionalrast")) {
-          terra::writeRaster(proportionalrast, filename, overwrite = TRUE)
-          googledrive::drive_upload(
-            media = filename,
-            path = googledrive::as_id(save.folderpath$id),
-            name = paste0(date, "_proportional.tif"),
-            overwrite = TRUE
-          )
-        }
-
-        if (exists("stackedrast")) {
-          terra::writeRaster(stackedrast, filename, overwrite = TRUE)
-          googledrive::drive_upload(
-            media = filename,
-            path = googledrive::as_id(save.folderpath$id),
-            name = paste0(date, "_stacked.tif"),
-            overwrite = TRUE
-          )
-        }
+      
+      if (cov.file.type == "csv") {
+        stackedrast <- terra::rast(as.matrix(cbind(projection_df[, "x"],
+                                                   projection_df[, "y"],
+                                                   stacked)), crs = prj,
+                                   type="xyz")
+      }
+      
+      if (!missing(spatial.mask)) {
+        stackedrast <- terra::mask(stackedrast, spatial.mask)
+      }
+      
+      # If projection of covariates are not the same as desired, reproject the projection
+      if (!prj == proj.prj) {
+        stackedrast <- terra::project(stackedrast, y = proj.prj)
+      }
+      
+      
+      
+    }
+    
+    ## Save projection rasters to local directory
+    if (!missing(save.directory)) {
+      
+      if (exists("binaryrast")) {
+        
+        terra::writeRaster(binaryrast,
+                           file = paste0(save.directory, "/", date, "_binary.tif"),
+                           overwrite = TRUE)
+      }
+      
+      if (exists("abundancerast")) {
+        
+        terra::writeRaster(abundancerast,
+                           file = paste0(save.directory, "/", date, "_abundance.tif"),
+                           overwrite = TRUE)
+      }
+      if (exists("proportionalrast")) {
+        
+        terra::writeRaster(proportionalrast,
+                           file = paste0(save.directory, "/", date, "_proportional.tif"),
+                           overwrite = TRUE
+        )
+      }
+      
+      if (exists("stackedrast")) {
+        
+        terra::writeRaster(stackedrast,
+                           file = paste0(save.directory, "/", date, "_stacked.tif"),
+                           overwrite = TRUE)
       }
     }
+    
+    # Save projection rasters to Google Drive folder
+    if (!missing(save.drive.folder)) {
+      # Check user email provided
+      if (missing(user.email)) {
+        stop(" Please provide user email linked to Google Drive account")
+      }
+      
+      # Initiate Google Drive
+      googledrive::drive_auth(email = user.email)
+      googledrive::drive_user()
+      save.folderpath <- googledrive::drive_find(pattern = save.drive.folder,
+                                                 type = 'folder')
+      
+      # If more than one folder partially matches, use grep to get exact match
+      if(nrow(save.folderpath)>1) {
+        save.folderpath <- save.folderpath[grep(paste0("^", save.drive.folder, "$"),
+                                                save.folderpath$name), ]
+      }
+      # If exact match to more than one folder then not uniquely named. Cannot write file.
+      if (nrow(save.folderpath) > 1) {
+        stop("save.drive.folder is not uniquely named in your Google Drive ")
+      }
+      
+      if (nrow(save.folderpath) == 0) {
+        stop("save.drive.folder doesn't exist")
+      }
+      
+      filename <- paste0(tempfile(), ".tif") # Temporary file name
+      
+      if (exists("binaryrast")) {
+        
+        terra::writeRaster(binaryrast, filename, overwrite = TRUE)
+        googledrive::drive_upload(
+          media = filename,
+          path = googledrive::as_id(save.folderpath$id),
+          name = paste0(date, "_binary.tif"),
+          overwrite = TRUE
+        )
+      }
+      
+      if (exists("abundancerast")) {
+        terra::writeRaster(abundancerast, filename, overwrite = TRUE)
+        googledrive::drive_upload(
+          media = filename,
+          path = googledrive::as_id(save.folderpath$id),
+          name = paste0(date, "_abundance.tif"),
+          overwrite = TRUE
+        )
+      }
+      
+      if (exists("proportionalrast")) {
+        terra::writeRaster(proportionalrast, filename, overwrite = TRUE)
+        googledrive::drive_upload(
+          media = filename,
+          path = googledrive::as_id(save.folderpath$id),
+          name = paste0(date, "_proportional.tif"),
+          overwrite = TRUE
+        )
+      }
+      
+      if (exists("stackedrast")) {
+        terra::writeRaster(stackedrast, filename, overwrite = TRUE)
+        googledrive::drive_upload(
+          media = filename,
+          path = googledrive::as_id(save.folderpath$id),
+          name = paste0(date, "_stacked.tif"),
+          overwrite = TRUE
+        )
+      }
     }
+  }
+}
 
 
