@@ -536,7 +536,12 @@ dynamic_proj_covariates <- function(dates,
       if (!missing(local.directory)) {
         fileimport <- directoryfiles[grep(name, directoryfiles)]
         fileimport <- fileimport[grep(date, fileimport)] # Select files
-        fileimport <- fileimport[!grepl("unprocessed", fileimport)] # Select files
+        fileimport <- fileimport[grepl(".tif", fileimport)] # Select files
+        fileimport <- fileimport[!grepl("unprocessed.tif", fileimport)] # Select files
+
+        if (length(fileimport) > 1) {
+          stop("More than one raster with date and varname in local directory")
+        }
         raster <- terra::rast(fileimport) # Read raster from local dir
         terra::crs(raster) <- prj # Check that projection is set
       }
