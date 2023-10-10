@@ -141,10 +141,10 @@ dynamic_proj <-  function(dates,
                           drive.folder,
                           user.email,
                           sdm.mod,
-                          sdm.thresh = 0.5,
-                          sdm.weight = 1,
+                          sdm.thresh,
+                          sdm.weight ,
                           sam.mod,
-                          sam.weight = 1,
+                          sam.weight,
                           save.directory,
                           save.drive.folder,
                           cov.file.type,
@@ -155,6 +155,7 @@ dynamic_proj <-  function(dates,
   # Set thresholds
   if (!missing(sdm.mod) && missing(sdm.thresh)) {
     message("No sdm.thresh. Default 0.5")
+    sdm.thresh <- 0.5
   }
 
   if (missing(proj.prj)) {
@@ -168,6 +169,7 @@ dynamic_proj <-  function(dates,
   }
   if (!missing(sdm.mod) && missing(sdm.weight)) {
     message("No sdm.weight specified. Default equal weighting.")
+    sdm.weight <- 1
   }
 
   if (!missing(sdm.mod)){
@@ -183,6 +185,7 @@ dynamic_proj <-  function(dates,
     if (missing(sam.weight)) {
       message("No sam.weight specified. Default equal weighting")
     }
+    sam.weight <- 1
     if (!length(sam.weight) == length(sam.mod) && !length(sam.weight) == 1) {
       stop(
         "sam.weight should be of length(1) or equal to number of sam models."
