@@ -224,34 +224,40 @@ spatiotemp_thin <-  function(occ.data,
       # keep iterating through and randomly removing them
       # and look at impact on others to select next record to remove
 
-      while (any(matrix)) {
+      num_rows <- nrow(matrix)
 
-        # Identify rows with highest overlap as we want to exclude these first
-        rows.to.remove <- as.numeric(which(overlap == max(overlap, na.rm = TRUE)))
+      for (i in 1:num_rows) {
 
-        # Randomly select one of the rows with highest overlap to exclude first
-        rows.to.remove <- sample(rows.to.remove, 1)
+        # Check if there are any remaining overlaps
+        if (!any(matrix)){break}
 
-        # Remove therow from the distance matrix & minus its from overlap vector
-        overlap <- overlap - matrix[rows.to.remove, ]
+        # Identify rows with the highest overlap
+        max_overlap <- max(overlap, na.rm = TRUE)
+        rows.to.remove <- which(overlap == max_overlap)
 
-        # Removed row no longer overlaps any others, set to 0
-        overlap[rows.to.remove] <- 0
+        # Randomly select one of the rows with the highest overlap
+        row_to_remove <- sample(rows.to.remove, 1)
 
-        # Change value of removed row from TRUE to FALSE as removed from matrix
-        matrix[rows.to.remove, ] <- FALSE
-        matrix[, rows.to.remove] <- FALSE
+        # Update the overlap vector
+        overlap <- overlap - matrix[row_to_remove, ]
+        overlap[row_to_remove] <- 0
 
-        # Keep record of which rows to remove from final occurrence data.frame
-        remove[rows.to.remove] <- FALSE
+        # Update the matrix to mark the removed row and column as FALSE
+        matrix[row_to_remove, ] <- FALSE
+        matrix[, row_to_remove] <- FALSE
+
+        # Update the removal record
+        remove[row_to_remove] <- FALSE
       }
 
       # Make the new, thinned, data set
       thinned.data.frame <- occ.data.split[remove, , drop = FALSE]
       results <- rbind(results, thinned.data.frame)
+
     }
 
-
+    total_removed <- nrow(occ.data) - nrow(results)
+    print(paste(total_removed, " of ", nrow(occ.data), "removed by temporal"))
     #-------------------------------------------------------
     # Spatial thinning
     #-------------------------------------------------------
