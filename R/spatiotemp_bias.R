@@ -128,8 +128,8 @@ spatiotemp_bias <-  function(occ.data,
 
     # Plot histogram of frequency of records for each day to visualise bias
     p<- ggplot2::ggplot(occ.data,
-                     ggplot2::aes_string(x = as.numeric(as.vector((occ.data[, temp])))))+
-                     ggplot2::geom_histogram(binwidth = 1,
+                     ggplot2::aes_string(x = occ.data[[temp]]))+
+                     ggplot2::geom_histogram(
                                              color = "black",
                                              fill = "white")+
                      ggplot2::labs(title =  paste0("Frequency distribution of records: ", temp),

@@ -77,14 +77,9 @@
 #' @examples
 #'
 #'data("sample_explan_data")
-#'
-#'sample_explan_data$weights<-1-sample_explan_data$REL_SAMP_EFFORT
-#'
 #'\dontshow{
-#'sample_filt_data<-sample_explan_data[1:100,]
+#'sample_filt_data<-sample_explan_data[1:65,]
 #'}
-#'
-#'
 #'split <- sample(c(TRUE, FALSE),
 #'                replace=TRUE,
 #'                nrow(sample_explan_data),
@@ -92,12 +87,12 @@
 #'
 #'training <- sample_explan_data[split, ]
 #'testing <- sample_explan_data[!split, ]
+#'
 #'brt_fit(
 #'  occ.data = training,
 #'  test.data = testing,
 #'  response.col = "presence.absence",
 #'  distribution = "bernoulli",
-#'  weights.col = "weights",
 #'  varnames = colnames(training)[14:16],
 #'  interaction.depth = 2
 #')
@@ -157,14 +152,6 @@ brt_fit <- function(occ.data,
 
   # Create formula using response and explanatory variables specified
     formula <- stats::formula(paste(response.col, paste(varnames, collapse = " + "), sep = " ~ "))
-
-    # Set response variable as correct class for "bernoulli" distribution
-    if (distribution == "bernoulli") {
-      if (!is.character(occ.data[, response.col])) {
-        occ.data[, response.col] <- as.character(occ.data[, response.col])
-      }
-    }
-
 
     # Remove rows that contain NA where applicable.
     occ.data <- occ.data[!is.na(occ.data[, response.col]), ]
