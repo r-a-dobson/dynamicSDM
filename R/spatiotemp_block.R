@@ -31,7 +31,7 @@
 #'approach for model training and testing.
 #'
 #'We adapt this approach to account for temporal autocorrelation by enabling users to split records
-#'into sampling units based upon spatial or temporal characteristics before blocking occurs.
+#'into sampling units based upon spatial and temporal characteristic before blocking occurs.
 #'
 #'# Spatial splitting
 #'
@@ -45,6 +45,8 @@
 #'considered unique sampling unit. For instance, if `temporal.block` = `year`, then records from the
 #'same year are considered a sampling unit to be grouped into blocks.
 #'
+#'Note: If spatial splitting is also used, then spatial characteristics may split these further into
+#'separate sampling units.
 #'
 #'The `temporal.block` option `quarter` splits occurrence records into sampling units based on which
 #'quarter of the year the record month belongs to: (1) January-March, (2) April-June, (3)
@@ -53,7 +55,7 @@
 #'
 #'# Block generation
 #'
-#'Once split into sampling units based upon temporal or spatial characteristics, these units are
+#'Once split into sampling units based upon temporal and spatial characteristics, these units are
 #'then assigned into given number of blocks (`n.blocks`), so that the mean and range of explanatory
 #'variables (`vars.to.block.by`) and total sample size are similar across each. The number of
 #'`iterations` specifies how many random shuffles are used to optimise block equalisation.
@@ -65,7 +67,7 @@
 #'  Biology, 19, 1236-1248.
 #'
 #'@return Returns occurrence data frame with column "BLOCK.CATS", assigning each record to a
-#'  spatial or temporal block.
+#'  spatiotemporal block.
 #' @examples
 #' \donttest{
 #'data("sample_explan_data")
@@ -79,6 +81,7 @@
 #'  occ.data = sample_explan_data,
 #'  spatial.layer = random_cat_layer,
 #'  spatial.split.degrees = 3,
+#'  temporal.block = c("month"),
 #'  vars.to.block.by = colnames(sample_explan_data)[14:16],
 #'  n.blocks = 3,
 #'  iterations = 30
@@ -90,29 +93,24 @@ spatiotemp_block <- function(occ.data,
                              vars.to.block.by,
                              spatial.layer,
                              spatial.split.degrees,
-                             temporal.block ,
+                             temporal.block,
                              n.blocks = 10,
                              iterations = 5000) {
 
     # Save occ.data to return with added block column at end
     occ.data.save <- occ.data
 
-    temporal.block.2 <- NULL
     if (n.blocks < 2) {
       stop("n.blocks must be over one for blocking")
     }
 
-    if (!missing(spatial.layer)) {
-      message("Blocking by spatial features.")
+    if (missing(spatial.layer)) {
+      message("spatial.layer is missing. No blocking by spatial features.")
     }
 
-    if (!missing(spatial.layer) && !missing(temporal.block)) {
-      stop("Error: Spatial and Temporal Blocking must be applied separately. Provide only one of `spatial.layer` or `temporal.block`.")
-    }
-
-    if (!missing(temporal.block)) {
-      message("Blocking by temporal features.")
-
+    if (missing(temporal.block)) {
+      message("temporal.block is missing. No blocking by temporal features.")
+      temporal.block.2 <-NULL
     }
 
     if (!missing(temporal.block)) {
