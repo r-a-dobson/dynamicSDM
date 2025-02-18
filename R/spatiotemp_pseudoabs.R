@@ -414,14 +414,14 @@ spatiotemp_pseudoabs <-  function(spatial.method,
 
     # For each record date, randomly select the number of dates  within buffer
     for (x in 1:length(date1)) {
-      random_date <- sample(c(dynamic_proj_dates(as.character(date3[x]),
+      random_date <- suppressMessages(sample(c(as.Date(dynamic_proj_dates(as.character(date3[x]),
                                                  as.character(date5[x]),
                                                  interval = 1,
-                                                 interval.level = "day"),
-                              dynamic_proj_dates(as.character(date4[x]),
+                                                 interval.level = "day")),
+                              as.Date(dynamic_proj_dates(as.character(date4[x]),
                                                  as.character(date2[x]),
                                                  interval = 1,
-                                                 interval.level = "day")), value, replace = TRUE)
+                                                 interval.level = "day"))), value, replace = TRUE))
 
       PA_dates <- c(PA_dates, as.Date(random_date))
 
